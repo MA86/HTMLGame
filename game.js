@@ -1,4 +1,4 @@
-/* Define tank blueprint */
+/* TODO: Define tank blueprint */
 const Tank = function(xPos, yPos, rotation, speed, sprite) {
   // Initialize all attributes
   this.position = {
@@ -29,6 +29,15 @@ const Tank = function(xPos, yPos, rotation, speed, sprite) {
   }
 }
 
+/* TODO: Define background blueprint */
+const Background = function(bgSprite) {
+  this.bgSprite = bgSprite;
+
+  this.render = function(ctx) {
+    ctx.drawImage(this.bgSprite, 50, 50);
+  }
+}
+
 const addInputEventListeners = function(dic) {
   addEventListener("keydown", function(e) {
     dic[e.code] = true;
@@ -41,26 +50,33 @@ const addInputEventListeners = function(dic) {
 
 /* On Window load - aka main */
 window.addEventListener("load", function(e) {
-  // Set global variables
+  // Global variables
   var gameCanvas = document.getElementById("game-canvas");
   var ctx = gameCanvas.getContext("2d");
   var keysDown = {};
   var timeNow;
+  var timeThen;
 
-  // Handle input
+  // Set background
+  let bgImage = new Image();
+  bgImage.src = "images/grass.png";
+  let bg = new Background(bgImage);
+
+  // Set input event listeners
   addInputEventListeners(keysDown);
 
-  // Instantiate tank and image objects
+  // Set tank
   let tankImage = new Image();
   tankImage.src = "images/icon.png";
-  var tank = new Tank(100,100,2,200,tankImage);
+  let tank = new Tank(100,100,2,200,tankImage);
 
   // Game loop
   const main = function() {
     timeNow = Date.now();
-    var delta = (timeNow - timeThen) / 1000.0;
+    let delta = (timeNow - timeThen) / 1000.0;
 
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+    bg.render(ctx);
     tank.update(keysDown, delta);
     tank.render(ctx);
 
@@ -68,6 +84,6 @@ window.addEventListener("load", function(e) {
     timeThen = timeNow;
   }
   // Start game
-  var timeThen = Date.now()
+  timeThen = Date.now()
   main();
 });
