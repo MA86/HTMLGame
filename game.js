@@ -60,7 +60,7 @@ window.addEventListener("load", function(e) {
   // Set background
   let bgImage = new Image();
   bgImage.src = "images/grass.png";
-  let bg = new Background(bgImage);
+  let background = new Background(bgImage);
 
   // Set input event listeners
   addInputEventListeners(keysDown);
@@ -76,7 +76,7 @@ window.addEventListener("load", function(e) {
     let delta = (timeNow - timeThen) / 1000.0;
 
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-    bg.render(ctx);
+    background.render(ctx);
     tank.update(keysDown, delta);
     tank.render(ctx);
 
