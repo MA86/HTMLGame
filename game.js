@@ -1,19 +1,26 @@
 /* TODO: Define tank blueprint */
-const Tank = function(xPos, yPos, rotation, speed, sprite) {
+const Tank = function(xPos, yPos, rotationSpeed, speed, sprite) {
   // Initialize all attributes
   this.position = {
     "x": xPos,
     "y": yPos
   };
-  this.speed = speed;
-  this.rotation = rotation;
+  this.speed = speed;                 // Pixels per second
+  this.rotation = 0;                  // Degrees
+  this.rotationSpeed = rotationSpeed; // Degrees per second
   this.sprite = sprite;
 
   this.render = function(ctx) {
+    let spriteCenter = {
+      "x": this.sprite.naturalWidth / 2,
+      "y": this.sprite.naturalHeight / 2
+    };
+    // Rotate around self
     ctx.save();
-    ctx.translate(this.position.x, this.position.y);
-    ctx.rotate(this.rotation);
-    ctx.drawImage(this.sprite, this.position.x, this.position.y);
+    ctx.translate(this.position.x + spriteCenter.x, this.position.y + spriteCenter.y);
+    ctx.rotate(this.rotation * Math.PI / 180);
+    console.log(this.rotation);
+    ctx.drawImage(this.sprite, -spriteCenter.x, -spriteCenter.y);
     ctx.restore();
   }
 
@@ -25,12 +32,12 @@ const Tank = function(xPos, yPos, rotation, speed, sprite) {
       this.position.y += this.speed * dt;
     }
     if (keysDown.ArrowRight == true) {
-      this.position.x += this.speed * dt;
-      this.rotation += this.rotation * Math.PI / 180;
+      //this.position.x += this.speed * dt;
+      this.rotation += this.rotationSpeed * dt;
     }
     if (keysDown.ArrowLeft == true) {
-      this.position.x -= this.speed * dt;
-      this.rotation -= this.rotation * Math.PI / 180;
+      //this.position.x -= this.speed * dt;
+      this.rotation -= this.rotationSpeed * dt;
     }
   }
 }
@@ -74,7 +81,7 @@ window.addEventListener("load", function(e) {
   // Set tank
   let tankImage = new Image();
   tankImage.src = "images/icon.png";
-  let tank = new Tank(0,0,2,100,tankImage);
+  let tank = new Tank(100,100,90,100,tankImage);
 
   // Game loop
   const main = function() {
@@ -83,8 +90,9 @@ window.addEventListener("load", function(e) {
 
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     background.render(ctx);
-    tank.update(keysDown, delta);
+
     tank.render(ctx);
+    tank.update(keysDown, delta);
 
     window.requestAnimationFrame(main);
     timeThen = timeNow;
