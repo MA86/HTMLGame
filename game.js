@@ -5,12 +5,16 @@ const Tank = function(xPos, yPos, rotation, speed, sprite) {
     "x": xPos,
     "y": yPos
   };
-  this.rotation = rotation;
   this.speed = speed;
+  this.rotation = rotation;
   this.sprite = sprite;
 
   this.render = function(ctx) {
+    ctx.save();
+    ctx.translate(this.position.x, this.position.y);
+    ctx.rotate(this.rotation);
     ctx.drawImage(this.sprite, this.position.x, this.position.y);
+    ctx.restore();
   }
 
   this.update = function(keysDown, dt) {
@@ -22,9 +26,11 @@ const Tank = function(xPos, yPos, rotation, speed, sprite) {
     }
     if (keysDown.ArrowRight == true) {
       this.position.x += this.speed * dt;
+      this.rotation += this.rotation * Math.PI / 180;
     }
     if (keysDown.ArrowLeft == true) {
       this.position.x -= this.speed * dt;
+      this.rotation -= this.rotation * Math.PI / 180;
     }
   }
 }
@@ -68,7 +74,7 @@ window.addEventListener("load", function(e) {
   // Set tank
   let tankImage = new Image();
   tankImage.src = "images/icon.png";
-  let tank = new Tank(100,100,2,200,tankImage);
+  let tank = new Tank(0,0,2,100,tankImage);
 
   // Game loop
   const main = function() {
