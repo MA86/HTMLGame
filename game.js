@@ -1,4 +1,7 @@
-/* TODO: Define tank blueprint */
+// TODO: wrap rotation after 360 degrees.
+// TODO: move towards direction of rotation.
+
+/* Define tank blueprint */
 const Tank = function(xPos, yPos, rotationSpeed, speed, sprite) {
   // Initialize all attributes
   this.position = {
@@ -8,7 +11,7 @@ const Tank = function(xPos, yPos, rotationSpeed, speed, sprite) {
   this.speed = speed;                 // Pixels per second
   this.rotation = 0;                  // Degrees
   this.rotationSpeed = rotationSpeed; // Degrees per second
-  this.sprite = sprite;
+  this.sprite = sprite;               // Image object
 
   this.render = function(ctx) {
     let spriteCenter = {
@@ -19,8 +22,8 @@ const Tank = function(xPos, yPos, rotationSpeed, speed, sprite) {
     ctx.save();
     ctx.translate(this.position.x + spriteCenter.x, this.position.y + spriteCenter.y);
     ctx.rotate(this.rotation * Math.PI / 180);
-    console.log(this.rotation);
     ctx.drawImage(this.sprite, -spriteCenter.x, -spriteCenter.y);
+    this.rotation = this.rotation % 360;
     ctx.restore();
   }
 
