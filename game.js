@@ -1,6 +1,3 @@
-// TODO: wrap rotation after 360 degrees.
-// TODO: move towards direction of rotation.
-
 /* Define tank blueprint */
 const Tank = function(xPos, yPos, rotationSpeed, speed, sprite) {
   // Initialize all attributes
@@ -8,10 +5,14 @@ const Tank = function(xPos, yPos, rotationSpeed, speed, sprite) {
     "x": xPos,
     "y": yPos
   };
-  this.speed = speed;                 // Pixels per second
-  this.rotation = 0;                  // Degrees
-  this.rotationSpeed = rotationSpeed; // Degrees per second
-  this.sprite = sprite;               // Image object
+  this.speed = speed;
+  // Pixels per second
+  this.rotation = 0;
+  // Degrees
+  this.rotationSpeed = rotationSpeed;
+  // Degrees per second
+  this.sprite = sprite;
+  // Image object
 
   this.render = function(ctx) {
     let spriteCenter = {
@@ -23,38 +24,49 @@ const Tank = function(xPos, yPos, rotationSpeed, speed, sprite) {
     ctx.translate(this.position.x + spriteCenter.x, this.position.y + spriteCenter.y);
     ctx.rotate(this.rotation * Math.PI / 180);
     ctx.drawImage(this.sprite, -spriteCenter.x, -spriteCenter.y);
-    this.rotation = this.rotation % 360;
     ctx.restore();
   }
 
   this.update = function(keysDown, dt) {
+    let rotationInRadian = this.rotation * Math.PI / 180;
+    let dx = Math.cos(rotationInRadian) * (this.speed * dt);
+    let dy = Math.sin(rotationInRadian) * (this.speed * dt);
+
+    // Move forward/backward
     if (keysDown.ArrowUp == true) {
-      this.position.y -= this.speed * dt;
+      this.position.x += dx;
+      this.position.y += dy;
     }
     if (keysDown.ArrowDown == true) {
-      this.position.y += this.speed * dt;
+      this.position.x -= dx;
+      this.position.y -= dy;
     }
+
+    // Rotate right/left
     if (keysDown.ArrowRight == true) {
-      //this.position.x += this.speed * dt;
       this.rotation += this.rotationSpeed * dt;
     }
     if (keysDown.ArrowLeft == true) {
-      //this.position.x -= this.speed * dt;
       this.rotation -= this.rotationSpeed * dt;
     }
+    // Wrap around
+    this.rotation = this.rotation % 360;
   }
 }
 
-/* TODO: Define background blueprint */
+/* Define background blueprint */
 const Background = function(bgSprite) {
   this.bgSprite = bgSprite;
 
   this.render = function(ctx) {
     ctx.drawImage(this.bgSprite, 50, 50);
   }
+
+  this.update = function(keysDown, dt) {// does nothing
+  }
 }
 
-const addInputEventListeners = function(dic) {
+const addKeyboardInputEventListeners = function(dic) {
   addEventListener("keydown", function(e) {
     dic[e.code] = true;
   }, false);
@@ -70,23 +82,26 @@ window.addEventListener("load", function(e) {
   var gameCanvas = document.getElementById("game-canvas");
   var ctx = gameCanvas.getContext("2d");
   var keysDown = {};
-  var timeNow;
-  var timeThen;
+  var entities = [];
 
-  // Set background
+  // Set keyboard event listeners
+  addKeyboardInputEventListeners(keysDown);
+
+  // Background entity
   let bgImage = new Image();
   bgImage.src = "images/grass.png";
   let background = new Background(bgImage);
+  entities.push(background)
 
-  // Set input event listeners
-  addInputEventListeners(keysDown);
-
-  // Set tank
+  // Tank entity
   let tankImage = new Image();
   tankImage.src = "images/icon.png";
-  let tank = new Tank(100,100,90,100,tankImage);
+  let tank = new Tank(100,100,50,100,tankImage);
+  entities.push(tank)
 
   // Game loop
+  var timeNow;
+  var timeThen;
   const main = function() {
     timeNow = Date.now();
     let delta = (timeNow - timeThen) / 1000.0;
@@ -94,13 +109,19 @@ window.addEventListener("load", function(e) {
     ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
     background.render(ctx);
 
-    tank.render(ctx);
-    tank.update(keysDown, delta);
+    // Update entities
+    for (let i = 0; i < entities.length; i++) {
+      entities[i].update(keysDown,delta)
+    }
 
+    // Render entities
+    for (let i = 0; i < entities.length; i++) {
+      entities[i].render(ctx)
+    }
+    // Call main for every frame
     window.requestAnimationFrame(main);
     timeThen = timeNow;
   }
-  // Start game
   timeThen = Date.now()
-  main();
+  main();   // Initial call
 });
