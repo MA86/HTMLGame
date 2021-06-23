@@ -1,0 +1,3 @@
+const getImages = function(directory) {
+    
+}
