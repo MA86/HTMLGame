@@ -33,15 +33,15 @@ window.addEventListener("load", function (e) {
     // Tank entity
     let tankImage = new Image();
     tankImage.src = "images/icon.png";
-    let tank = new Tank(100, 100, 50, 100, tankImage);
+    let tank = new Tank(200, 200, 50, 100, tankImage);
     entities.push(tank);
-
-    //var exp = JSON.parse(explosionJSON);
-    console.log(explosionJSON);
-    //let sprite = new Sprite();
-    //sprite.framesPerSecond = 6;
-    //sprite.images = getImage("images/explosion");
-    //entities.push(sprite);
+    
+    // TEST
+    let explosions = new Image();
+    explosions.src = "images/explosions.png";
+    let sprite = new Sprite(explosions, explosionsData, 30);
+    entities.push(sprite);
+    // TEST
 
     // Game loop
     var timeNow;

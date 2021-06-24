@@ -1,30 +1,21 @@
 /* Define tank blueprint */
-const Tank = function (xPos, yPos, rotationSpeed, speed, image) {
+const Tank = function (xPos, yPos, rotationSpeed, speed, sprite) {
     // Initialize all attributes
     this.position = {
         "x": xPos,
         "y": yPos
     };
+    // In pixels per second
     this.speed = speed;
-    // Pixels per second
+    // In degrees
     this.rotation = 0;
-    // Degrees
+    // In degrees per second
     this.rotationSpeed = rotationSpeed;
-    // Degrees per second
-    this.image = image;
     // Image object
+    this.sprite = sprite;
 
     this.render = function (ctx) {
-        let spriteCenter = {
-            "x": this.image.naturalWidth / 2,
-            "y": this.image.naturalHeight / 2
-        };
-        // Rotate around self
-        ctx.save();
-        ctx.translate(this.position.x + spriteCenter.x, this.position.y + spriteCenter.y);
-        ctx.rotate(this.rotation * Math.PI / 180);
-        ctx.drawImage(this.image, -spriteCenter.x, -spriteCenter.y);
-        ctx.restore();
+        
     }
 
     this.update = function (keysDown, dt) {
