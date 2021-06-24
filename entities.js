@@ -1,5 +1,7 @@
+import { Sprite } from "./sprite.js";
+
 /* Define tank blueprint */
-const Tank = function (xPos, yPos, rotationSpeed, speed, sprite) {
+const Tank = function (xPos, yPos, rotationSpeed, speed, spriteSheetPath, spriteSheetData,) {
     // Initialize all attributes
     this.position = {
         "x": xPos,
@@ -8,27 +10,20 @@ const Tank = function (xPos, yPos, rotationSpeed, speed, sprite) {
     // In pixels per second
     this.speed = speed;
     // In degrees
-    this.rotation = 0;
+    this.rotation = { "r": 0 };
     // In degrees per second
     this.rotationSpeed = rotationSpeed;
-    // Image object
-    this.sprite = sprite;
+    // Sprite object
+    this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 28, this);
 
     this.render = function (ctx) {
-        let spriteCenter = {
-            "x": this.image.naturalWidth / 2,
-            "y": this.image.naturalHeight / 2
-        };
-        // Rotate around self
-        ctx.save();
-        ctx.translate(this.position.x + spriteCenter.x, this.position.y + spriteCenter.y);
-        ctx.rotate(this.rotation * Math.PI / 180);
-        ctx.drawImage(this.image, -spriteCenter.x, -spriteCenter.y);
-        ctx.restore();
+        this.sprite.render(ctx);
     }
 
     this.update = function (keysDown, dt) {
-        let rotationInRadian = this.rotation * Math.PI / 180;
+        this.sprite.update(keysDown, dt);
+
+        let rotationInRadian = this.rotation.r * Math.PI / 180;
         let dx = Math.cos(rotationInRadian) * (this.speed * dt);
         let dy = Math.sin(rotationInRadian) * (this.speed * dt);
 
@@ -44,13 +39,13 @@ const Tank = function (xPos, yPos, rotationSpeed, speed, sprite) {
 
         // Rotate right/left
         if (keysDown.ArrowRight == true) {
-            this.rotation += this.rotationSpeed * dt;
+            this.rotation.r += this.rotationSpeed * dt;
         }
         if (keysDown.ArrowLeft == true) {
-            this.rotation -= this.rotationSpeed * dt;
+            this.rotation.r -= this.rotationSpeed * dt;
         }
         // Wrap around
-        this.rotation = this.rotation % 360;
+        this.rotation.r = this.rotation.r % 360;
     }
 }
 

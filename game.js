@@ -29,19 +29,10 @@ window.addEventListener("load", function (e) {
     bgImage.src = "images/grass.png";
     let background = new Background(bgImage);
     entities.push(background)
-
-    // Tank entity
-    let tankImage = new Image();
-    tankImage.src = "images/icon.png";
-    let tank = new Tank(200, 200, 50, 100, tankImage);
-    entities.push(tank);
     
-    // TEST
-    let explosions = new Image();
-    explosions.src = "images/explosions.png";
-    let sprite = new Sprite(explosions, explosionsData, 30);
-    entities.push(sprite);
-    // TEST
+    // Tank entity
+    let tank = new Tank(200, 200, 100, 100, "images/explosions.png", explosionsData);
+    entities.push(tank);
 
     // Game loop
     var timeNow;
@@ -51,7 +42,6 @@ window.addEventListener("load", function (e) {
         let delta = (timeNow - timeThen) / 1000.0;
 
         ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
-        background.render(ctx);
 
         // Update entities
         for (let i = 0; i < entities.length; i++) {

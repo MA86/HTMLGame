@@ -1,3 +1,0 @@
-const getImages = function(directory) {
-    
-}

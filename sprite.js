@@ -1,14 +1,13 @@
 /* Define sprite animatation blueprint */
-const Sprite = function (spriteSheet, spriteSheetData, framesPerSecond) {
-    this.index = 0;
+const Sprite = function (spriteSheetPath, spriteSheetData, framesPerSecond, entity = null) {
+    // Initialize all attributes
     this.spriteSheetData = spriteSheetData;
-    this.spriteSheet = spriteSheet;
+    this.spriteSheet = new Image();
+    this.spriteSheet.src = spriteSheetPath;
+    this.index = 0;
     this.framesPerSecond = framesPerSecond;
-    this.rotation = 45;
-    this.position = {
-        "x": 100,
-        "y": 100
-    };
+    this.rotation = (entity == null) ? 0 : entity.rotation;
+    this.position = (entity == null) ? { "x": 0, "y": 0 } : entity.position;
     this.timeTracker = 0;
 
     this.render = function (ctx) {
@@ -21,7 +20,7 @@ const Sprite = function (spriteSheet, spriteSheetData, framesPerSecond) {
             this.position.x,
             this.position.y
         );
-        ctx.rotate(this.rotation * Math.PI / 180);
+        ctx.rotate(this.rotation.r * Math.PI / 180);
         ctx.drawImage(
             this.spriteSheet,
             this.spriteSheetData.frames[this.index].frame.x,

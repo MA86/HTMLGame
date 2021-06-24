@@ -1,3 +1,4 @@
+/* TODO:
 import { Sprite } from "./sprite"
 
 // Animation
@@ -8,5 +9,5 @@ playerAnimation.addAnimation("throw",new Sprite(playerSpritesheet,jumpData,30));
 
 playerAnimation.play("walk")
 playerAnimation.playingAnimation
-
+*/
 
