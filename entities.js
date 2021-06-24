@@ -15,7 +15,16 @@ const Tank = function (xPos, yPos, rotationSpeed, speed, sprite) {
     this.sprite = sprite;
 
     this.render = function (ctx) {
-        
+        let spriteCenter = {
+            "x": this.image.naturalWidth / 2,
+            "y": this.image.naturalHeight / 2
+        };
+        // Rotate around self
+        ctx.save();
+        ctx.translate(this.position.x + spriteCenter.x, this.position.y + spriteCenter.y);
+        ctx.rotate(this.rotation * Math.PI / 180);
+        ctx.drawImage(this.image, -spriteCenter.x, -spriteCenter.y);
+        ctx.restore();
     }
 
     this.update = function (keysDown, dt) {
