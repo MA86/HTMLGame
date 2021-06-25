@@ -1,5 +1,6 @@
 /* Define sprite animatation blueprint */
 const Sprite = function (spriteSheetPath, spriteSheetData, framesPerSecond, entity = null) {
+    // TODO: Handle one frame spritesheet case.
     // Initialize all attributes
     this.spriteSheetData = spriteSheetData;
     this.spriteSheet = new Image();

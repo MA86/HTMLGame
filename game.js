@@ -1,7 +1,6 @@
 "use strict";
 
 import { Tank, Background } from './entities.js';
-import { Sprite } from './sprite.js';
 
 const addKeyboardInputEventListeners = function (dic) {
     addEventListener("keydown", function (e) {
@@ -17,6 +16,8 @@ const addKeyboardInputEventListeners = function (dic) {
 window.addEventListener("load", function (e) {
     // Global variables
     var gameCanvas = document.getElementById("game-canvas");
+    gameCanvas.width = 1000;
+    gameCanvas.height = 1000;
     var ctx = gameCanvas.getContext("2d");
     var keysDown = {};
     var entities = [];
@@ -25,13 +26,11 @@ window.addEventListener("load", function (e) {
     addKeyboardInputEventListeners(keysDown);
 
     // Background entity
-    let bgImage = new Image();
-    bgImage.src = "images/grass.png";
-    let background = new Background(bgImage);
-    entities.push(background)
+    //let background = new Background("images/grass.png", explosionsData);
+    //entities.push(background)
     
     // Tank entity
-    let tank = new Tank(200, 200, 100, 100, "images/explosions.png", explosionsData);
+    let tank = new Tank(200, 200, 25, 100, "images/mSix.png", mSixData);
     entities.push(tank);
 
     // Game loop
