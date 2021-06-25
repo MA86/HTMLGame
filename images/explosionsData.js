@@ -1,4 +1,4 @@
-explosionsData = {
+let explosionsData = {
 	"frames": [
 		{
 			"filename": "expl_09_0001.png",
@@ -664,3 +664,5 @@ explosionsData = {
 		"scale": "1"
 	}
 }
+
+export { explosionsData };

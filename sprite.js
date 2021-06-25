@@ -1,3 +1,5 @@
+"use strict";
+
 /* Define sprite animatation blueprint */
 const Sprite = function (spriteSheetPath, spriteSheetData, framesPerSecond, entity = null) {
     // TODO: Handle one frame spritesheet case.
@@ -40,7 +42,7 @@ const Sprite = function (spriteSheetPath, spriteSheetData, framesPerSecond, enti
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;
         if (this.timeTracker >= delay) {
-            // Update index
+            // Next index
             this.index += 1;
             // Wrap index
             this.index = this.index % this.spriteSheetData.frames.length;

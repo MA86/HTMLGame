@@ -1,0 +1,38 @@
+let mSixTankBodyData = {
+	"frames": [
+		{
+			"filename": "mSixTankBody.png",
+			"frame": {
+				"x": 1,
+				"y": 1,
+				"w": 114,
+				"h": 53
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 114,
+				"h": 53
+			},
+			"sourceSize": {
+				"w": 114,
+				"h": 53
+			}
+		}
+	],
+	"meta": {
+		"app": "http://www.codeandweb.com/texturepacker",
+		"version": "1.0",
+		"image": "spritesheet.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 116,
+			"h": 55
+		},
+		"scale": "1"
+	}
+}
+
+export { mSixTankBodyData };

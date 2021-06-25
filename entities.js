@@ -1,19 +1,28 @@
+"use strict";
+
 import { Sprite } from "./sprite.js";
 
 /* Define tank blueprint */
 const Tank = function (xPos, yPos, rotationSpeed, speed, spriteSheetPath, spriteSheetData) {
-    // Initialize all attributes
+    // Initialize attributes
     this.position = {
         "x": xPos,
         "y": yPos
     };
-    // In pixels per second
+    // Unit: PPS
     this.speed = speed;
-    // In degrees
+    // Unit: degrees
     this.rotation = { "r": 0 };
-    // In degrees per second
+    // Unit: DPS 
     this.rotationSpeed = rotationSpeed;
-    this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 1, this);
+    this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 0, this);
+    this.turret = new Turret(
+        this.position,
+        this.rotation.r,
+        50,
+        "images/mSixTankTurret.png",
+        spriteSheetsData.mSixTankTurretData
+    );
 
     this.render = function (ctx) {
         this.sprite.render(ctx);
@@ -48,16 +57,36 @@ const Tank = function (xPos, yPos, rotationSpeed, speed, spriteSheetPath, sprite
     }
 }
 
+/* Define turret blueprint */
+const Turret = function (position, rotation, rotationSpeed, spriteSheetPath, spriteSheetData) {
+    this.position = position;
+    this.rotation = rotation;
+    this.rotationSpeed = rotationSpeed;
+    this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 0, this);
+
+    this.render = function (ctx) {
+        //TODO
+        this.sprite.render(ctx);
+    }
+
+    this.update = function (keysDown, dt) {
+        //TODO
+        // Rotate right/left
+        if (keysDown.KeyD == true) {
+            this.rotation += this.rotationSpeed * dt;
+            console.log(keysDown.KeyD);
+        }
+        if (keysDown.KeyA == true) {
+            this.rotation -= this.rotationSpeed * dt;
+
+        }
+        // Wrap around
+        this.rotation = this.rotation % 360;
+    }
+}
+
 /* Define background blueprint */
 const Background = function (spriteSheetPath, spriteSheetData) {
-    // TODO: implement "Animated Background" if possible, instead of static picture.
-    // Careful though, running it like sprites can eat lots of memory.
-    // Instead use efficient techniques to do this type of animation, like changing
-    // pixels in png to simulate starry night! or 'localized' animation.
-    // Read up scrolling background too. (aka parallax)
-
-    // Ask what settings for one frame spritesheet.
-    
     this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 1);
 
     this.render = function (ctx) {
@@ -69,4 +98,4 @@ const Background = function (spriteSheetPath, spriteSheetData) {
     }
 }
 
-export { Tank, Background };
+export { Tank, Turret, Background };

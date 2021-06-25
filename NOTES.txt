@@ -1,0 +1,10 @@
+Some tradeoffs to consider:
+	PROBLEM: Too many files == too many GET requests.
+	SOLUTION: In DEVELOPMENT create many files to organize. In PRODUCTION, put everythin in
+		  ONE file and minify it, then deploy.
+
+    // TODO: implement "Animated Background" if possible, instead of static picture.
+    // Careful though, running it like sprites can eat lots of memory.
+    // Instead use efficient techniques to do this type of animation, like changing
+    // pixels in png to simulate starry night! or 'localized' animation.
+    // Read up scrolling background too. (aka parallax)
