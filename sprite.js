@@ -39,12 +39,11 @@ const Sprite = function (spriteSheetPath, spriteSheetData, framesPerSecond, enti
     }
 
     this.update = function (keysDown, dt) {
+        // Change frame per second
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;
         if (this.timeTracker >= delay) {
-            // Next index
             this.index += 1;
-            // Wrap index
             this.index = this.index % this.spriteSheetData.frames.length;
             this.timeTracker = 0;
         }

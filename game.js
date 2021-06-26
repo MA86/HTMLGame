@@ -35,9 +35,6 @@ window.addEventListener("load", function (e) {
     let tank = new Tank(200, 200, 25, 100, "images/mSixTankBody.png", spriteSheetsData.mSixTankBodyData);
     entities.push(tank);
 
-    let turret = new Turret(tank.position, 0, 35, "images/mSixTankTurret.png", spriteSheetsData.mSixTankTurretData);
-    entities.push(turret);
-
     // Game loop
     var timeNow = 0;
     var timeThen = 0;

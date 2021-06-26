@@ -1,5 +1,6 @@
 "use strict";
 
+import * as spriteSheetsData from './spritesheetsData.js';
 import { Sprite } from "./sprite.js";
 
 /* Define tank blueprint */
@@ -9,27 +10,27 @@ const Tank = function (xPos, yPos, rotationSpeed, speed, spriteSheetPath, sprite
         "x": xPos,
         "y": yPos
     };
-    // Unit: PPS
-    this.speed = speed;
-    // Unit: degrees
-    this.rotation = { "r": 0 };
-    // Unit: DPS 
-    this.rotationSpeed = rotationSpeed;
+
+    this.speed = speed;             // Unit: PPS       
+    this.rotation = { "r": 0 };     // Unit: degrees
+    this.rotationSpeed = rotationSpeed;     // Unit: DPS 
     this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 0, this);
     this.turret = new Turret(
         this.position,
-        this.rotation.r,
         50,
         "images/mSixTankTurret.png",
-        spriteSheetsData.mSixTankTurretData
+        spriteSheetsData.mSixTankTurretData,
+        this.rotation
     );
 
     this.render = function (ctx) {
         this.sprite.render(ctx);
+        this.turret.render(ctx);
     }
 
     this.update = function (keysDown, dt) {
         this.sprite.update(keysDown, dt);
+        this.turret.update(keysDown, dt);
 
         let rotationInRadian = this.rotation.r * Math.PI / 180;
         let dx = Math.cos(rotationInRadian) * (this.speed * dt);
@@ -58,30 +59,29 @@ const Tank = function (xPos, yPos, rotationSpeed, speed, spriteSheetPath, sprite
 }
 
 /* Define turret blueprint */
-const Turret = function (position, rotation, rotationSpeed, spriteSheetPath, spriteSheetData) {
+const Turret = function (position, rotationSpeed, spriteSheetPath, spriteSheetData, parentRotation) {
     this.position = position;
-    this.rotation = rotation;
+    this.rotation = { "r": 0 };
     this.rotationSpeed = rotationSpeed;
+    this.parentRotation = parentRotation;
     this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 0, this);
 
     this.render = function (ctx) {
-        //TODO
         this.sprite.render(ctx);
     }
 
     this.update = function (keysDown, dt) {
-        //TODO
+        this.sprite.update(keysDown, dt);
+
         // Rotate right/left
         if (keysDown.KeyD == true) {
-            this.rotation += this.rotationSpeed * dt;
-            console.log(keysDown.KeyD);
+            this.rotation.r += this.rotationSpeed * dt;
         }
         if (keysDown.KeyA == true) {
-            this.rotation -= this.rotationSpeed * dt;
-
+            this.rotation.r -= this.rotationSpeed * dt;
         }
         // Wrap around
-        this.rotation = this.rotation % 360;
+        this.rotation.r = this.rotation.r % 360;
     }
 }
 
