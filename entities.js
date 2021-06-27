@@ -62,8 +62,9 @@ const Tank = function (xPos, yPos, rotationSpeed, speed, spriteSheetPath, sprite
 const Turret = function (position, rotationSpeed, spriteSheetPath, spriteSheetData, parentRotation) {
     this.position = position;
     this.rotation = { "r": 0 };
-    this.rotationSpeed = rotationSpeed;
     this.parentRotation = parentRotation;
+    this.rotationSpeed = rotationSpeed;
+    this.rotateBy = 0;
     this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 0, this);
 
     this.render = function (ctx) {
@@ -73,15 +74,19 @@ const Turret = function (position, rotationSpeed, spriteSheetPath, spriteSheetDa
     this.update = function (keysDown, dt) {
         this.sprite.update(keysDown, dt);
 
-        // Rotate right/left
+        // Rotate relative to parent 
+        this.rotation.r = this.parentRotation.r + this.rotateBy;
+
+        // Set rotateBy
         if (keysDown.KeyD == true) {
-            this.rotation.r += this.rotationSpeed * dt;
+            this.rotateBy += this.rotationSpeed * dt;
         }
         if (keysDown.KeyA == true) {
-            this.rotation.r -= this.rotationSpeed * dt;
+            this.rotateBy -= this.rotationSpeed * dt;
         }
         // Wrap around
         this.rotation.r = this.rotation.r % 360;
+        this.rotateBy = this.rotateBy % 360;
     }
 }
 
