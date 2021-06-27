@@ -5,20 +5,20 @@ let mSixTankTurretData = {
 			"frame": {
 				"x": 1,
 				"y": 1,
-				"w": 82,
-				"h": 35
+				"w": 270,
+				"h": 96
 			},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {
 				"x": 0,
 				"y": 0,
-				"w": 82,
-				"h": 35
+				"w": 270,
+				"h": 96
 			},
 			"sourceSize": {
-				"w": 82,
-				"h": 35
+				"w": 270,
+				"h": 96
 			}
 		}
 	],
@@ -28,8 +28,8 @@ let mSixTankTurretData = {
 		"image": "spritesheet.png",
 		"format": "RGBA8888",
 		"size": {
-			"w": 84,
-			"h": 37
+			"w": 272,
+			"h": 98
 		},
 		"scale": "1"
 	}

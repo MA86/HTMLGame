@@ -13,16 +13,22 @@ const addKeyboardInputEventListeners = function (dic) {
     }, false);
 }
 
+const setFullScreenMode = function (gameCanvas) {
+    gameCanvas.width = window.innerWidth;
+    gameCanvas.height = window.innerHeight;
+}
+
 /* On Window load */
 window.addEventListener("load", function (e) {
     // Global variables
     var gameCanvas = document.getElementById("game-canvas");
-    gameCanvas.width = 1000;
-    gameCanvas.height = 1000;
     var ctx = gameCanvas.getContext("2d");
-
     var keysDown = {};
     var entities = [];
+
+    // Full screen mode
+    setFullScreenMode(gameCanvas);
+    window.addEventListener("resize", setFullScreenMode);
 
     // Set keyboard event listeners
     addKeyboardInputEventListeners(keysDown);
@@ -32,7 +38,7 @@ window.addEventListener("load", function (e) {
     //entities.push(background)
 
     // Create tank entity
-    let tank = new Tank(200, 200, 25, 100, "images/mSixTankBody.png", spriteSheetsData.mSixTankBodyData);
+    let tank = new Tank(300, 300, 25, 110, "images/mSixTankBody.png", spriteSheetsData.mSixTankBodyData);
     entities.push(tank);
 
     // Game loop

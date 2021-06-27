@@ -5,20 +5,20 @@ let mSixTankBodyData = {
 			"frame": {
 				"x": 1,
 				"y": 1,
-				"w": 114,
-				"h": 53
+				"w": 270,
+				"h": 111
 			},
 			"rotated": false,
 			"trimmed": false,
 			"spriteSourceSize": {
 				"x": 0,
 				"y": 0,
-				"w": 114,
-				"h": 53
+				"w": 270,
+				"h": 111
 			},
 			"sourceSize": {
-				"w": 114,
-				"h": 53
+				"w": 270,
+				"h": 111
 			}
 		}
 	],
@@ -28,8 +28,8 @@ let mSixTankBodyData = {
 		"image": "spritesheet.png",
 		"format": "RGBA8888",
 		"size": {
-			"w": 116,
-			"h": 55
+			"w": 272,
+			"h": 113
 		},
 		"scale": "1"
 	}

@@ -17,7 +17,7 @@ const Tank = function (xPos, yPos, rotationSpeed, speed, spriteSheetPath, sprite
     this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 0, this);
     this.turret = new Turret(
         this.position,
-        50,
+        25,
         "images/mSixTankTurret.png",
         spriteSheetsData.mSixTankTurretData,
         this.rotation
@@ -59,8 +59,8 @@ const Tank = function (xPos, yPos, rotationSpeed, speed, spriteSheetPath, sprite
 }
 
 /* Define turret blueprint */
-const Turret = function (position, rotationSpeed, spriteSheetPath, spriteSheetData, parentRotation) {
-    this.position = position;
+const Turret = function (parentPos = { "x": 0, "y": 0 }, rotationSpeed, spriteSheetPath, spriteSheetData, parentRotation = 0) {
+    this.position = parentPos;
     this.rotation = { "r": 0 };
     this.parentRotation = parentRotation;
     this.rotationSpeed = rotationSpeed;
