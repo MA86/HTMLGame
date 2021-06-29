@@ -1,19 +1,17 @@
-import { Turret } from "./entities";
-import { Sprite } from "./sprite";
+import * as spriteSheetsData from './spritesheetsData.js';
 
 class Entity {
-    constructor() {
-        this.position = { x: 0, y: 0 };
-        this.rotation = 0;
-        this.parent = null;
-        this.children = []
+    constructor(pos, rot, parent) {
+        this.position = pos;
+        this.rotation = rot;
+        this.parent = parent;
+        this.children = [];
     }
 
     render(ctx) {
         ctx.save();
-
         ctx.translate(this.position.x, this.position.y);
-        ctx.rotate(this.rotation);
+        ctx.rotate(this.rotation * Math.PI / 180);
 
         this.renderThis(ctx);
 
@@ -21,12 +19,11 @@ class Entity {
             const child = this.children[i];
             child.render()
         }
-
         ctx.restore();
     }
 
     renderThis(ctx) {
-
+        // Derived class defines this method
     }
 
     update(keysDown, dt) {
@@ -38,21 +35,53 @@ class Entity {
     }
 
     updateThis(keysdown, dt) {
-
+        // Derived class defines this method
     }
 }
 
 class Tank extends Entity {
-    constructor() {
-        super();
-        this.children.push(new Sprite());
-        this.children.push(new Turret());
+    constructor(pos, rot, parent, speed, rSpeed, ssPath, ssData) {
+        super(pos, rot, parent);
+        this.speed = speed;             // Unit: PPS       
+        this.rotationSpeed = rSpeed;     // Unit: DPS
+        this.children.push(
+            new Sprite(this.position, this.rotation, this, ssPath.tank, spriteSheetsData.mSixTankBodyData, 0)
+        );
+        //this.children.push(
+        //new Turret(this.position, this.rotation, this, 45, ssPath.turret, spriteSheetsData.mSixTankTurretData, 0)
+        //);
+    }
+
+    updateThis(keysDown, dt) {
+        //let rotationInRadian = this.rotation.r * Math.PI / 180;
+        //let dx = Math.cos(rotationInRadian) * (this.speed * dt);
+        //let dy = Math.sin(rotationInRadian) * (this.speed * dt);
+
+        // Move forward/backward
+        if (keysDown && keysDown.ArrowUp == true) {
+            this.position.x += 1//dx;
+            //this.position.y += //dy;
+        }
+        if (keysDown && keysDown.ArrowDown == true) {
+            this.position.x -= -1//dx;
+            // this.position.y -= dy;
+        }
+
+        // Rotate right/left
+        if (keysDown && keysDown.ArrowRight == true) {
+            this.rotation += this.rotationSpeed * dt;
+        }
+        if (keysDown && keysDown.ArrowLeft == true) {
+            this.rotation -= this.rotationSpeed * dt;
+        }
+        // Wrap around
+        this.rotation = this.rotation % 360;
     }
 }
 
 class Sprite extends Entity {
-    constructor(spriteSheetPath, spriteSheetData, framesPerSecond) {
-        super();
+    constructor(pos, rot, parent, spriteSheetPath, spriteSheetData, framesPerSecond) {
+        super(pos, rot, parent);
         this.spriteSheetData = spriteSheetData;
         this.spriteSheet = new Image();
         this.spriteSheet.src = spriteSheetPath;
@@ -65,12 +94,12 @@ class Sprite extends Entity {
             "x": this.spriteSheetData.frames[this.index].frame.w / 2,
             "y": this.spriteSheetData.frames[this.index].frame.h / 2
         };
-        ctx.save();
-        ctx.translate(
-            this.position.x,
-            this.position.y
-        );
-        ctx.rotate(this.rotation.r * Math.PI / 180);
+        //ctx.save();
+        //ctx.translate(
+        //this.position.x,
+        //this.position.y
+        //);
+        //ctx.rotate(this.rotation * Math.PI / 180);
         ctx.drawImage(
             this.spriteSheet,
             this.spriteSheetData.frames[this.index].frame.x,
@@ -82,7 +111,7 @@ class Sprite extends Entity {
             this.spriteSheetData.frames[this.index].frame.w,
             this.spriteSheetData.frames[this.index].frame.h
         );
-        ctx.restore();
+        //ctx.restore();
     }
 
     updateThis(keysDown, dt) {
@@ -98,23 +127,26 @@ class Sprite extends Entity {
 }
 
 class Turret extends Entity {
-    constructor() {
-        super();
-        this.rotationSpeed = rotationSpeed;
-        let sprite = new Sprite(spriteSheetPath, spriteSheetData, 0, this);
-        this.children.push(sprite);
+    constructor(pos, rot, parent, rSpeed, ssPath, ssData, framesPS) {
+        super(pos, rot, parent);
+        this.rotationSpeed = rSpeed;
+        this.children.push(
+            new Sprite(this.position, this.rotation, this, ssPath, ssData, framesPS)
+        );
     }
 
     updateThis(keysDown, dt) {
         // Set rotateBy
-        if (keysDown.KeyD == true) {
+        if (keysDown && keysDown.KeyD == true) {
             this.rotation += this.rotationSpeed * dt;
         }
-        if (keysDown.KeyA == true) {
+        if (keysDown && keysDown.KeyA == true) {
             this.rotation -= this.rotationSpeed * dt;
         }
         // Wrap around
         this.rotation = this.rotation % 360;
     }
 }
+
+export { Tank };
 

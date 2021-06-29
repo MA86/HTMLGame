@@ -1,7 +1,7 @@
 "use strict";
 
 import * as spriteSheetsData from './spritesheetsData.js';
-import { Tank, Turret, Background } from './entities.js';
+import { Tank } from './sample.js';
 
 const addKeyboardInputEventListeners = function (dic) {
     addEventListener("keydown", function (e) {
@@ -38,7 +38,7 @@ window.addEventListener("load", function (e) {
     //entities.push(background)
 
     // Create tank entity
-    let tank = new Tank(300, 300, 25, 110, "images/mSixTankBody.png", spriteSheetsData.mSixTankBodyData);
+    let tank = new Tank(300, 300, 25, 110, { "tank": "images/mSixTankBody.png", "turret": "images/mSixTankTurret.png" }, spriteSheetsData);
     entities.push(tank);
 
     // Game loop
