@@ -19,7 +19,7 @@ const setFullScreenMode = function (gameCanvas) {
 }
 
 /* On Window load */
-window.addEventListener("load", function (e) {
+addEventListener("load", function (e) {
     // Global variables
     var gameCanvas = document.getElementById("game-canvas");
     var ctx = gameCanvas.getContext("2d");
@@ -28,39 +28,41 @@ window.addEventListener("load", function (e) {
 
     // Full screen mode
     setFullScreenMode(gameCanvas);
-    window.addEventListener("resize", setFullScreenMode);
+    addEventListener("resize", setFullScreenMode);
 
     // Set keyboard event listeners
     addKeyboardInputEventListeners(keysDown);
 
-    // Create background entity
-    //let background = new Background("images/grass.png", explosionsData);
-    //entities.push(background)
-
     // Create tank entity
-    let tank = new Tank(300, 300, 25, 110, { "tank": "images/mSixTankBody.png", "turret": "images/mSixTankTurret.png" }, spriteSheetsData);
+    let tank = new Tank(
+        { "x": 200, "y": 200 }, 25, null, { "tank": "images/mSixTankBody.png", "turret": "images/mSixTankTurret.png" }, spriteSheetsData
+    );
     entities.push(tank);
 
     // Game loop
     var timeNow = 0;
     var timeThen = 0;
     const main = function (timeStamp) {
+        // Calculate time between two frames
         timeNow = (timeStamp == undefined) ? 0 : timeStamp;
         let delta = (timeNow - timeThen) / 1000;
 
+        // Clear canvas
         ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-        // Update entities
+        // Save context
+        //ctx.save();
         for (let i = 0; i < entities.length; i++) {
             entities[i].update(keysDown, delta);
         }
-        // Render entities
         for (let i = 0; i < entities.length; i++) {
             entities[i].render(ctx);
         }
+        // Restore context
+        //ctx.restore();
 
         // Call main for every frame
-        window.requestAnimationFrame(main);
+        requestAnimationFrame(main);
         timeThen = timeNow;
     }
     // Start game loop

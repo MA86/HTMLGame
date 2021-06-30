@@ -1,5 +1,3 @@
-import * as spriteSheetsData from './spritesheetsData.js';
-
 class Entity {
     constructor(pos, rot, parent) {
         this.position = pos;
@@ -17,7 +15,7 @@ class Entity {
 
         for (let i = 0; i < this.children.length; i++) {
             const child = this.children[i];
-            child.render()
+            child.render(ctx)
         }
         ctx.restore();
     }
@@ -27,7 +25,7 @@ class Entity {
     }
 
     update(keysDown, dt) {
-        this.updateThis();
+        this.updateThis(keysDown, dt);
         for (let i = 0; i < this.children.length; i++) {
             const child = this.children[i];
             child.update(keysDown, dt)
@@ -40,12 +38,12 @@ class Entity {
 }
 
 class Tank extends Entity {
-    constructor(pos, rot, parent, speed, rSpeed, ssPath, ssData) {
+    constructor(pos, rot, parent, ssPath, ssData) {
         super(pos, rot, parent);
-        this.speed = speed;             // Unit: PPS       
-        this.rotationSpeed = rSpeed;     // Unit: DPS
+        this.speed = 45;             // Unit: PPS       
+        this.rotationSpeed = 35;     // Unit: DPS
         this.children.push(
-            new Sprite(this.position, this.rotation, this, ssPath.tank, spriteSheetsData.mSixTankBodyData, 0)
+            new Sprite({ "x": 0, "y": 0 }, this.rotation, this, ssPath.tank, ssData.mSixTankBodyData, 0)
         );
         //this.children.push(
         //new Turret(this.position, this.rotation, this, 45, ssPath.turret, spriteSheetsData.mSixTankTurretData, 0)
@@ -64,7 +62,7 @@ class Tank extends Entity {
         }
         if (keysDown && keysDown.ArrowDown == true) {
             this.position.x -= -1//dx;
-            // this.position.y -= dy;
+            //this.position.y -= dy;
         }
 
         // Rotate right/left
@@ -127,11 +125,11 @@ class Sprite extends Entity {
 }
 
 class Turret extends Entity {
-    constructor(pos, rot, parent, rSpeed, ssPath, ssData, framesPS) {
+    constructor(pos, rot, parent, ssPath, ssData) {
         super(pos, rot, parent);
-        this.rotationSpeed = rSpeed;
+        this.rotationSpeed = 25;
         this.children.push(
-            new Sprite(this.position, this.rotation, this, ssPath, ssData, framesPS)
+            new Sprite(this.position, this.rotation, this, ssPath, ssData, 1)
         );
     }
 

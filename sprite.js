@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 
 /* Define sprite animatation blueprint */
 const Sprite = function (spriteSheetPath, spriteSheetData, framesPerSecond, entity = null) {

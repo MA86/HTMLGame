@@ -1,4 +1,4 @@
-"use strict";
+//"use strict";
 
 import * as spriteSheetsData from './spritesheetsData.js';
 import { Sprite } from "./sprite.js";
