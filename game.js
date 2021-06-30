@@ -6,6 +6,17 @@ import { Tank } from './sample.js';
 const addKeyboardInputEventListeners = function (dic) {
     addEventListener("keydown", function (e) {
         dic[e.code] = true;
+        switch (e.code) {
+            case "ArrowUp":
+            case "ArrowDown":
+            case "ArrowLeft":
+            case "ArrowRight":
+            case "Space":
+                e.preventDefault();
+                break;
+            default:
+                break;
+        }
     }, false);
 
     addEventListener("keyup", function (e) {
@@ -26,16 +37,20 @@ addEventListener("load", function (e) {
     var keysDown = {};
     var entities = [];
 
-    // Full screen mode
     setFullScreenMode(gameCanvas);
     addEventListener("resize", setFullScreenMode);
-
-    // Set keyboard event listeners
     addKeyboardInputEventListeners(keysDown);
 
     // Create tank entity
     let tank = new Tank(
-        { "x": 200, "y": 200 }, 25, null, { "tank": "images/mSixTankBody.png", "turret": "images/mSixTankTurret.png" }, spriteSheetsData
+        { "x": 200, "y": 200 },
+        25,
+        null,
+        {
+            "tank": "images/mSixTankBody.png",
+            "turret": "images/mSixTankTurret.png"
+        },
+        spriteSheetsData
     );
     entities.push(tank);
 
@@ -50,21 +65,17 @@ addEventListener("load", function (e) {
         // Clear canvas
         ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-        // Save context
-        //ctx.save();
         for (let i = 0; i < entities.length; i++) {
             entities[i].update(keysDown, delta);
         }
         for (let i = 0; i < entities.length; i++) {
             entities[i].render(ctx);
         }
-        // Restore context
-        //ctx.restore();
 
         // Call main for every frame
         requestAnimationFrame(main);
         timeThen = timeNow;
     }
-    // Start game loop
+    // Start loop
     main();
 });

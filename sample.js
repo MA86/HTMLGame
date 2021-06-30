@@ -15,7 +15,7 @@ class Entity {
 
         for (let i = 0; i < this.children.length; i++) {
             const child = this.children[i];
-            child.render(ctx)
+            child.render(ctx);
         }
         ctx.restore();
     }
@@ -28,7 +28,7 @@ class Entity {
         this.updateThis(keysDown, dt);
         for (let i = 0; i < this.children.length; i++) {
             const child = this.children[i];
-            child.update(keysDown, dt)
+            child.update(keysDown, dt);
         }
     }
 
@@ -40,29 +40,29 @@ class Entity {
 class Tank extends Entity {
     constructor(pos, rot, parent, ssPath, ssData) {
         super(pos, rot, parent);
-        this.speed = 45;             // Unit: PPS       
-        this.rotationSpeed = 35;     // Unit: DPS
+        this.speed = 70;             // Unit: PPS       
+        this.rotationSpeed = 20;     // Unit: DPS
         this.children.push(
-            new Sprite({ "x": 0, "y": 0 }, this.rotation, this, ssPath.tank, ssData.mSixTankBodyData, 0)
+            new Sprite({ "x": 0, "y": 0 }, 0, this, ssPath.tank, ssData.mSixTankBodyData, 0)
         );
-        //this.children.push(
-        //new Turret(this.position, this.rotation, this, 45, ssPath.turret, spriteSheetsData.mSixTankTurretData, 0)
-        //);
+        this.children.push(
+            new Turret({ "x": 0, "y": 0 }, 0, this, ssPath.turret, ssData.mSixTankTurretData, 0)
+        );
     }
 
     updateThis(keysDown, dt) {
-        //let rotationInRadian = this.rotation.r * Math.PI / 180;
-        //let dx = Math.cos(rotationInRadian) * (this.speed * dt);
-        //let dy = Math.sin(rotationInRadian) * (this.speed * dt);
+        let rotationInRadian = this.rotation * Math.PI / 180;
+        let dx = Math.cos(rotationInRadian) * (this.speed * dt);
+        let dy = Math.sin(rotationInRadian) * (this.speed * dt);
 
         // Move forward/backward
         if (keysDown && keysDown.ArrowUp == true) {
-            this.position.x += 1//dx;
-            //this.position.y += //dy;
+            this.position.x += dx;
+            this.position.y += dy;
         }
         if (keysDown && keysDown.ArrowDown == true) {
-            this.position.x -= -1//dx;
-            //this.position.y -= dy;
+            this.position.x -= dx;
+            this.position.y -= dy;
         }
 
         // Rotate right/left
@@ -129,7 +129,7 @@ class Turret extends Entity {
         super(pos, rot, parent);
         this.rotationSpeed = 25;
         this.children.push(
-            new Sprite(this.position, this.rotation, this, ssPath, ssData, 1)
+            new Sprite({ "x": 0, "y": 0 }, 0, this, ssPath, ssData, 0)
         );
     }
 
