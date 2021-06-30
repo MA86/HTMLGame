@@ -1,7 +1,7 @@
 "use strict";
 
 import * as spriteSheetsData from './spritesheetsData.js';
-import { Tank } from './sample.js';
+import { Tank } from './entities.js';
 
 const addKeyboardInputEventListeners = function (dic) {
     addEventListener("keydown", function (e) {
@@ -24,7 +24,7 @@ const addKeyboardInputEventListeners = function (dic) {
     }, false);
 }
 
-const setFullScreenMode = function (gameCanvas) {
+const setFullScreenMode = function (ctx) {
     gameCanvas.width = window.innerWidth;
     gameCanvas.height = window.innerHeight;
 }

@@ -1,106 +1,145 @@
-//"use strict";
-
-import * as spriteSheetsData from './spritesheetsData.js';
-import { Sprite } from "./sprite.js";
-
-/* Define tank blueprint */
-const Tank = function (xPos, yPos, rotationSpeed, speed, spriteSheetPath, spriteSheetData) {
-    // Initialize attributes
-    this.position = {
-        "x": xPos,
-        "y": yPos
-    };
-
-    this.speed = speed;             // Unit: PPS       
-    this.rotation = { "r": 0 };     // Unit: degrees
-    this.rotationSpeed = rotationSpeed;     // Unit: DPS 
-    this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 0, this);
-    this.turret = new Turret(
-        this.position,
-        25,
-        "images/mSixTankTurret.png",
-        spriteSheetsData.mSixTankTurretData,
-        this.rotation
-    );
-
-    this.render = function (ctx) {
-        this.sprite.render(ctx);
-        this.turret.render(ctx);
+class Entity {
+    constructor(pos, rot, parent) {
+        this.position = pos;
+        this.rotation = rot;
+        this.parent = parent;
+        this.children = [];
     }
 
-    this.update = function (keysDown, dt) {
-        this.sprite.update(keysDown, dt);
-        this.turret.update(keysDown, dt);
+    render(ctx) {
+        ctx.save();
+        ctx.translate(this.position.x, this.position.y);
+        ctx.rotate(this.rotation * Math.PI / 180);
 
-        let rotationInRadian = this.rotation.r * Math.PI / 180;
+        this.renderThis(ctx);
+
+        for (let i = 0; i < this.children.length; i++) {
+            const child = this.children[i];
+            child.render(ctx);
+        }
+        ctx.restore();
+    }
+
+    renderThis(ctx) {
+        // Derived class defines this method
+    }
+
+    update(keysDown, dt) {
+        this.updateThis(keysDown, dt);
+        for (let i = 0; i < this.children.length; i++) {
+            const child = this.children[i];
+            child.update(keysDown, dt);
+        }
+    }
+
+    updateThis(keysdown, dt) {
+        // Derived class defines this method
+    }
+}
+
+class Tank extends Entity {
+    constructor(pos, rot, parent, ssPath, ssData) {
+        super(pos, rot, parent);
+        this.speed = 70;             // Unit: PPS       
+        this.rotationSpeed = 20;     // Unit: DPS
+        this.children.push(
+            new Sprite({ "x": 0, "y": 0 }, 0, this, ssPath.tank, ssData.mSixTankBodyData, 0)
+        );
+        this.children.push(
+            new Turret({ "x": 0, "y": 0 }, 0, this, ssPath.turret, ssData.mSixTankTurretData, 0)
+        );
+    }
+
+    updateThis(keysDown, dt) {
+        let rotationInRadian = this.rotation * Math.PI / 180;
         let dx = Math.cos(rotationInRadian) * (this.speed * dt);
         let dy = Math.sin(rotationInRadian) * (this.speed * dt);
 
-        // Move forward/backward
-        if (keysDown.ArrowUp == true) {
+        // Forward/backward
+        if (keysDown && keysDown.ArrowUp == true) {
             this.position.x += dx;
             this.position.y += dy;
         }
-        if (keysDown.ArrowDown == true) {
+        if (keysDown && keysDown.ArrowDown == true) {
             this.position.x -= dx;
             this.position.y -= dy;
         }
 
         // Rotate right/left
-        if (keysDown.ArrowRight == true) {
-            this.rotation.r += this.rotationSpeed * dt;
+        if (keysDown && keysDown.ArrowRight == true) {
+            this.rotation += this.rotationSpeed * dt;
         }
-        if (keysDown.ArrowLeft == true) {
-            this.rotation.r -= this.rotationSpeed * dt;
-        }
-        // Wrap around
-        this.rotation.r = this.rotation.r % 360;
-    }
-}
-
-/* Define turret blueprint */
-const Turret = function (parentPos = { "x": 0, "y": 0 }, rotationSpeed, spriteSheetPath, spriteSheetData, parentRotation = 0) {
-    this.position = parentPos;
-    this.rotation = { "r": 0 };
-    this.parentRotation = parentRotation;
-    this.rotationSpeed = rotationSpeed;
-    this.rotateBy = 0;
-    this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 0, this);
-
-    this.render = function (ctx) {
-        this.sprite.render(ctx);
-    }
-
-    this.update = function (keysDown, dt) {
-        this.sprite.update(keysDown, dt);
-
-        // Rotate relative to parent 
-        this.rotation.r = this.parentRotation.r + this.rotateBy;
-
-        // Set rotateBy
-        if (keysDown.KeyD == true) {
-            this.rotateBy += this.rotationSpeed * dt;
-        }
-        if (keysDown.KeyA == true) {
-            this.rotateBy -= this.rotationSpeed * dt;
+        if (keysDown && keysDown.ArrowLeft == true) {
+            this.rotation -= this.rotationSpeed * dt;
         }
         // Wrap around
-        this.rotation.r = this.rotation.r % 360;
-        this.rotateBy = this.rotateBy % 360;
+        this.rotation = this.rotation % 360;
     }
 }
 
-/* Define background blueprint */
-const Background = function (spriteSheetPath, spriteSheetData) {
-    this.sprite = new Sprite(spriteSheetPath, spriteSheetData, 1);
+class Sprite extends Entity {
+    constructor(pos, rot, parent, spriteSheetPath, spriteSheetData, framesPerSecond) {
+        super(pos, rot, parent);
+        this.index = 0;
+        this.framesPerSecond = framesPerSecond;
+        this.timeTracker = 0;
+        this.spriteSheetData = spriteSheetData;
+        this.spriteSheet = new Image();
+        this.spriteSheet.src = spriteSheetPath;
 
-    this.render = function (ctx) {
-        this.sprite.render(ctx);
+    }
+    renderThis(ctx) {
+        let frameCenter = {
+            "x": this.spriteSheetData.frames[this.index].frame.w / 2,
+            "y": this.spriteSheetData.frames[this.index].frame.h / 2
+        };
+
+        ctx.drawImage(
+            this.spriteSheet,
+            this.spriteSheetData.frames[this.index].frame.x,
+            this.spriteSheetData.frames[this.index].frame.y,
+            this.spriteSheetData.frames[this.index].frame.w,
+            this.spriteSheetData.frames[this.index].frame.h,
+            -frameCenter.x,
+            -frameCenter.y,
+            this.spriteSheetData.frames[this.index].frame.w,
+            this.spriteSheetData.frames[this.index].frame.h
+        );
     }
 
-    this.update = function (keysDown, dt) {
-        // Does nothing
+    updateThis(keysDown, dt) {
+        // Update index
+        this.timeTracker += dt;
+        let delay = 1 / this.framesPerSecond;
+        if (this.timeTracker >= delay) {
+            this.index += 1;
+            this.index = this.index % this.spriteSheetData.frames.length;
+            this.timeTracker = 0;
+        }
     }
 }
 
-export { Tank, Turret, Background };
+class Turret extends Entity {
+    constructor(pos, rot, parent, ssPath, ssData) {
+        super(pos, rot, parent);
+        this.rotationSpeed = 25;
+        this.children.push(
+            new Sprite({ "x": 0, "y": 0 }, 0, this, ssPath, ssData, 0)
+        );
+    }
+
+    updateThis(keysDown, dt) {
+        // Rotate
+        if (keysDown && keysDown.KeyD == true) {
+            this.rotation += this.rotationSpeed * dt;
+        }
+        if (keysDown && keysDown.KeyA == true) {
+            this.rotation -= this.rotationSpeed * dt;
+        }
+        // Wrap around
+        this.rotation = this.rotation % 360;
+    }
+}
+
+export { Tank };
+
