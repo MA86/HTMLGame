@@ -24,7 +24,7 @@ const addKeyboardInputEventListeners = function (dic) {
     }, false);
 }
 
-const setFullScreenMode = function (ctx) {
+const setFullScreenMode = function (gameCanvas) {
     gameCanvas.width = window.innerWidth;
     gameCanvas.height = window.innerHeight;
 }
