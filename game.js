@@ -24,24 +24,14 @@ const addKeyboardInputEventListeners = function (dic) {
     }, false);
 }
 
-const setFullScreenMode = function (gameCanvas) {
+const addFullScreenMode = function (gameCanvas) {
     gameCanvas.width = window.innerWidth;
     gameCanvas.height = window.innerHeight;
+    addEventListener("resize", addFullScreenMode);
 }
 
-/* On Window load */
-addEventListener("load", function (e) {
-    // Global variables
-    var gameCanvas = document.getElementById("game-canvas");
-    var ctx = gameCanvas.getContext("2d");
-    var keysDown = {};
-    var entities = [];
-
-    setFullScreenMode(gameCanvas);
-    addEventListener("resize", setFullScreenMode);
-    addKeyboardInputEventListeners(keysDown);
-
-    // Create tank entity
+const loadGame = function (entities) {
+    // Load entities
     let tank = new Tank(
         { "x": 200, "y": 200 },
         25,
@@ -54,17 +44,34 @@ addEventListener("load", function (e) {
     );
     entities.push(tank);
 
-    // Game loop
+    // Load map
+}
+
+/*** On Window Load ***/
+addEventListener("load", function (e) {
+    // Global variables
+    var gameCanvas = document.getElementById("game-canvas");
+    var ctx = gameCanvas.getContext("2d");
+    var keysDown = {};
+    var entities = [];
+
+    addFullScreenMode(gameCanvas);
+    addKeyboardInputEventListeners(keysDown);
+
+    loadGame(entities);
+
+    /*** Game Loop ***/
     var timeNow = 0;
     var timeThen = 0;
     const main = function (timeStamp) {
-        // Calculate time between two frames
+        // Time between two frames
         timeNow = (timeStamp == undefined) ? 0 : timeStamp;
         let delta = (timeNow - timeThen) / 1000;
 
         // Clear canvas
         ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
+        // Update/render
         for (let i = 0; i < entities.length; i++) {
             entities[i].update(keysDown, delta);
         }
@@ -72,10 +79,9 @@ addEventListener("load", function (e) {
             entities[i].render(ctx);
         }
 
-        // Call main for every frame
+        // Call main again ASAP
         requestAnimationFrame(main);
         timeThen = timeNow;
     }
-    // Start loop
     main();
 });
