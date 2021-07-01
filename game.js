@@ -71,7 +71,7 @@ addEventListener("load", function (e) {
         // Clear canvas
         ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
-        // Update/render
+        // Update/render entities
         for (let i = 0; i < entities.length; i++) {
             entities[i].update(keysDown, delta);
         }

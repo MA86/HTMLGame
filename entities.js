@@ -141,5 +141,22 @@ class Turret extends Entity {
     }
 }
 
+class Background extends Entity {
+    constructor(pos, rot, parent, ssPath, ssData, bgSound, bgMusic) {
+        super(pos, rot, parent);
+        this.tileMap = [
+
+        ];
+    }
+
+    updateThis(keysDown, dt) {
+        //TODO
+    }
+
+    renderThis(ctx) {
+        //TODO
+    }
+}
+
 export { Tank };
 
