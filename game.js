@@ -1,7 +1,7 @@
 "use strict";
 
 import * as spriteSheetsData from './spritesheetsData.js';
-import { Tank } from './entities.js';
+import { Tank, Background } from './entities.js';
 
 const addKeyboardInputEventListeners = function (dic) {
     addEventListener("keydown", function (e) {
@@ -31,6 +31,10 @@ const addFullScreenMode = function (gameCanvas) {
 }
 
 const loadGame = function (entities) {
+    // Load background
+    let background = new Background({ "x": 0, "y": 0 }, 0, null, "images/ground.png");
+    entities.push(background);
+
     // Load entities
     let tank = new Tank(
         { "x": 200, "y": 200 },
@@ -43,8 +47,6 @@ const loadGame = function (entities) {
         spriteSheetsData
     );
     entities.push(tank);
-
-    // Load map
 }
 
 /*** On Window Load ***/

@@ -46,8 +46,12 @@ class Tank extends Entity {
             new Sprite({ "x": 0, "y": 0 }, 0, this, ssPath.tank, ssData.mSixTankBodyData, 0)
         );
         this.children.push(
-            new Turret({ "x": 0, "y": 0 }, 0, this, ssPath.turret, ssData.mSixTankTurretData, 0)
+            new Turret({ "x": 0, "y": 20 }, 0, this, ssPath.turret, ssData.mSixTankTurretData, 0)
         );
+        this.children.push(
+            new Turret({ "x": 0, "y": -20 }, 0, this, ssPath.turret, ssData.mSixTankTurretData, 0)
+        );
+
     }
 
     updateThis(keysDown, dt) {
@@ -142,11 +146,25 @@ class Turret extends Entity {
 }
 
 class Background extends Entity {
-    constructor(pos, rot, parent, ssPath, ssData, bgSound, bgMusic) {
+    constructor(pos, rot, parent, ssPath) {
         super(pos, rot, parent);
-        this.tileMap = [
-
-        ];
+        this.spriteSheet = new Image();
+        this.spriteSheet.src = ssPath;
+        this.map = {
+            "cols": 8,
+            "rows": 8,
+            "tsize": 128,
+            "tiles": [
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                0, 0, 0, 0, 0, 0, 0, 0,
+                1, 0, 0, 0, 0, 0, 0, 0,
+            ]
+        };
     }
 
     updateThis(keysDown, dt) {
@@ -154,9 +172,24 @@ class Background extends Entity {
     }
 
     renderThis(ctx) {
-        //TODO
+        for (let c = 0; c < this.map.cols; c++) {
+            for (let r = 0; r < this.map.rows; r++) {
+                let tile = this.map.tiles[r * this.map.cols + c];
+                ctx.drawImage(
+                    this.spriteSheet,
+                    tile * this.map.tsize,  // source x
+                    0,                      // source y
+                    this.map.tsize,
+                    this.map.tsize,
+                    c * this.map.tsize,     // dest x
+                    r * this.map.tsize,     // dest y
+                    this.map.tsize,
+                    this.map.tsize
+                );
+            }
+        }
     }
 }
 
-export { Tank };
+export { Tank, Background };
 
