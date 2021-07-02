@@ -168,7 +168,7 @@ class Background extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        //TODO
+        //TODO: create two canvases, one for background.
     }
 
     renderThis(ctx) {
