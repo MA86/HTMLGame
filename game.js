@@ -1,7 +1,8 @@
 "use strict";
 
 import * as spriteSheetsData from './spritesheetsData.js';
-import { Tank, Background } from './entities.js';
+import * as maps from './maps/maps.js';
+import { Tank, MapRenderer } from './entities.js';
 
 const addKeyboardInputEventListeners = function (dic) {
     addEventListener("keydown", function (e) {
@@ -31,11 +32,13 @@ const addFullScreenMode = function (gameCanvas) {
 }
 
 const loadGame = function (entities) {
-    // Load background
-    let background = new Background({ "x": 0, "y": 0 }, 0, null, "images/ground.png");
-    entities.push(background);
+    // Load map
+    let gazala = new MapRenderer(
+        { "x": 0, "y": 0 }, 0, null, "images/ground.png", maps.gazalaMap.layerZero
+    );
+    entities.push(gazala);
 
-    // Load entities
+    // Load player
     let tank = new Tank(
         { "x": 200, "y": 200 },
         25,
