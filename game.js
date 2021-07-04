@@ -2,7 +2,7 @@
 
 import * as spriteSheetsData from './spritesheetsData.js';
 import * as maps from './maps/maps.js';
-import { Tank, MapRenderer } from './entities.js';
+import { Tank, TerrainLayer, Turret } from './entities.js';
 
 const addKeyboardInputEventListeners = function (dic) {
     addEventListener("keydown", function (e) {
@@ -33,10 +33,24 @@ const addFullScreenMode = function (gameCanvas) {
 
 const loadGame = function (entities) {
     // Load map
-    let gazala = new MapRenderer(
-        { "x": 0, "y": 0 }, 0, null, "images/ground.png", maps.gazalaMap.layerZero
+    let ssMap = new Image();
+    ssMap.src = "images/ground.png";
+    let gazalaGrass = new TerrainLayer(
+        { x: 0, y: 0 },
+        0,
+        null,
+        30,
+        30,
+        ssMap,
+        128,
+        8,
+        8
     );
-    entities.push(gazala);
+    gazalaGrass.fill(8);
+    entities.push(gazalaGrass);
+
+    let desertTurret = new Turret({ x: 0, y: 0 }, 0, gazalaDesert, "images/mSixTankTurret.png", spriteSheetsData.mSixTankTurretData);
+    desertTurret.rotationSpeed = 900;
 
     // Load player
     let tank = new Tank(

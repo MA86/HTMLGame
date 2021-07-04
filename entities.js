@@ -4,6 +4,8 @@ class Entity {
         this.rotation = rot;
         this.parent = parent;
         this.children = [];
+        if (parent != null)
+            parent.children.push(this);
     }
 
     render(ctx) {
@@ -145,39 +147,100 @@ class Turret extends Entity {
     }
 }
 
-class MapRenderer extends Entity {
-    constructor(pos, rot, parent, ssPath, map) {
+class TerrainLayer extends Entity {
+    constructor(pos, rot, parent, numCols, numRows, ssImage, tSize, numColsImage, numRowsImage,) {
         super(pos, rot, parent);
-        this.spriteSheet = new Image();
-        this.spriteSheet.src = ssPath;
-        this.map = map;
+        this.ssImage = ssImage;
+        this.tSize = tSize;
+        this.numColsImage = numColsImage;
+        this.numColsRows = numRowsImage;
+        this.mapCols = numCols;
+        this.mapRows = numRows;
+        this.tiles = []
+        this.fill(-1);
     }
 
-    updateThis(keysDown, dt) {
-        //TODO: create two canvases, one for background.
+    fill(value) {
+        this.tiles = []
+        for (let i = 0; i < this.mapCols * this.mapRows; i++) {
+            this.tiles.push(value);
+        }
     }
 
     renderThis(ctx) {
-        for (let col = 0; col < this.map.cols; col++) {
-            for (let row = 0; row < this.map.rows; row++) {
-                let tile = this.map.tiles[row * this.map.cols + col];
-                if (tile !== 0) {
-                    ctx.drawImage(
-                        this.spriteSheet,
-                        (tile - 1) * this.map.tsize,  // source x
-                        0,  //TODO: source y
-                        this.map.tsize,
-                        this.map.tsize,
-                        col * this.map.tsize,     // dest x
-                        row * this.map.tsize,     // dest y
-                        this.map.tsize,
-                        this.map.tsize
-                    );
-                }
+        for (let i = 0; i < this.tiles.length; i++) {
+            let mapRow = Math.trunc(i / this.mapCols);
+            let mapCol = i % this.mapCols;
+            let mapX = mapCol * this.tSize;
+            let mapY = mapRow * this.tSize;
+
+            const imageNumber = this.tiles[i];
+            let imageRow = Math.trunc(imageNumber / this.numColsImage);
+            let imageColumn = imageNumber % this.numColsImage;
+            let imageX = imageColumn * this.tSize;
+            let imageY = imageRow * this.tSize;
+
+            if (imageNumber !== -1) {
+                ctx.drawImage(
+                    this.ssImage,
+                    imageX,    // source x
+                    imageY,    //source y
+                    this.tSize,
+                    this.tSize,
+                    mapX,     // dest x
+                    mapY,     // dest y
+                    this.tSize,
+                    this.tSize
+                );
             }
         }
     }
 }
 
-export { Tank, MapRenderer };
+// TODO remove this class and all usages of it
+// class MapRenderer extends Entity {
+//     constructor(pos, rot, parent, ssPath, map) {
+//         super(pos, rot, parent);
+//         this.spriteSheet = new Image();
+//         this.spriteSheet.src = ssPath;
+//         this.map = map;
+//     }
+
+//     updateThis(keysDown, dt) {
+//         //TODO: create two canvases, one for background.
+//     }
+
+//     renderThis(ctx) {
+//         for (let col = 0; col < this.map.cols; col++) {
+//             for (let row = 0; row < this.map.rows; row++) {
+//                 let tile = this.map.tiles[row * this.map.cols + col];
+//                 if (tile !== 0) {
+//                     ctx.drawImage(
+//                         this.spriteSheet,
+//                         (tile - 1) * this.map.tsize,    // source x
+//                         0,                              //source y
+//                         this.map.tsize,
+//                         this.map.tsize,
+//                         col * this.map.tsize,     // dest x
+//                         row * this.map.tsize,     // dest y
+//                         this.map.tsize,
+//                         this.map.tsize
+//                     );
+//                 }
+//             }
+
+//             for (let i = 0; i < this.map.tiles.length; i++) {
+//                 const imageNumber = this.map.tiles[i];
+//                 let imageRow = Math.trunc(imageNumber / this.map.cols);
+//                 let imageColumn = imageNumber % this.map.cols;
+//                 let imageX = imageColumn * this.map.tsize;
+//                 let imageY = imageRow * this.map.tsize;
+//                 let canvasRow = Math.trunc(i /)
+
+//             }
+//         }
+//     }
+// }
+
+export { Tank, TerrainLayer, Turret };
 
