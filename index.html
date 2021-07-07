@@ -3,13 +3,14 @@
 <header>
     <script type="text/module" src="spritesheetsData.js"></script>
     <script type="module" src="game.js"></script>
-
     <link rel="stylesheet" type="text/css" href="css/game.css">
 </header>
 
 <body>
-    <div id="game-canvas-div">
-        <canvas id="game-canvas"></canvas>
+    <div id="canvas-div" style="position: relative;">
+        <canvas id="static-canvas" style="position: absolute; z-index: 0;"></canvas>
+        <canvas id="game-canvas" style="position: absolute; z-index: 1;"></canvas>
+        <canvas id="ui-canvas" style="position: absolute; z-index: 2;"></canvas>
     </div>
 </body>
 

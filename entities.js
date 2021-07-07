@@ -48,12 +48,8 @@ class Tank extends Entity {
             new Sprite({ "x": 0, "y": 0 }, 0, this, ssPath.tank, ssData.mSixTankBodyData, 0)
         );
         this.children.push(
-            new Turret({ "x": 0, "y": 20 }, 0, this, ssPath.turret, ssData.mSixTankTurretData, 0)
+            new Turret({ "x": 0, "y": 0 }, 0, this, ssPath.turret, ssData.mSixTankTurretData, 0)
         );
-        this.children.push(
-            new Turret({ "x": 0, "y": -20 }, 0, this, ssPath.turret, ssData.mSixTankTurretData, 0)
-        );
-
     }
 
     updateThis(keysDown, dt) {
@@ -128,7 +124,7 @@ class Sprite extends Entity {
 class Turret extends Entity {
     constructor(pos, rot, parent, ssPath, ssData) {
         super(pos, rot, parent);
-        this.rotationSpeed = 25;
+        this.rotationSpeed = 20;
         this.children.push(
             new Sprite({ "x": 0, "y": 0 }, 0, this, ssPath, ssData, 0)
         );

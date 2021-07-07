@@ -31,8 +31,8 @@ const addFullScreen = function (canvas) {
     addEventListener("resize", addFullScreen);
 }
 
-const loadGame = function (entities) {
-    // Load map
+const loadGame = function (entities, keysDown, dt, staticCtx, c) {
+    // Load static map
     let ssMap = new Image();
     ssMap.src = "images/ground.png";
     let gazalaGrass = new TerrainLayer(
@@ -47,10 +47,8 @@ const loadGame = function (entities) {
         8
     );
     gazalaGrass.fill(8);
-    entities.push(gazalaGrass);
-
-    let desertTurret = new Turret({ x: 0, y: 0 }, 0, gazalaDesert, "images/mSixTankTurret.png", spriteSheetsData.mSixTankTurretData);
-    desertTurret.rotationSpeed = 900;
+    gazalaGrass.update(keysDown, dt);
+    gazalaGrass.render(staticCtx);
 
     // Load player
     let tank = new Tank(
@@ -77,21 +75,22 @@ addEventListener("load", function (e) {
     var gameCtx = gameCanvas.getContext("2d");
     var keysDown = {};
     var entities = [];
+    var delta = 0;
 
     addFullScreen(staticCanvas);
     addFullScreen(uiCanvas);
     addFullScreen(gameCanvas);
     addKeyboardInputEventListeners(keysDown);
 
-    loadGame(entities);
+    loadGame(entities, keysDown, delta, staticCtx);
 
-    /*** Game Loop ***/
+    /*** Every Frame ***/
     var timeNow = 0;
     var timeThen = 0;
     const main = function (timeStamp) {
         // Time between two frames
         timeNow = (timeStamp == undefined) ? 0 : timeStamp;
-        let delta = (timeNow - timeThen) / 1000;
+        delta = (timeNow - timeThen) / 1000;
 
         // Clear canvas
         gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
