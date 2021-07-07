@@ -25,10 +25,10 @@ const addKeyboardInputEventListeners = function (dic) {
     }, false);
 }
 
-const addFullScreenMode = function (gameCanvas) {
-    gameCanvas.width = window.innerWidth;
-    gameCanvas.height = window.innerHeight;
-    addEventListener("resize", addFullScreenMode);
+const addFullScreen = function (canvas) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    addEventListener("resize", addFullScreen);
 }
 
 const loadGame = function (entities) {
@@ -69,12 +69,18 @@ const loadGame = function (entities) {
 /*** On Window Load ***/
 addEventListener("load", function (e) {
     // Global variables
-    var gameCanvas = document.getElementById("game-canvas");
-    var ctx = gameCanvas.getContext("2d");
+    var staticCanvas = document.getElementById("static-canvas");    // For static bg
+    var uiCanvas = document.getElementById("ui-canvas");            // For event
+    var gameCanvas = document.getElementById("game-canvas");        // For frame
+    var staticCtx = staticCanvas.getContext("2d");
+    var uiCtx = uiCanvas.getContext("2d");
+    var gameCtx = gameCanvas.getContext("2d");
     var keysDown = {};
     var entities = [];
 
-    addFullScreenMode(gameCanvas);
+    addFullScreen(staticCanvas);
+    addFullScreen(uiCanvas);
+    addFullScreen(gameCanvas);
     addKeyboardInputEventListeners(keysDown);
 
     loadGame(entities);
@@ -88,14 +94,14 @@ addEventListener("load", function (e) {
         let delta = (timeNow - timeThen) / 1000;
 
         // Clear canvas
-        ctx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+        gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
 
         // Update/render entities
         for (let i = 0; i < entities.length; i++) {
             entities[i].update(keysDown, delta);
         }
         for (let i = 0; i < entities.length; i++) {
-            entities[i].render(ctx);
+            entities[i].render(gameCtx);
         }
 
         // Call main again ASAP
