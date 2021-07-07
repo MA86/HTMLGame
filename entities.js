@@ -197,50 +197,5 @@ class TerrainLayer extends Entity {
     }
 }
 
-// TODO remove this class and all usages of it
-// class MapRenderer extends Entity {
-//     constructor(pos, rot, parent, ssPath, map) {
-//         super(pos, rot, parent);
-//         this.spriteSheet = new Image();
-//         this.spriteSheet.src = ssPath;
-//         this.map = map;
-//     }
-
-//     updateThis(keysDown, dt) {
-//         //TODO: create two canvases, one for background.
-//     }
-
-//     renderThis(ctx) {
-//         for (let col = 0; col < this.map.cols; col++) {
-//             for (let row = 0; row < this.map.rows; row++) {
-//                 let tile = this.map.tiles[row * this.map.cols + col];
-//                 if (tile !== 0) {
-//                     ctx.drawImage(
-//                         this.spriteSheet,
-//                         (tile - 1) * this.map.tsize,    // source x
-//                         0,                              //source y
-//                         this.map.tsize,
-//                         this.map.tsize,
-//                         col * this.map.tsize,     // dest x
-//                         row * this.map.tsize,     // dest y
-//                         this.map.tsize,
-//                         this.map.tsize
-//                     );
-//                 }
-//             }
-
-//             for (let i = 0; i < this.map.tiles.length; i++) {
-//                 const imageNumber = this.map.tiles[i];
-//                 let imageRow = Math.trunc(imageNumber / this.map.cols);
-//                 let imageColumn = imageNumber % this.map.cols;
-//                 let imageX = imageColumn * this.map.tsize;
-//                 let imageY = imageRow * this.map.tsize;
-//                 let canvasRow = Math.trunc(i /)
-
-//             }
-//         }
-//     }
-// }
-
 export { Tank, TerrainLayer, Turret };
 
