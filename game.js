@@ -29,41 +29,30 @@ const addFullScreen = function (canvas) {
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
     addEventListener("resize", addFullScreen);
+    console.log("resize");
+    console.log(canvas.width);
 }
 
-const loadImages = function (listOfPaths) {
-    let images = [];
-    let loadedImages = 0
-    for (let i = 0; i < listOfPaths.length; i++) {
+const loadImagesThenInitialize = function (listOfPaths) {
+    let numImagesLoaded = 0;
+    let numImagesRequested = listOfPaths.length;
+    for (let i = 0; i < numImagesRequested; i++) {
         let image = new Image();
         image.src = listOfPaths[i];
-        images[listOfPaths[i]] = image;
-        image.onload = function () {
-            loadedImages++;
-        }
-    }
-    image.onload =
-        images = [{ path: image }, {}]
-    return images
-}
 
-const preLoadImages = function (images, entities, keysDown, dt, bgCtx, ugCtx) {
-    let loadedImages = 0;
-    let totalImages = images.length;
-    for (let i = 0; i < totalImages; i++) {
-        images[i].onload = function () {
-            loadedImages++;
-            if (loadedImages == totalImages) {
-                loadGameObjects()
+        image.onload = function () {
+            window.globals.images[listOfPaths[i]] = image;
+            numImagesLoaded++;
+            if (numImagesLoaded == numImagesRequested) {
+                Initialize();
             }
         }
     }
 }
 
-const loadGameObjects = function (entities, keysDown, dt, bgCtx, ugCtx) {
+const loadGameObjects = function (entities, keysDown, bgCtx, ugCtx) {
     // Create background
-    let ssMap = new Image();
-    ssMap.src = "images/ground.png";
+    let ssMap = window.globals.images["images/ground.png"];
     let gazalaGrass = new TerrainLayer(
         { x: 0, y: 0 },
         0,
@@ -76,7 +65,6 @@ const loadGameObjects = function (entities, keysDown, dt, bgCtx, ugCtx) {
         8
     );
     gazalaGrass.fill(8);
-    gazalaGrass.update(keysDown, dt);
     gazalaGrass.render(bgCtx);
 
     // Create player
@@ -85,37 +73,19 @@ const loadGameObjects = function (entities, keysDown, dt, bgCtx, ugCtx) {
         25,
         null,
         {
-            "tank": "images/mSixTankBody.png",
-            "turret": "images/mSixTankTurret.png"
+            "tank": window.globals.images["images/mSixTankBody.png"],
+            "turret": window.globals.images["images/mSixTankTurret.png"]
         },
         spriteSheetsData
     );
     entities.push(tank);
 }
 
-/*** On Window Load ***/
-addEventListener("load", function (e) {
-    // Global objects
-    var backgroundCanv = document.getElementById("bg-canvas");    // For static
-    var middlegroundCanv = document.getElementById("mg-canvas");  // For frames
-    var uppergroundCanv = document.getElementById("ug-canvas");   // For events
-
-    var backgroundCtx = backgroundCanv.getContext("2d");
-    var middlegroundCtx = middlegroundCanv.getContext("2d");
-    var uppergroundCtx = uppergroundCanv.getContext("2d");
-
-    var keysDown = {};
-    var entities = [];
-    var delta = 0;
-
-    // Function calls
-    addFullScreen(backgroundCanv);
-    addFullScreen(middlegroundCanv);
-    addFullScreen(uppergroundCanv);
-    addKeyboardInputEventListeners(keysDown);
-    loadGameObjects(entities, keysDown, delta, backgroundCtx);
+const Initialize = function () {
+    loadGameObjects(window.globals.entities, window.globals.keysDown, window.globals.backgroundCtx);
 
     /*** Every Frame ***/
+    var delta = 0;
     var timeNow = 0;
     var timeThen = 0;
     const main = function (timeStamp) {
@@ -124,14 +94,14 @@ addEventListener("load", function (e) {
         delta = (timeNow - timeThen) / 1000;
 
         // Clear middle-canvas
-        middlegroundCtx.clearRect(0, 0, middlegroundCanv.width, middlegroundCanv.height);
+        window.globals.middlegroundCtx.clearRect(0, 0, window.globals.middlegroundCanv.width, window.globals.middlegroundCanv.height);
 
         // Update/render entities of middle-canvas
-        for (let i = 0; i < entities.length; i++) {
-            entities[i].update(keysDown, delta);
+        for (let i = 0; i < window.globals.entities.length; i++) {
+            window.globals.entities[i].update(window.globals.keysDown, delta);
         }
-        for (let i = 0; i < entities.length; i++) {
-            entities[i].render(middlegroundCtx);
+        for (let i = 0; i < window.globals.entities.length; i++) {
+            window.globals.entities[i].render(window.globals.middlegroundCtx);
         }
 
         // Call main again ASAP
@@ -139,4 +109,35 @@ addEventListener("load", function (e) {
         timeThen = timeNow;
     }
     main();
+}
+
+/*** On Window Load ***/
+addEventListener("load", function (e) {
+    // Global objects
+    window.globals = {};
+    window.globals.backgroundCanv = document.getElementById("bg-canvas");    // For static
+    window.globals.middlegroundCanv = document.getElementById("mg-canvas");  // For frames
+    window.globals.uppergroundCanv = document.getElementById("ug-canvas");   // For events
+
+    window.globals.backgroundCtx = window.globals.backgroundCanv.getContext("2d");
+    window.globals.middlegroundCtx = window.globals.middlegroundCanv.getContext("2d");
+    window.globals.uppergroundCtx = window.globals.uppergroundCanv.getContext("2d");
+
+    window.globals.keysDown = {};
+    window.globals.entities = [];
+
+    window.globals.imagePaths = [
+        "images/ground.png",
+        "images/mSixTankBody.png",
+        "images/mSixTankTurret.png",
+    ];
+
+    window.globals.images = {};
+
+    // Function calls
+    addFullScreen(window.globals.backgroundCanv);
+    addFullScreen(window.globals.middlegroundCanv);
+    addFullScreen(window.globals.uppergroundCanv);
+    addKeyboardInputEventListeners(window.globals.keysDown);
+    loadImagesThenInitialize(window.globals.imagePaths);
 });

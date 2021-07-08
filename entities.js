@@ -40,15 +40,15 @@ class Entity {
 }
 
 class Tank extends Entity {
-    constructor(pos, rot, parent, ssPath, ssData) {
+    constructor(pos, rot, parent, spriteSheet, ssData) {
         super(pos, rot, parent);
         this.speed = 70;             // Unit: PPS       
         this.rotationSpeed = 20;     // Unit: DPS
         this.children.push(
-            new Sprite({ "x": 0, "y": 0 }, 0, this, ssPath.tank, ssData.mSixTankBodyData, 0)
+            new Sprite({ "x": 0, "y": 0 }, 0, this, spriteSheet.tank, ssData.mSixTankBodyData, 0)
         );
         this.children.push(
-            new Turret({ "x": 0, "y": 0 }, 0, this, ssPath.turret, ssData.mSixTankTurretData, 0)
+            new Turret({ "x": 0, "y": 0 }, 0, this, spriteSheet.turret, ssData.mSixTankTurretData, 0)
         );
     }
 
@@ -80,15 +80,13 @@ class Tank extends Entity {
 }
 
 class Sprite extends Entity {
-    constructor(pos, rot, parent, spriteSheetPath, spriteSheetData, framesPerSecond) {
+    constructor(pos, rot, parent, spriteSheet, spriteSheetData, framesPerSecond) {
         super(pos, rot, parent);
         this.index = 0;
         this.framesPerSecond = framesPerSecond;
         this.timeTracker = 0;
         this.spriteSheetData = spriteSheetData;
-        this.spriteSheet = new Image();
-        this.spriteSheet.src = spriteSheetPath;
-
+        this.spriteSheet = spriteSheet;
     }
     renderThis(ctx) {
         let frameCenter = {
@@ -122,11 +120,11 @@ class Sprite extends Entity {
 }
 
 class Turret extends Entity {
-    constructor(pos, rot, parent, ssPath, ssData) {
+    constructor(pos, rot, parent, spriteSheet, ssData) {
         super(pos, rot, parent);
         this.rotationSpeed = 20;
         this.children.push(
-            new Sprite({ "x": 0, "y": 0 }, 0, this, ssPath, ssData, 0)
+            new Sprite({ "x": 0, "y": 0 }, 0, this, spriteSheet, ssData, 0)
         );
     }
 
@@ -154,6 +152,7 @@ class TerrainLayer extends Entity {
         this.mapRows = numRows;
         this.tiles = []
         this.fill(-1);
+        this.drawn = false;
     }
 
     fill(value) {
@@ -164,31 +163,34 @@ class TerrainLayer extends Entity {
     }
 
     renderThis(ctx) {
-        for (let i = 0; i < this.tiles.length; i++) {
-            let mapRow = Math.trunc(i / this.mapCols);
-            let mapCol = i % this.mapCols;
-            let mapX = mapCol * this.tSize;
-            let mapY = mapRow * this.tSize;
+        if (this.drawn == false) {
+            for (let i = 0; i < this.tiles.length; i++) {
+                let mapRow = Math.trunc(i / this.mapCols);
+                let mapCol = i % this.mapCols;
+                let mapX = mapCol * this.tSize;
+                let mapY = mapRow * this.tSize;
 
-            const imageNumber = this.tiles[i];
-            let imageRow = Math.trunc(imageNumber / this.numColsImage);
-            let imageColumn = imageNumber % this.numColsImage;
-            let imageX = imageColumn * this.tSize;
-            let imageY = imageRow * this.tSize;
+                const imageNumber = this.tiles[i];
+                let imageRow = Math.trunc(imageNumber / this.numColsImage);
+                let imageColumn = imageNumber % this.numColsImage;
+                let imageX = imageColumn * this.tSize;
+                let imageY = imageRow * this.tSize;
 
-            if (imageNumber !== -1) {
-                ctx.drawImage(
-                    this.ssImage,
-                    imageX,    // source x
-                    imageY,    // source y
-                    this.tSize,
-                    this.tSize,
-                    mapX,     // dest x
-                    mapY,     // dest y
-                    this.tSize,
-                    this.tSize
-                );
+                if (imageNumber !== -1) {
+                    ctx.drawImage(
+                        this.ssImage,
+                        imageX,    // source x
+                        imageY,    // source y
+                        this.tSize,
+                        this.tSize,
+                        mapX,     // dest x
+                        mapY,     // dest y
+                        this.tSize,
+                        this.tSize
+                    );
+                }
             }
+            this.drawn = true;
         }
     }
 }
