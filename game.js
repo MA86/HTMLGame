@@ -31,8 +31,19 @@ const addFullScreen = function (canvas) {
     addEventListener("resize", addFullScreen);
 }
 
-const loadGame = function (entities, keysDown, dt, staticCtx, c) {
-    // Load static map
+const preLoadImages = function (images) {
+
+}
+const loadGameObjects = function (entities, keysDown, dt, bgCtx, ugCtx) {
+    // Prepare images
+    let loadedImages = 0;
+    let totalImages = images.length;
+    for (let i = 0; i < array.length; i++) {
+        const element = array[index];
+
+    }
+
+    // Create background
     let ssMap = new Image();
     ssMap.src = "images/ground.png";
     let gazalaGrass = new TerrainLayer(
@@ -48,9 +59,9 @@ const loadGame = function (entities, keysDown, dt, staticCtx, c) {
     );
     gazalaGrass.fill(8);
     gazalaGrass.update(keysDown, dt);
-    gazalaGrass.render(staticCtx);
+    gazalaGrass.render(bgCtx);
 
-    // Load player
+    // Create player
     let tank = new Tank(
         { "x": 200, "y": 200 },
         25,
@@ -66,41 +77,43 @@ const loadGame = function (entities, keysDown, dt, staticCtx, c) {
 
 /*** On Window Load ***/
 addEventListener("load", function (e) {
-    // Global variables
-    var staticCanvas = document.getElementById("static-canvas");    // For static bg
-    var uiCanvas = document.getElementById("ui-canvas");            // For event
-    var gameCanvas = document.getElementById("game-canvas");        // For frame
-    var staticCtx = staticCanvas.getContext("2d");
-    var uiCtx = uiCanvas.getContext("2d");
-    var gameCtx = gameCanvas.getContext("2d");
+    // Global objects
+    var backgroundCanv = document.getElementById("bg-canvas");    // For static
+    var middlegroundCanv = document.getElementById("mg-canvas");  // For frames
+    var uppergroundCanv = document.getElementById("ug-canvas");   // For events
+
+    var backgroundCtx = backgroundCanv.getContext("2d");
+    var middlegroundCtx = middlegroundCanv.getContext("2d");
+    var uppergroundCtx = uppergroundCanv.getContext("2d");
+
     var keysDown = {};
     var entities = [];
     var delta = 0;
 
-    addFullScreen(staticCanvas);
-    addFullScreen(uiCanvas);
-    addFullScreen(gameCanvas);
+    // Function calls
+    addFullScreen(backgroundCanv);
+    addFullScreen(middlegroundCanv);
+    addFullScreen(uppergroundCanv);
     addKeyboardInputEventListeners(keysDown);
-
-    loadGame(entities, keysDown, delta, staticCtx);
+    loadGameObjects(entities, keysDown, delta, backgroundCtx);
 
     /*** Every Frame ***/
     var timeNow = 0;
     var timeThen = 0;
     const main = function (timeStamp) {
-        // Time between two frames
+        // Calculate Time between two frames
         timeNow = (timeStamp == undefined) ? 0 : timeStamp;
         delta = (timeNow - timeThen) / 1000;
 
-        // Clear canvas
-        gameCtx.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+        // Clear middle-canvas
+        middlegroundCtx.clearRect(0, 0, middlegroundCanv.width, middlegroundCanv.height);
 
-        // Update/render entities
+        // Update/render entities of middle-canvas
         for (let i = 0; i < entities.length; i++) {
             entities[i].update(keysDown, delta);
         }
         for (let i = 0; i < entities.length; i++) {
-            entities[i].render(gameCtx);
+            entities[i].render(middlegroundCtx);
         }
 
         // Call main again ASAP

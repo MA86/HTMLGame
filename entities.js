@@ -180,7 +180,7 @@ class TerrainLayer extends Entity {
                 ctx.drawImage(
                     this.ssImage,
                     imageX,    // source x
-                    imageY,    //source y
+                    imageY,    // source y
                     this.tSize,
                     this.tSize,
                     mapX,     // dest x
