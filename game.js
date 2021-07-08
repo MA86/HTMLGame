@@ -32,17 +32,16 @@ const addFullScreen = function (canvas) {
 }
 
 const preLoadImages = function (images) {
-
-}
-const loadGameObjects = function (entities, keysDown, dt, bgCtx, ugCtx) {
-    // Prepare images
     let loadedImages = 0;
     let totalImages = images.length;
-    for (let i = 0; i < array.length; i++) {
-        const element = array[index];
+    for (let i = 0; i < totalImages; i++) {
+        images[i].onload = function () {
 
+        }
     }
+}
 
+const loadGameObjects = function (entities, keysDown, dt, bgCtx, ugCtx) {
     // Create background
     let ssMap = new Image();
     ssMap.src = "images/ground.png";
