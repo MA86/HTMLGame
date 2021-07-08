@@ -31,12 +31,31 @@ const addFullScreen = function (canvas) {
     addEventListener("resize", addFullScreen);
 }
 
-const preLoadImages = function (images) {
+const loadImages = function (listOfPaths) {
+    let images = [];
+    let loadedImages = 0
+    for (let i = 0; i < listOfPaths.length; i++) {
+        let image = new Image();
+        image.src = listOfPaths[i];
+        images[listOfPaths[i]] = image;
+        image.onload = function () {
+            loadedImages++;
+        }
+    }
+    image.onload =
+        images = [{ path: image }, {}]
+    return images
+}
+
+const preLoadImages = function (images, entities, keysDown, dt, bgCtx, ugCtx) {
     let loadedImages = 0;
     let totalImages = images.length;
     for (let i = 0; i < totalImages; i++) {
         images[i].onload = function () {
-
+            loadedImages++;
+            if (loadedImages == totalImages) {
+                loadGameObjects()
+            }
         }
     }
 }
