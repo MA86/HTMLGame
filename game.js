@@ -25,14 +25,6 @@ const addKeyboardInputEventListeners = function (dic) {
     }, false);
 }
 
-const addFullScreen = function (canvas) {
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    addEventListener("resize", addFullScreen);
-    console.log("resize");
-    console.log(canvas.width);
-}
-
 const loadImagesThenInitialize = function (listOfPaths) {
     let numImagesLoaded = 0;
     let numImagesRequested = listOfPaths.length;
@@ -134,10 +126,27 @@ addEventListener("load", function (e) {
 
     window.globals.images = {};
 
+    // Define full screen for canvases
+    const bgFullScreen = function () {
+        window.globals.backgroundCanv.width = window.innerWidth;
+        window.globals.backgroundCanv.height = window.innerHeight;
+        addEventListener("resize", bgFullScreen);
+    }
+    const mgFullScreen = function () {
+        window.globals.middlegroundCanv.width = window.innerWidth;
+        window.globals.middlegroundCanv.height = window.innerHeight;
+        addEventListener("resize", mgFullScreen);
+    }
+    const ugFullScreen = function () {
+        window.globals.uppergroundCanv.width = window.innerWidth;
+        window.globals.uppergroundCanv.height = window.innerHeight;
+        addEventListener("resize", ugFullScreen);
+    }
+
     // Function calls
-    addFullScreen(window.globals.backgroundCanv);
-    addFullScreen(window.globals.middlegroundCanv);
-    addFullScreen(window.globals.uppergroundCanv);
+    bgFullScreen();
+    mgFullScreen();
+    ugFullScreen();
     addKeyboardInputEventListeners(window.globals.keysDown);
     loadImagesThenInitialize(window.globals.imagePaths);
 });
