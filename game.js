@@ -102,6 +102,7 @@ const start = function () {
     main();
 }
 
+// TODO: why ths function fires twice?
 const addScreenResizeEventListener = function () {
     window.globals.backgroundCanv.width = window.innerWidth;
     window.globals.backgroundCanv.height = window.innerHeight;
