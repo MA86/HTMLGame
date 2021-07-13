@@ -3,7 +3,7 @@
 import * as spriteSheetsData from './spritesheetsData.js';
 import { Tank, TerrainLayer, Turret } from './entities.js';
 
-const addKeyboardInputEventListeners = function (dic) {
+const addKeyboardEventListener = function (dic) {
     addEventListener("keydown", function (e) {
         dic[e.code] = true;
         switch (e.code) {
@@ -102,6 +102,16 @@ const start = function () {
     main();
 }
 
+const addScreenResizeEventListener = function () {
+    window.globals.backgroundCanv.width = window.innerWidth;
+    window.globals.backgroundCanv.height = window.innerHeight;
+    window.globals.middlegroundCanv.width = window.innerWidth;
+    window.globals.middlegroundCanv.height = window.innerHeight;
+    window.globals.uppergroundCanv.width = window.innerWidth;
+    window.globals.uppergroundCanv.height = window.innerHeight;
+    addEventListener("resize", addScreenResizeEventListener);
+}
+
 /*** On Window Load ***/
 addEventListener("load", function (e) {
     // Global objects
@@ -124,7 +134,7 @@ addEventListener("load", function (e) {
     ];
 
     window.globals.images = {};
-
+    /*
     // Define full screen for canvases
     const bgFullScreen = function () {
         window.globals.backgroundCanv.width = window.innerWidth;
@@ -140,12 +150,10 @@ addEventListener("load", function (e) {
         window.globals.uppergroundCanv.width = window.innerWidth;
         window.globals.uppergroundCanv.height = window.innerHeight;
         addEventListener("resize", ugFullScreen);
-    }
+    }*/
 
     // Function calls
-    bgFullScreen();
-    mgFullScreen();
-    ugFullScreen();
-    addKeyboardInputEventListeners(window.globals.keysDown);
+    addScreenResizeEventListener();
+    addKeyboardEventListener(window.globals.keysDown);
     loadImagesThenStart(window.globals.imagePaths);
 });
