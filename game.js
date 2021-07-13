@@ -134,23 +134,6 @@ addEventListener("load", function (e) {
     ];
 
     window.globals.images = {};
-    /*
-    // Define full screen for canvases
-    const bgFullScreen = function () {
-        window.globals.backgroundCanv.width = window.innerWidth;
-        window.globals.backgroundCanv.height = window.innerHeight;
-        addEventListener("resize", bgFullScreen);
-    }
-    const mgFullScreen = function () {
-        window.globals.middlegroundCanv.width = window.innerWidth;
-        window.globals.middlegroundCanv.height = window.innerHeight;
-        addEventListener("resize", mgFullScreen);
-    }
-    const ugFullScreen = function () {
-        window.globals.uppergroundCanv.width = window.innerWidth;
-        window.globals.uppergroundCanv.height = window.innerHeight;
-        addEventListener("resize", ugFullScreen);
-    }*/
 
     // Function calls
     addScreenResizeEventListener();
