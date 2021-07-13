@@ -1,7 +1,6 @@
 "use strict";
 
 import * as spriteSheetsData from './spritesheetsData.js';
-import * as maps from './maps/maps.js';
 import { Tank, TerrainLayer, Turret } from './entities.js';
 
 const addKeyboardInputEventListeners = function (dic) {
@@ -25,7 +24,7 @@ const addKeyboardInputEventListeners = function (dic) {
     }, false);
 }
 
-const loadImagesThenInitialize = function (listOfPaths) {
+const loadImagesThenStart = function (listOfPaths) {
     let numImagesLoaded = 0;
     let numImagesRequested = listOfPaths.length;
     for (let i = 0; i < numImagesRequested; i++) {
@@ -36,7 +35,7 @@ const loadImagesThenInitialize = function (listOfPaths) {
             window.globals.images[listOfPaths[i]] = image;
             numImagesLoaded++;
             if (numImagesLoaded == numImagesRequested) {
-                Initialize();
+                start();
             }
         }
     }
@@ -73,7 +72,7 @@ const loadGameObjects = function (entities, keysDown, bgCtx, ugCtx) {
     entities.push(tank);
 }
 
-const Initialize = function () {
+const start = function () {
     loadGameObjects(window.globals.entities, window.globals.keysDown, window.globals.backgroundCtx);
 
     /*** Every Frame ***/
@@ -148,5 +147,5 @@ addEventListener("load", function (e) {
     mgFullScreen();
     ugFullScreen();
     addKeyboardInputEventListeners(window.globals.keysDown);
-    loadImagesThenInitialize(window.globals.imagePaths);
+    loadImagesThenStart(window.globals.imagePaths);
 });
