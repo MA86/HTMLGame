@@ -1,9 +1,10 @@
 "use strict";
 
 import * as spriteSheetsData from './spritesheetsData.js';
-import { Tank, TerrainLayer, Turret } from './entities.js';
+import { Tank } from './entities/tank.js';
+import { TerrainLayer } from './entities/terrainlayer.js';
 
-const addKeyboardEventListener = function (dic) {
+const setupKeyboardHandler = function (dic) {
     addEventListener("keydown", function (e) {
         dic[e.code] = true;
         switch (e.code) {
@@ -24,7 +25,7 @@ const addKeyboardEventListener = function (dic) {
     }, false);
 }
 
-const loadImagesThenStart = function (listOfPaths) {
+const preLoadThenStart = function (listOfPaths) {
     let numImagesLoaded = 0;
     let numImagesRequested = listOfPaths.length;
     for (let i = 0; i < numImagesRequested; i++) {
@@ -41,8 +42,7 @@ const loadImagesThenStart = function (listOfPaths) {
     }
 }
 
-const loadGameObjects = function (entities, keysDown, bgCtx, ugCtx) {
-    // Create background
+const loadMap = function (bgCtx) {
     let ssMap = window.globals.images["images/ground.png"];
     let gazalaGrass = new TerrainLayer(
         { x: 0, y: 0 },
@@ -57,8 +57,13 @@ const loadGameObjects = function (entities, keysDown, bgCtx, ugCtx) {
     );
     gazalaGrass.fill(8);
     gazalaGrass.render(bgCtx);
+}
 
-    // Create player
+const loadObject = function (entities, keysDown, bgCtx, ugCtx) {
+    // load background
+    loadMap(bgCtx);
+
+    // load player
     let tank = new Tank(
         { "x": 200, "y": 200 },
         25,
@@ -73,7 +78,9 @@ const loadGameObjects = function (entities, keysDown, bgCtx, ugCtx) {
 }
 
 const start = function () {
-    loadGameObjects(window.globals.entities, window.globals.keysDown, window.globals.backgroundCtx);
+    setupKeyboardHandler(window.globals.keysDown);
+    resizeScreen();
+    loadObject(window.globals.entities, window.globals.keysDown, window.globals.backgroundCtx);
 
     /*** Every Frame ***/
     var delta = 0;
@@ -102,42 +109,37 @@ const start = function () {
     main();
 }
 
-// TODO: why ths function fires twice?
-const addScreenResizeEventListener = function () {
+const resizeScreen = function () {
     window.globals.backgroundCanv.width = window.innerWidth;
     window.globals.backgroundCanv.height = window.innerHeight;
     window.globals.middlegroundCanv.width = window.innerWidth;
     window.globals.middlegroundCanv.height = window.innerHeight;
     window.globals.uppergroundCanv.width = window.innerWidth;
     window.globals.uppergroundCanv.height = window.innerHeight;
-    addEventListener("resize", addScreenResizeEventListener);
+    // Reload map erased map
+    loadMap(window.globals.backgroundCtx);
+
+    addEventListener("resize", resizeScreen);
 }
 
 /*** On Window Load ***/
 addEventListener("load", function (e) {
     // Global objects
     window.globals = {};
-    window.globals.backgroundCanv = document.getElementById("bg-canvas");    // For static
-    window.globals.middlegroundCanv = document.getElementById("mg-canvas");  // For frames
-    window.globals.uppergroundCanv = document.getElementById("ug-canvas");   // For events
-
+    window.globals.backgroundCanv = document.getElementById("bg-canvas");    // For static stuff
+    window.globals.middlegroundCanv = document.getElementById("mg-canvas");  // For frames stuff
+    window.globals.uppergroundCanv = document.getElementById("ug-canvas");   // For event stuff
     window.globals.backgroundCtx = window.globals.backgroundCanv.getContext("2d");
     window.globals.middlegroundCtx = window.globals.middlegroundCanv.getContext("2d");
     window.globals.uppergroundCtx = window.globals.uppergroundCanv.getContext("2d");
-
     window.globals.keysDown = {};
     window.globals.entities = [];
-
     window.globals.imagePaths = [
         "images/ground.png",
         "images/mSixTankBody.png",
         "images/mSixTankTurret.png",
     ];
-
     window.globals.images = {};
 
-    // Function calls
-    addScreenResizeEventListener();
-    addKeyboardEventListener(window.globals.keysDown);
-    loadImagesThenStart(window.globals.imagePaths);
+    preLoadThenStart(window.globals.imagePaths);
 });
