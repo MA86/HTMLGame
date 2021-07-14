@@ -4,7 +4,7 @@ import * as spriteSheetsData from './spritesheetsData.js';
 import { Tank } from './entities/tank.js';
 import { TerrainLayer } from './entities/terrainlayer.js';
 
-const setupKeyboardHandler = function (dic) {
+const setupKeyboardInputHandler = function (dic) {
     addEventListener("keydown", function (e) {
         dic[e.code] = true;
         switch (e.code) {
@@ -25,21 +25,17 @@ const setupKeyboardHandler = function (dic) {
     }, false);
 }
 
-const preLoadThenStart = function (listOfPaths) {
-    let numImagesLoaded = 0;
-    let numImagesRequested = listOfPaths.length;
-    for (let i = 0; i < numImagesRequested; i++) {
-        let image = new Image();
-        image.src = listOfPaths[i];
+const setupFullScreen = function () {
+    window.globals.backgroundCanv.width = window.innerWidth;
+    window.globals.backgroundCanv.height = window.innerHeight;
+    window.globals.middlegroundCanv.width = window.innerWidth;
+    window.globals.middlegroundCanv.height = window.innerHeight;
+    window.globals.uppergroundCanv.width = window.innerWidth;
+    window.globals.uppergroundCanv.height = window.innerHeight;
+    // Reload map erased map
+    loadMap(window.globals.backgroundCtx);
 
-        image.onload = function () {
-            window.globals.images[listOfPaths[i]] = image;
-            numImagesLoaded++;
-            if (numImagesLoaded == numImagesRequested) {
-                start();
-            }
-        }
-    }
+    addEventListener("resize", setupFullScreen);
 }
 
 const loadMap = function (bgCtx) {
@@ -77,9 +73,26 @@ const loadObject = function (entities, keysDown, bgCtx, ugCtx) {
     entities.push(tank);
 }
 
+const preLoadThenStart = function (listOfPaths) {
+    let numImagesLoaded = 0;
+    let numImagesRequested = listOfPaths.length;
+    for (let i = 0; i < numImagesRequested; i++) {
+        let image = new Image();
+        image.src = listOfPaths[i];
+
+        image.onload = function () {
+            window.globals.images[listOfPaths[i]] = image;
+            numImagesLoaded++;
+            if (numImagesLoaded == numImagesRequested) {
+                start();
+            }
+        }
+    }
+}
+
 const start = function () {
-    setupKeyboardHandler(window.globals.keysDown);
-    resizeScreen();
+    setupKeyboardInputHandler(window.globals.keysDown);
+    setupFullScreen();
     loadObject(window.globals.entities, window.globals.keysDown, window.globals.backgroundCtx);
 
     /*** Every Frame ***/
@@ -107,19 +120,6 @@ const start = function () {
         timeThen = timeNow;
     }
     main();
-}
-
-const resizeScreen = function () {
-    window.globals.backgroundCanv.width = window.innerWidth;
-    window.globals.backgroundCanv.height = window.innerHeight;
-    window.globals.middlegroundCanv.width = window.innerWidth;
-    window.globals.middlegroundCanv.height = window.innerHeight;
-    window.globals.uppergroundCanv.width = window.innerWidth;
-    window.globals.uppergroundCanv.height = window.innerHeight;
-    // Reload map erased map
-    loadMap(window.globals.backgroundCtx);
-
-    addEventListener("resize", resizeScreen);
 }
 
 /*** On Window Load ***/
