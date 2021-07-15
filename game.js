@@ -143,3 +143,14 @@ addEventListener("load", function (e) {
 
     preLoadThenStart(window.globals.imagePaths);
 });
+
+// Multiplayer plan:
+// Pick client-server model
+    // Server has game logic and controls what happens client side.
+// Use Lerp
+// Use WebSockets
+    // Uses TCP
+    // Starts with HTTP handshake but connection is kept open for comm.
+// We can get out of this complexity nightmare by just using a serverless
+// realtime messaging architecture which can support these by default.
+    // Ably.
