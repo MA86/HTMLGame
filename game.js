@@ -1,6 +1,6 @@
 "use strict";
 
-import * as spriteSheetsData from './spritesheetsData.js';
+import * as spriteSheetsData from './images_and_data/spritesheetsData.js';
 import { Tank } from './entities/tank.js';
 import { TerrainLayer } from './entities/terrainlayer.js';
 
@@ -39,7 +39,7 @@ const setupFullScreen = function () {
 }
 
 const loadMap = function (bgCtx) {
-    let ssMap = window.globals.images["images/ground.png"];
+    let ssMap = window.globals.images["./images_and_data/ground.png"];
     let gazalaGrass = new TerrainLayer(
         { x: 0, y: 0 },
         0,
@@ -65,8 +65,8 @@ const loadObject = function (entities, keysDown, bgCtx, ugCtx) {
         25,
         null,
         {
-            "tank": window.globals.images["images/mSixTankBody.png"],
-            "turret": window.globals.images["images/mSixTankTurret.png"]
+            "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
+            "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
         },
         spriteSheetsData
     );
@@ -135,22 +135,11 @@ addEventListener("load", function (e) {
     window.globals.keysDown = {};
     window.globals.entities = [];
     window.globals.imagePaths = [
-        "images/ground.png",
-        "images/mSixTankBody.png",
-        "images/mSixTankTurret.png",
+        "./images_and_data/ground.png",
+        "./images_and_data/mSixTankBody.png",
+        "./images_and_data/mSixTankTurret.png",
     ];
     window.globals.images = {};
 
     preLoadThenStart(window.globals.imagePaths);
 });
-
-// Multiplayer plan:
-// Pick client-server model
-    // Server has game logic and controls what happens client side.
-// Use Lerp
-// Use WebSockets
-    // Uses TCP
-    // Starts with HTTP handshake but connection is kept open for comm.
-// We can get out of this complexity nightmare by just using a serverless
-// realtime messaging architecture which can support these by default.
-    // Ably.
