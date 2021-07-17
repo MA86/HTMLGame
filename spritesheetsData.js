@@ -4,9 +4,9 @@
  */
 
 // Import JSONs
-import { mSixTankBodyData } from "./images/mSixTankBodyData.js";
-import { mSixTankTurretData } from "./images/mSixTankTurretData.js";
-import { explosionsData } from "./images/explosionsData.js";
+import { mSixTankBodyData } from "./images_and_data/mSixTankBodyData.js";
+import { mSixTankTurretData } from "./images_and_data/mSixTankTurretData.js";
+import { explosionsData } from "./images_and_data/explosionsData.js";
 
 // Export JSONs
 export {

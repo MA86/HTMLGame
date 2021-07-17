@@ -11,6 +11,7 @@ class Turret extends Entity {
     }
 
     updateThis(keysDown, dt) {
+        // EMIT to server...
         // Rotate
         if (keysDown && keysDown.KeyD == true) {
             this.rotation += this.rotationSpeed * dt;

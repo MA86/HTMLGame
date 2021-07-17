@@ -1,11 +1,13 @@
 "use strict";
 
-import * as spriteSheetsData from './images_and_data/spritesheetsData.js';
+import * as spriteSheetsData from './spritesheetsData.js';
 import { Tank } from './entities/tank.js';
 import { TerrainLayer } from './entities/terrainlayer.js';
 
-const setupKeyboardInputHandler = function (dic) {
+// client code
+const setupKeyboardHandler = function (dic) {
     addEventListener("keydown", function (e) {
+        // emit keydown, send message to server..
         dic[e.code] = true;
         switch (e.code) {
             case "ArrowUp":
@@ -21,6 +23,7 @@ const setupKeyboardInputHandler = function (dic) {
     }, false);
 
     addEventListener("keyup", function (e) {
+        // emit keyup, send message to server...
         delete dic[e.code];
     }, false);
 }
@@ -91,7 +94,7 @@ const preLoadThenStart = function (listOfPaths) {
 }
 
 const start = function () {
-    setupKeyboardInputHandler(window.globals.keysDown);
+    setupKeyboardHandler(window.globals.keysDown);
     setupFullScreen();
     loadObject(window.globals.entities, window.globals.keysDown, window.globals.backgroundCtx);
 

@@ -20,6 +20,7 @@ class Tank extends Entity {
         let dx = Math.cos(rotationInRadian) * (this.speed * dt);
         let dy = Math.sin(rotationInRadian) * (this.speed * dt);
 
+        // EMIT to server...
         // Forward/backward
         if (keysDown && keysDown.ArrowUp == true) {
             this.position.x += dx;
