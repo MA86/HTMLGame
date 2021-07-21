@@ -27,7 +27,7 @@ const setupKeyboardHandler = function (dic) {
         delete dic[e.code];
     }, false);
 }
-
+// Client code
 const setupFullScreen = function () {
     window.globals.backgroundCanv.width = window.innerWidth;
     window.globals.backgroundCanv.height = window.innerHeight;
@@ -35,29 +35,31 @@ const setupFullScreen = function () {
     window.globals.middlegroundCanv.height = window.innerHeight;
     window.globals.uppergroundCanv.width = window.innerWidth;
     window.globals.uppergroundCanv.height = window.innerHeight;
-    // Reload map erased map
+    // Reload erased map
     loadMap(window.globals.backgroundCtx);
 
     addEventListener("resize", setupFullScreen);
 }
-
+// Client code
+// TODO: Turn to immediately called function?
 const loadMap = function (bgCtx) {
-    let ssMap = window.globals.images["./images_and_data/ground.png"];
-    let gazalaGrass = new TerrainLayer(
+    let mapSS = window.globals.images["./images_and_data/ground.png"];
+    let map = new TerrainLayer(
         { x: 0, y: 0 },
         0,
         null,
         30,
         30,
-        ssMap,
+        mapSS,
         128,
         8,
         8
     );
-    gazalaGrass.fill(8);
-    gazalaGrass.render(bgCtx);
+    map.fill(8);
+    map.render(bgCtx);
+    // Clip map?
 }
-
+// TODO: Turn into immediately called function?
 const loadObject = function (entities, keysDown, bgCtx, ugCtx) {
     // load background
     loadMap(bgCtx);
@@ -75,7 +77,9 @@ const loadObject = function (entities, keysDown, bgCtx, ugCtx) {
     );
     entities.push(tank);
 }
-
+// Client code
+// TODO: Turn to immediately called function
+// Create a list of image elements
 const preLoadThenStart = function (listOfPaths) {
     let numImagesLoaded = 0;
     let numImagesRequested = listOfPaths.length;
@@ -109,7 +113,7 @@ const start = function () {
 
         // Clear middle-canvas
         window.globals.middlegroundCtx.clearRect(0, 0, window.globals.middlegroundCanv.width, window.globals.middlegroundCanv.height);
-
+        // Server code
         // Update/render entities of middle-canvas
         for (let i = 0; i < window.globals.entities.length; i++) {
             window.globals.entities[i].update(window.globals.keysDown, delta);
