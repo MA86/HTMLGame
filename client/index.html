@@ -3,7 +3,8 @@
 <header>
     <script type="module" src="/spritesheetsData.js"></script>
     <script type="module" src="/game.js"></script>
-    <link rel="stylesheet" type="text/css" href="/game.css">
+
+    <link rel="stylesheet" type="text/css" href="/styles/game.css">
 </header>
 
 <body>
@@ -12,6 +13,10 @@
         <canvas id="mg-canvas" style="position: absolute; z-index: 1;"></canvas>
         <canvas id="ug-canvas" style="position: absolute; z-index: 2;"></canvas>
     </div>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var socketClient = io();
+    </script>
 </body>
 
 </html>
