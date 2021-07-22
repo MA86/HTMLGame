@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <header>
+    <script src="/socket.io/socket.io.js"></script>
     <script type="module" src="/spritesheetsData.js"></script>
     <script type="module" src="/game.js"></script>
 
@@ -13,10 +14,6 @@
         <canvas id="mg-canvas" style="position: absolute; z-index: 1;"></canvas>
         <canvas id="ug-canvas" style="position: absolute; z-index: 2;"></canvas>
     </div>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        var socketClient = io();
-    </script>
 </body>
 
 </html>

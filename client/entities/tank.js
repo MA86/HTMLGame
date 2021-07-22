@@ -15,7 +15,7 @@ class Tank extends Entity {
         );
     }
 
-    updateThis(keysDown, dt) {
+    updateThis(keysDown, dt, socket) {
         let rotationInRadian = this.rotation * Math.PI / 180;
         let dx = Math.cos(rotationInRadian) * (this.speed * dt);
         let dy = Math.sin(rotationInRadian) * (this.speed * dt);
@@ -25,18 +25,22 @@ class Tank extends Entity {
         if (keysDown && keysDown.ArrowUp == true) {
             this.position.x += dx;
             this.position.y += dy;
+            socket.emit("tank position", this.position);
         }
         if (keysDown && keysDown.ArrowDown == true) {
             this.position.x -= dx;
             this.position.y -= dy;
+            socket.emit("tank position", this.position);
         }
 
         // Rotate right/left
         if (keysDown && keysDown.ArrowRight == true) {
             this.rotation += this.rotationSpeed * dt;
+            socket.emit("tank rotation", this.rotation);
         }
         if (keysDown && keysDown.ArrowLeft == true) {
             this.rotation -= this.rotationSpeed * dt;
+            socket.emit("tank rotation", this.rotation);
         }
         // Wrap around
         this.rotation = this.rotation % 360;

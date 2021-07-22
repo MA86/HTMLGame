@@ -45,7 +45,7 @@ const setupFullScreen = function () {
 const loadMap = function (bgCtx) {
     let mapSS = window.globals.images["./images_and_data/ground.png"];
     let map = new TerrainLayer(
-        { x: 0, y: 0 },
+        { "x": 0, "y": 0 },
         0,
         null,
         30,
@@ -64,7 +64,7 @@ const loadObject = function (entities, keysDown, bgCtx, ugCtx) {
     // load background
     loadMap(bgCtx);
 
-    // load player
+    // load self tank
     let tank = new Tank(
         { "x": 200, "y": 200 },
         25,
@@ -76,6 +76,28 @@ const loadObject = function (entities, keysDown, bgCtx, ugCtx) {
         spriteSheetsData
     );
     entities.push(tank);
+
+    // load an enemy tank
+    let enemyTank = new Tank(
+        { "x": 500, "y": 600 },
+        25,
+        null,
+        {
+            "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
+            "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
+        },
+        spriteSheetsData
+    );
+    entities.push(enemyTank);
+
+    window.globals.clientSocket.on("tank position", function (pos) {
+        enemyTank.position = pos;
+        enemyTank.render(window.globals.middlegroundCtx);
+    });
+    window.globals.clientSocket.on("tank rotation", function (rot) {
+        enemyTank.rotation = rot;
+        enemyTank.render(window.globals.middlegroundCtx);
+    });
 }
 // Client code
 // TODO: Turn to immediately called function
@@ -116,7 +138,7 @@ const start = function () {
         // Server code
         // Update/render entities of middle-canvas
         for (let i = 0; i < window.globals.entities.length; i++) {
-            window.globals.entities[i].update(window.globals.keysDown, delta);
+            window.globals.entities[i].update(window.globals.keysDown, delta, window.globals.clientSocket);
         }
         for (let i = 0; i < window.globals.entities.length; i++) {
             window.globals.entities[i].render(window.globals.middlegroundCtx);
@@ -147,6 +169,7 @@ addEventListener("load", function (e) {
         "./images_and_data/mSixTankTurret.png",
     ];
     window.globals.images = {};
+    window.globals.clientSocket = io();
 
     preLoadThenStart(window.globals.imagePaths);
 });

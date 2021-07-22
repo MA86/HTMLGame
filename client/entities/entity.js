@@ -26,15 +26,15 @@ class Entity {
         // Derived class defines this method
     }
 
-    update(keysDown, dt) {
-        this.updateThis(keysDown, dt);
+    update(keysDown, dt, socket) {
+        this.updateThis(keysDown, dt, socket);
         for (let i = 0; i < this.children.length; i++) {
             const child = this.children[i];
-            child.update(keysDown, dt);
+            child.update(keysDown, dt, socket);
         }
     }
 
-    updateThis(keysdown, dt) {
+    updateThis(keysdown, dt, socket) {
         // Derived class defines this method
     }
 }
