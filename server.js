@@ -29,15 +29,18 @@ serverSocket.on("connection", function (socket) {
 
     socket.on("disconnect", () => {
         console.log("a client disconnected");
+
+        // Remove disconnected client from server
         let indexOfDisconnectedClient = listOfClientId.map(function (obj) {
             return obj.clientId;
         }).indexOf(socket.id);
-        // Remove disconnected client
         listOfClientId.splice(indexOfDisconnectedClient);
+
+        // Remove disconnected client from clients
+        serverSocket.emit("remove tank", scoket.id);
     });
-    // Wait a bit
     setTimeout(function () {
-        // When client data is recieved
+        // Listen for client data
         socket.on("tank position", function (data) {
             // Broadcast to everyone
             serverSocket.emit("tank position", data);
@@ -51,9 +54,9 @@ serverSocket.on("connection", function (socket) {
             serverSocket.emit("turret rotation", data);
         });
 
-        // All clients, except this client, create a tank
+        // Existing clients creates one tank for new client
         socket.broadcast.emit("create tank", { "clientId": socket.id });
-        // This client create a list of tanks
+        // New client creates tanks for all existing clients
         socket.emit("create tanks", listOfClientId);
     }, 2000);
 });
