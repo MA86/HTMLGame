@@ -78,6 +78,7 @@ const startGame = function () {
     setupKeyboardHandler(window.globals.keysDown);
     setupFullScreen();
     createWorld(window.globals.backgroundCtx);
+    // If you are existing client, create the newly joined tank
     window.globals.clientSocket.on("create tank", function (data) {
         let tank = new Tank(
             { "x": 200, "y": 200 },
@@ -91,6 +92,24 @@ const startGame = function () {
             data
         );
         window.globals.entities.push(tank);
+    });
+    // If you are new client, create self + other tanks
+    window.globals.clientSocket.on("create tanks", function (data) {
+        for (let i = 0; i < data.length; i++) {
+            const d = data[i];
+            let tank = new Tank(
+                { "x": 200, "y": 200 },
+                25,
+                null,
+                {
+                    "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
+                    "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
+                },
+                spriteSheetsData,
+                d
+            );
+            window.globals.entities.push(tank);
+        }
     });
 
     var delta = 0;
