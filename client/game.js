@@ -4,10 +4,8 @@ import * as spriteSheetsData from './spritesheetsData.js';
 import { Tank } from './entities/tank.js';
 import { TerrainLayer } from './entities/terrainlayer.js';
 
-// client code
 const setupKeyboardHandler = function (dic) {
     addEventListener("keydown", function (e) {
-        // emit keydown, send message to server..
         dic[e.code] = true;
         switch (e.code) {
             case "ArrowUp":
@@ -23,11 +21,10 @@ const setupKeyboardHandler = function (dic) {
     }, false);
 
     addEventListener("keyup", function (e) {
-        // emit keyup, send message to server...
         delete dic[e.code];
     }, false);
 }
-// Client code
+
 const setupFullScreen = function () {
     window.globals.backgroundCanv.width = window.innerWidth;
     window.globals.backgroundCanv.height = window.innerHeight;
@@ -36,13 +33,12 @@ const setupFullScreen = function () {
     window.globals.uppergroundCanv.width = window.innerWidth;
     window.globals.uppergroundCanv.height = window.innerHeight;
     // Reload erased map
-    loadMap(window.globals.backgroundCtx);
+    createWorld(window.globals.backgroundCtx);
 
     addEventListener("resize", setupFullScreen);
 }
-// Client code
-// TODO: Turn to immediately called function?
-const loadMap = function (bgCtx) {
+
+const createWorld = function (bgCtx) {
     let mapSS = window.globals.images["./images_and_data/ground.png"];
     let map = new TerrainLayer(
         { "x": 0, "y": 0 },
@@ -57,74 +53,46 @@ const loadMap = function (bgCtx) {
     );
     map.fill(8);
     map.render(bgCtx);
-    // Clip map?
 }
-// TODO: Turn into immediately called function?
-const loadObject = function (entities, keysDown, bgCtx, ugCtx) {
-    // load background
-    loadMap(bgCtx);
 
-    // load self tank
-    let tank = new Tank(
-        { "x": 200, "y": 200 },
-        25,
-        null,
-        {
-            "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
-            "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
-        },
-        spriteSheetsData
-    );
-    entities.push(tank);
-
-    // load an enemy tank
-    let enemyTank = new Tank(
-        { "x": 500, "y": 600 },
-        25,
-        null,
-        {
-            "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
-            "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
-        },
-        spriteSheetsData
-    );
-    entities.push(enemyTank);
-
-    window.globals.clientSocket.on("tank position", function (pos) {
-        enemyTank.position = pos;
-        enemyTank.render(window.globals.middlegroundCtx);
-    });
-    window.globals.clientSocket.on("tank rotation", function (rot) {
-        enemyTank.rotation = rot;
-        enemyTank.render(window.globals.middlegroundCtx);
-    });
-}
-// Client code
-// TODO: Turn to immediately called function
-// Create a list of image elements
-const preLoadThenStart = function (listOfPaths) {
+// Load image elements into array
+const loadImageElementsThenStartGame = function () {
     let numImagesLoaded = 0;
-    let numImagesRequested = listOfPaths.length;
+    let numImagesRequested = window.globals.imagePaths.length;
     for (let i = 0; i < numImagesRequested; i++) {
         let image = new Image();
-        image.src = listOfPaths[i];
+        image.src = window.globals.imagePaths[i];
 
         image.onload = function () {
-            window.globals.images[listOfPaths[i]] = image;
+            window.globals.images[window.globals.imagePaths[i]] = image;
             numImagesLoaded++;
             if (numImagesLoaded == numImagesRequested) {
-                start();
+                startGame();
             }
         }
     }
 }
 
-const start = function () {
+/*** Every Frame ***/
+const startGame = function () {
     setupKeyboardHandler(window.globals.keysDown);
     setupFullScreen();
-    loadObject(window.globals.entities, window.globals.keysDown, window.globals.backgroundCtx);
+    createWorld(window.globals.backgroundCtx);
+    window.globals.clientSocket.on("create tank", function (data) {
+        let tank = new Tank(
+            { "x": 200, "y": 200 },
+            25,
+            null,
+            {
+                "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
+                "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
+            },
+            spriteSheetsData,
+            data
+        );
+        window.globals.entities.push(tank);
+    });
 
-    /*** Every Frame ***/
     var delta = 0;
     var timeNow = 0;
     var timeThen = 0;
@@ -171,5 +139,5 @@ addEventListener("load", function (e) {
     window.globals.images = {};
     window.globals.clientSocket = io();
 
-    preLoadThenStart(window.globals.imagePaths);
+    loadImageElementsThenStartGame();
 });
