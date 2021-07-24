@@ -5,8 +5,8 @@ import { Turret } from './turret.js';
 class Tank extends Entity {
     constructor(pos, rot, parent, spriteSheet, ssData, data) {
         super(pos, rot, parent);
-        this.speed = 85;             // Unit: PPS       
-        this.rotationSpeed = 35;     // Unit: DPS
+        this.speed = 70;             // Unit: PPS       
+        this.rotationSpeed = 25;     // Unit: DPS
         this.clientId = data.clientId;
         this.children.push(
             new Sprite({ "x": 0, "y": 0 }, 0, this, spriteSheet.tank, ssData.mSixTankBodyData, 0)

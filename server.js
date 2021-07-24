@@ -37,7 +37,7 @@ serverSocket.on("connection", function (socket) {
         listOfClientId.splice(indexOfDisconnectedClient);
 
         // Remove disconnected client from clients
-        serverSocket.emit("remove tank", scoket.id);
+        //serverSocket.emit("remove tank", scoket.id);
     });
     setTimeout(function () {
         // Listen for client data
@@ -58,7 +58,7 @@ serverSocket.on("connection", function (socket) {
         socket.broadcast.emit("create tank", { "clientId": socket.id });
         // New client creates tanks for all existing clients
         socket.emit("create tanks", listOfClientId);
-    }, 2000);
+    }, 500);
 });
 
 // Start HTTP server, listening on port 8000

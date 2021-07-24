@@ -33,7 +33,7 @@ const setupFullScreen = function () {
     window.globals.uppergroundCanv.width = window.innerWidth;
     window.globals.uppergroundCanv.height = window.innerHeight;
     // Reload erased map
-    createWorld(window.globals.backgroundCtx);
+    //createWorld(window.globals.backgroundCtx);
 
     addEventListener("resize", setupFullScreen);
 }
@@ -77,7 +77,7 @@ const loadImageElementsThenStartGame = function () {
 const startGame = function () {
     setupKeyboardHandler(window.globals.keysDown);
     setupFullScreen();
-    createWorld(window.globals.backgroundCtx);
+    //createWorld(window.globals.backgroundCtx);
     // If you are existing client, create the newly joined tank
     window.globals.clientSocket.on("create tank", function (data) {
         let tank = new Tank(
