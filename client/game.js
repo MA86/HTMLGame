@@ -117,7 +117,7 @@ const startGame = function () {
             const tank = window.globals.entities[i];
             if (tank.clientId == id) {
                 console.log(window.globals.entities[i]);
-                window.globals.entities.splice(i);
+                window.globals.entities.splice(i, 1);
             }
         }
     });

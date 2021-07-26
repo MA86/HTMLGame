@@ -34,8 +34,8 @@ serverSocket.on("connection", function (socket) {
         let indexOfDisconnectedClient = listOfClientId.map(function (obj) {
             return obj.clientId;
         }).indexOf(socket.id);
-        listOfClientId.splice(indexOfDisconnectedClient);
-
+        listOfClientId.splice(indexOfDisconnectedClient, 1);
+        console.log("Asking clients to remove tank with ID " + socket.id);
         // Remove disconnected client from clients' list
         serverSocket.emit("remove tank", socket.id);
     });
