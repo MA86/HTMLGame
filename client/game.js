@@ -111,6 +111,16 @@ const startGame = function () {
             window.globals.entities.push(tank);
         }
     });
+    // Remove the disconnected tank
+    window.globals.clientSocket.on("remove tank", function (id) {
+        for (let i = 0; i < window.globals.entities.length; i++) {
+            const tank = window.globals.entities[i];
+            if (tank.clientId == id) {
+                console.log(window.globals.entities[i]);
+                window.globals.entities.splice(i);
+            }
+        }
+    });
 
     var delta = 0;
     var timeNow = 0;

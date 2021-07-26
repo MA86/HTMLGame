@@ -36,29 +36,30 @@ serverSocket.on("connection", function (socket) {
         }).indexOf(socket.id);
         listOfClientId.splice(indexOfDisconnectedClient);
 
-        // Remove disconnected client from clients
-        //serverSocket.emit("remove tank", scoket.id);
+        // Remove disconnected client from clients' list
+        serverSocket.emit("remove tank", socket.id);
     });
+    // Wait a bit so clients are ready
     setTimeout(function () {
-        // Listen for client data
-        socket.on("tank position", function (data) {
-            // Broadcast to everyone
-            serverSocket.emit("tank position", data);
-        });
-        socket.on("tank rotation", function (data) {
-            // Broadcast to everyone
-            serverSocket.emit("tank rotation", data);
-        });
-        socket.on("turret rotation", function (data) {
-            // Broadcast to everyone
-            serverSocket.emit("turret rotation", data);
-        });
-
         // Existing clients creates one tank for new client
         socket.broadcast.emit("create tank", { "clientId": socket.id });
         // New client creates tanks for all existing clients
         socket.emit("create tanks", listOfClientId);
     }, 500);
+
+    // *** Listen for client data here *** //
+    socket.on("tank position", function (data) {
+        // Broadcast to everyone
+        serverSocket.emit("tank position", data);
+    });
+    socket.on("tank rotation", function (data) {
+        // Broadcast to everyone
+        serverSocket.emit("tank rotation", data);
+    });
+    socket.on("turret rotation", function (data) {
+        // Broadcast to everyone
+        serverSocket.emit("turret rotation", data);
+    });
 });
 
 // Start HTTP server, listening on port 8000
