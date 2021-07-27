@@ -78,7 +78,8 @@ const startGame = function () {
     setupKeyboardHandler(window.globals.keysDown);
     setupFullScreen();
     //createWorld(window.globals.backgroundCtx);
-    // If you are existing client, create the newly joined tank
+
+    // On create tank message
     window.globals.clientSocket.on("create tank", function (data) {
         let tank = new Tank(
             { "x": 200, "y": 200 },
@@ -93,7 +94,7 @@ const startGame = function () {
         );
         window.globals.entities.push(tank);
     });
-    // If you are new client, create self + other tanks
+    // On create tanks message
     window.globals.clientSocket.on("create tanks", function (data) {
         for (let i = 0; i < data.length; i++) {
             const d = data[i];
@@ -111,7 +112,7 @@ const startGame = function () {
             window.globals.entities.push(tank);
         }
     });
-    // Remove the disconnected tank
+    // On remove tank message
     window.globals.clientSocket.on("remove tank", function (id) {
         for (let i = 0; i < window.globals.entities.length; i++) {
             const tank = window.globals.entities[i];
@@ -119,6 +120,17 @@ const startGame = function () {
                 window.globals.entities.splice(i, 1);
             }
         }
+    });
+    // On server disconnect message
+    window.globals.clientSocket.on("disconnect", function () {
+        const message = document.createElement("H1");
+        message.innerHTML = "Server is down!";
+        document.body.appendChild(message);
+
+        for (let i = 0; i < window.globals.entities.length; i++) {
+            window.globals.entities.pop();
+        }
+        window.globals.clientSocket.disconnect();
     });
 
     var delta = 0;

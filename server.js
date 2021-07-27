@@ -1,3 +1,4 @@
+const process = require("process");
 // Import Express
 const express = require("express");
 // Handler function
@@ -44,25 +45,21 @@ serverSocket.on("connection", function (socket) {
         socket.broadcast.emit("create tank", { "clientId": socket.id });
         // New client creates tanks for all existing clients
         socket.emit("create tanks", listOfClientId);
+
+        // *** Listen for client data here *** //
+        socket.on("tank position", function (data) {
+            // Broadcast to everyone
+            serverSocket.emit("tank position", data);
+        });
+        socket.on("tank rotation", function (data) {
+            // Broadcast to everyone
+            serverSocket.emit("tank rotation", data);
+        });
+        socket.on("turret rotation", function (data) {
+            // Broadcast to everyone
+            serverSocket.emit("turret rotation", data);
+        });
     }, 500);
-
-    // *** Listen for client data here *** //
-    socket.on("tank position", function (data) {
-        // Broadcast to everyone
-        serverSocket.emit("tank position", data);
-    });
-    socket.on("tank rotation", function (data) {
-        // Broadcast to everyone
-        serverSocket.emit("tank rotation", data);
-    });
-    socket.on("turret rotation", function (data) {
-        // Broadcast to everyone
-        serverSocket.emit("turret rotation", data);
-    });
-});
-
-process.on("exit", function (c) {
-    console.log("server is down!");
 });
 
 // Start HTTP server, listening on port 8000
