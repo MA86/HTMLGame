@@ -2,7 +2,7 @@
     "name": "Tank Game",
     "version": "0.1.0",
     "description": "A tank game in development.",
-    "main": "game.js",
+    "main": "main.js",
     "dependencies": {
         "express": "^4.17.1",
         "socket.io": "^4.1.3"

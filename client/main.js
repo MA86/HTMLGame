@@ -116,7 +116,6 @@ const startGame = function () {
         for (let i = 0; i < window.globals.entities.length; i++) {
             const tank = window.globals.entities[i];
             if (tank.clientId == id) {
-                console.log(window.globals.entities[i]);
                 window.globals.entities.splice(i, 1);
             }
         }
@@ -125,7 +124,7 @@ const startGame = function () {
     var delta = 0;
     var timeNow = 0;
     var timeThen = 0;
-    const main = function (timeStamp) {
+    const mainLoop = function (timeStamp) {
         // Calculate Time between two frames
         timeNow = (timeStamp == undefined) ? 0 : timeStamp;
         delta = (timeNow - timeThen) / 1000;
@@ -141,11 +140,11 @@ const startGame = function () {
             window.globals.entities[i].render(window.globals.middlegroundCtx);
         }
 
-        // Call main again ASAP
-        requestAnimationFrame(main);
+        // Call main loop again ASAP
+        requestAnimationFrame(mainLoop);
         timeThen = timeNow;
     }
-    main();
+    mainLoop();
 }
 
 /*** On Window Load ***/

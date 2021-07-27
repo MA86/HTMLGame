@@ -35,7 +35,6 @@ serverSocket.on("connection", function (socket) {
             return obj.clientId;
         }).indexOf(socket.id);
         listOfClientId.splice(indexOfDisconnectedClient, 1);
-        console.log("Asking clients to remove tank with ID " + socket.id);
         // Remove disconnected client from clients' list
         serverSocket.emit("remove tank", socket.id);
     });
@@ -60,6 +59,10 @@ serverSocket.on("connection", function (socket) {
         // Broadcast to everyone
         serverSocket.emit("turret rotation", data);
     });
+});
+
+process.on("exit", function (c) {
+    console.log("server is down!");
 });
 
 // Start HTTP server, listening on port 8000
