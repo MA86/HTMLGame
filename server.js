@@ -11,7 +11,7 @@ const socket = require("socket.io");
 const serverSocket = new socket.Server(httpServer);
 
 // Variables
-var clientDataList = [];
+var clientData = [];
 
 // Search requested files inside client folder, first
 httpHandler.use(express.static(__dirname + "/client"));
@@ -27,46 +27,65 @@ const spawnPoint = function () {
     // Return the location
 }
 
-// When a client connects
+// When a new client connects
 serverSocket.on("connection", function (socket) {
     console.log("a client connected");
-    // Initialize new client and add to list
-    clientDataList.push({
+    // Initialize this client and add to list
+    clientData.push({
         "clientId": socket.id,
         "state": {
             "pos": { "x": 300, "y": 200 },
-            "rot": 45
+            "rot": 45,
+            "turRot": 0
         }
     });
-    // When client disconnects
+    // When this client disconnects
     socket.on("disconnect", () => {
         console.log("a client disconnected");
         // Remove disconnected client from list
-        let indexOfDisconnectedClient = clientDataList.map(function (obj) {
+        let indexOfDisconnectedClient = clientData.map(function (obj) {
             return obj.clientId;
         }).indexOf(socket.id);
-        clientDataList.splice(indexOfDisconnectedClient, 1);
+        clientData.splice(indexOfDisconnectedClient, 1);
         // Remove disconnected client from clients' list
         serverSocket.emit("remove tank", socket.id);
     });
-
     // TODO: Wait a bit so clients are ready
     setTimeout(function () {
-        // Tell existing clients to create the new client
-        socket.broadcast.emit("create tank", clientDataList[clientDataList.length - 1]);
-        // Tell the new client to create all existing clients
-        socket.emit("create tanks", clientDataList);
+        // Tell current clients to create this client
+        socket.broadcast.emit("create tank", clientData[clientData.length - 1]);
+        // Tell this client to create all current clients
+        socket.emit("create tanks", clientData);
 
-        // *** Listen for client data here *** //
+        // *** This client will update server on: *** //
         socket.on("tank position", function (data) {
+            // Store state
+            for (let i = 0; i < clientData.length; i++) {
+                const client = clientData[i];
+                if (client.clientId == data.clientId) {
+                    clientData[i].state.pos = data.pos;
+                }
+            }
             // Broadcast to everyone
             serverSocket.emit("tank position", data);
         });
         socket.on("tank rotation", function (data) {
+            for (let i = 0; i < clientData.length; i++) {
+                const client = clientData[i];
+                if (client.clientId == data.clientId) {
+                    clientData[i].state.rot = data.rot;
+                }
+            }
             // Broadcast to everyone
             serverSocket.emit("tank rotation", data);
         });
         socket.on("turret rotation", function (data) {
+            for (let i = 0; i < clientData.length; i++) {
+                const client = clientData[i];
+                if (client.clientId == data.clientId) {
+                    clientData[i].state.turRot = data.rot;
+                }
+            }
             // Broadcast to everyone
             serverSocket.emit("turret rotation", data);
         });

@@ -2,12 +2,12 @@ import { Entity } from './entity.js';
 import { Sprite } from './sprite.js';
 
 class Turret extends Entity {
-    constructor(pos, rot, parent, spriteSheet, ssData, clientId) {
+    constructor(pos, rot, parent, ss, ssData, clientId) {
         super(pos, rot, parent);
         this.rotationSpeed = 20;
         this.clientId = clientId;
         this.children.push(
-            new Sprite({ "x": 0, "y": 0 }, 0, this, spriteSheet, ssData, 0)
+            new Sprite({ "x": 0, "y": 0 }, 0, this, ss, ssData, 0)
         );
         let thisTurret = this;
         window.globals.clientSocket.on("turret rotation", function (data) {

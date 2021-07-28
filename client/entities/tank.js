@@ -3,16 +3,29 @@ import { Sprite } from './sprite.js';
 import { Turret } from './turret.js';
 
 class Tank extends Entity {
-    constructor(pos, rot, parent, spriteSheet, ssData, data) {
+    constructor(pos, rot, parent, ss, ssData, data) {
         super(pos, rot, parent);
         this.speed = 70;             // Unit: PPS       
         this.rotationSpeed = 25;     // Unit: DPS
         this.clientId = data.clientId;
         this.children.push(
-            new Sprite({ "x": 0, "y": 0 }, 0, this, spriteSheet.tank, ssData.mSixTankBodyData, 0)
+            new Sprite(
+                { "x": 0, "y": 0 },
+                0,
+                this,
+                ss.tank,
+                ssData.mSixTankBodyData,
+                0
+            )
         );
         this.children.push(
-            new Turret({ "x": 0, "y": 0 }, 0, this, spriteSheet.turret, ssData.mSixTankTurretData, data.clientId)
+            new Turret(
+                { "x": 0, "y": 0 },
+                data.state.turRot,
+                this, ss.turret,
+                ssData.mSixTankTurretData,
+                data.clientId
+            )
         );
 
         let thisTank = this;

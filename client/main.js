@@ -79,7 +79,7 @@ const startGame = function () {
     setupFullScreen();
     //createWorld(window.globals.backgroundCtx);
 
-    // Create the new player from initial state
+    // Create the new player
     window.globals.clientSocket.on("create tank", function (data) {
         let tank = new Tank(
             data.state.pos,
@@ -95,7 +95,7 @@ const startGame = function () {
         window.globals.entities.push(tank);
     });
     // TODO: create these from current state.
-    // Create existing players from thier current states
+    // Create existing players
     window.globals.clientSocket.on("create tanks", function (data) {
         for (let i = 0; i < data.length; i++) {
             const d = data[i];
