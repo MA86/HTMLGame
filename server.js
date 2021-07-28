@@ -27,21 +27,21 @@ const spawnPoint = function () {
     // Return the location
 }
 
-// When client connects
+// When a client connects
 serverSocket.on("connection", function (socket) {
     console.log("a client connected");
+    // Initialize new client and add to list
     clientDataList.push({
         "clientId": socket.id,
         "state": {
-            "pos":,
-            "rot":,
-
+            "pos": { "x": 300, "y": 200 },
+            "rot": 45
         }
     });
-
+    // When client disconnects
     socket.on("disconnect", () => {
         console.log("a client disconnected");
-        // Remove disconnected client from server
+        // Remove disconnected client from list
         let indexOfDisconnectedClient = clientDataList.map(function (obj) {
             return obj.clientId;
         }).indexOf(socket.id);
@@ -49,19 +49,12 @@ serverSocket.on("connection", function (socket) {
         // Remove disconnected client from clients' list
         serverSocket.emit("remove tank", socket.id);
     });
+
     // TODO: Wait a bit so clients are ready
     setTimeout(function () {
-        // Existing clients creates one tank for new client
-        socket.broadcast.emit(
-            "create tank",
-            {
-                "clientId": socket.id,
-                "state": {
-                    "x": 800, "y": 200
-                }
-            }
-        );
-        // New client creates tanks for all existing clients
+        // Tell existing clients to create the new client
+        socket.broadcast.emit("create tank", clientDataList[clientDataList.length - 1]);
+        // Tell the new client to create all existing clients
         socket.emit("create tanks", clientDataList);
 
         // *** Listen for client data here *** //

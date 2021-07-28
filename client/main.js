@@ -79,11 +79,11 @@ const startGame = function () {
     setupFullScreen();
     //createWorld(window.globals.backgroundCtx);
 
-    // On create tank message
+    // Create the new player from initial state
     window.globals.clientSocket.on("create tank", function (data) {
         let tank = new Tank(
-            data.spawnPoint,
-            25,
+            data.state.pos,
+            data.state.rot,
             null,
             {
                 "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
@@ -94,13 +94,14 @@ const startGame = function () {
         );
         window.globals.entities.push(tank);
     });
-    // On create tanks message
+    // TODO: create these from current state.
+    // Create existing players from thier current states
     window.globals.clientSocket.on("create tanks", function (data) {
         for (let i = 0; i < data.length; i++) {
             const d = data[i];
             let tank = new Tank(
-                d.spawnPoint,
-                25,
+                d.state.pos,
+                d.state.rot,
                 null,
                 {
                     "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
