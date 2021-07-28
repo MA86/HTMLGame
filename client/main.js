@@ -32,7 +32,7 @@ const setupFullScreen = function () {
     window.globals.middlegroundCanv.height = window.innerHeight;
     window.globals.uppergroundCanv.width = window.innerWidth;
     window.globals.uppergroundCanv.height = window.innerHeight;
-    // Reload erased map
+    // Reload erased map due to resize
     //createWorld(window.globals.backgroundCtx);
 
     addEventListener("resize", setupFullScreen);
@@ -82,7 +82,7 @@ const startGame = function () {
     // On create tank message
     window.globals.clientSocket.on("create tank", function (data) {
         let tank = new Tank(
-            { "x": 200, "y": 200 },
+            data.spawnPoint,
             25,
             null,
             {
@@ -99,7 +99,7 @@ const startGame = function () {
         for (let i = 0; i < data.length; i++) {
             const d = data[i];
             let tank = new Tank(
-                { "x": 200, "y": 200 },
+                d.spawnPoint,
                 25,
                 null,
                 {
@@ -124,8 +124,8 @@ const startGame = function () {
     // On server disconnect message
     window.globals.clientSocket.on("disconnect", function () {
         const message = document.createElement("H1");
-        message.innerHTML = "Server is down!";
-        document.body.appendChild(message);
+        message.innerHTML = "Server is down, please try again later!";
+        document.getElementById("canvas-div").appendChild(message);
 
         for (let i = 0; i < window.globals.entities.length; i++) {
             window.globals.entities.pop();
@@ -143,7 +143,7 @@ const startGame = function () {
 
         // Clear middle-canvas
         window.globals.middlegroundCtx.clearRect(0, 0, window.globals.middlegroundCanv.width, window.globals.middlegroundCanv.height);
-        // Server code
+
         // Update/render entities of middle-canvas
         for (let i = 0; i < window.globals.entities.length; i++) {
             window.globals.entities[i].update(window.globals.keysDown, delta, window.globals.clientSocket);

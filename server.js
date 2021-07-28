@@ -11,7 +11,7 @@ const socket = require("socket.io");
 const serverSocket = new socket.Server(httpServer);
 
 // Variables
-var listOfClientId = [];
+var clientDataList = [];
 
 // Search requested files inside client folder, first
 httpHandler.use(express.static(__dirname + "/client"));
@@ -21,30 +21,48 @@ httpHandler.get("/", function (req, res) {
     res.sendFile(__dirname + "/client/index.html");
 });
 
+// TODO: Create spawn point, add it to clientDataList
+const spawnPoint = function () {
+    // Find an available spawn point, 1/10
+    // Return the location
+}
+
 // When client connects
 serverSocket.on("connection", function (socket) {
     console.log("a client connected");
-    listOfClientId.push({
-        "clientId": socket.id
+    clientDataList.push({
+        "clientId": socket.id,
+        "state": {
+            "pos":,
+            "rot":,
+
+        }
     });
 
     socket.on("disconnect", () => {
         console.log("a client disconnected");
-
         // Remove disconnected client from server
-        let indexOfDisconnectedClient = listOfClientId.map(function (obj) {
+        let indexOfDisconnectedClient = clientDataList.map(function (obj) {
             return obj.clientId;
         }).indexOf(socket.id);
-        listOfClientId.splice(indexOfDisconnectedClient, 1);
+        clientDataList.splice(indexOfDisconnectedClient, 1);
         // Remove disconnected client from clients' list
         serverSocket.emit("remove tank", socket.id);
     });
-    // Wait a bit so clients are ready
+    // TODO: Wait a bit so clients are ready
     setTimeout(function () {
         // Existing clients creates one tank for new client
-        socket.broadcast.emit("create tank", { "clientId": socket.id });
+        socket.broadcast.emit(
+            "create tank",
+            {
+                "clientId": socket.id,
+                "state": {
+                    "x": 800, "y": 200
+                }
+            }
+        );
         // New client creates tanks for all existing clients
-        socket.emit("create tanks", listOfClientId);
+        socket.emit("create tanks", clientDataList);
 
         // *** Listen for client data here *** //
         socket.on("tank position", function (data) {
