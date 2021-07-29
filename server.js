@@ -47,7 +47,7 @@ serverSocket.on("connection", function (socket) {
             return obj.clientId;
         }).indexOf(socket.id);
         clientData.splice(indexOfDisconnectedClient, 1);
-        // Remove disconnected client from clients' list
+        // Remove disconnected client from active clients' list
         serverSocket.emit("remove tank", socket.id);
     });
     // TODO: Wait a bit so clients are ready

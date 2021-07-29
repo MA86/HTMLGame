@@ -94,7 +94,6 @@ const startGame = function () {
         );
         window.globals.entities.push(tank);
     });
-    // TODO: create these from current state.
     // Create existing players
     window.globals.clientSocket.on("create tanks", function (data) {
         for (let i = 0; i < data.length; i++) {
@@ -113,7 +112,7 @@ const startGame = function () {
             window.globals.entities.push(tank);
         }
     });
-    // On remove tank message
+    // On server request, remove a particular tank
     window.globals.clientSocket.on("remove tank", function (id) {
         for (let i = 0; i < window.globals.entities.length; i++) {
             const tank = window.globals.entities[i];
@@ -122,16 +121,19 @@ const startGame = function () {
             }
         }
     });
-    // On server disconnect message
+    // On server disconnected, 
     window.globals.clientSocket.on("disconnect", function () {
+        // TODO: this is responsibility of UI layer!
         const message = document.createElement("H1");
         message.innerHTML = "Server is down, please try again later!";
+        message.setAttribute()
         document.getElementById("canvas-div").appendChild(message);
 
-        for (let i = 0; i < window.globals.entities.length; i++) {
-            window.globals.entities.pop();
-        }
+        //for (let i = 0; i < window.globals.entities.length; i++) {
+        //window.globals.entities.pop();
+        //}
         window.globals.clientSocket.disconnect();
+        // TODO: stop game loop!
     });
 
     var delta = 0;
