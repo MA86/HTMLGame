@@ -21,7 +21,7 @@ httpHandler.get("/", function (req, res) {
     res.sendFile(__dirname + "/client/index.html");
 });
 
-// TODO: Create spawn point, add it to clientDataList
+// TODO: Create spawn point, add it to clientData
 const spawnPoint = function () {
     // Find an available spawn point, 1/10
     // Return the location

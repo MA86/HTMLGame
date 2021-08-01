@@ -1,13 +1,13 @@
 import { Entity } from './entity.js';
 
 class Sprite extends Entity {
-    constructor(pos, rot, parent, spriteSheet, spriteSheetData, framesPerSecond) {
+    constructor(pos, rot, parent, ss, ssData, framesPerSecond) {
         super(pos, rot, parent);
         this.index = 0;
         this.framesPerSecond = framesPerSecond;
         this.timeTracker = 0;
-        this.spriteSheetData = spriteSheetData;
-        this.spriteSheet = spriteSheet;
+        this.spriteSheetData = ssData;
+        this.spriteSheet = ss;
     }
     renderThis(ctx) {
         let frameCenter = {

@@ -5,9 +5,11 @@ import { Turret } from './turret.js';
 class Tank extends Entity {
     constructor(pos, rot, parent, ss, ssData, data) {
         super(pos, rot, parent);
-        this.speed = 70;             // Unit: PPS       
-        this.rotationSpeed = 25;     // Unit: DPS
+        this.velocity = 70;             // Unit: PPS       
+        this.rotationVelocity = 25;     // Unit: DPS
+        this.isColliding = false;
         this.clientId = data.clientId;
+
         this.children.push(
             new Sprite(
                 { "x": 0, "y": 0 },
@@ -22,7 +24,8 @@ class Tank extends Entity {
             new Turret(
                 { "x": 0, "y": 0 },
                 data.state.turRot,
-                this, ss.turret,
+                this,
+                ss.turret,
                 ssData.mSixTankTurretData,
                 data.clientId
             )
@@ -42,12 +45,10 @@ class Tank extends Entity {
     }
 
     updateThis(keysDown, dt, socket) {
-
         if (this.clientId == socket.id) {
-
             let rotationInRadian = this.rotation * Math.PI / 180;
-            let dx = Math.cos(rotationInRadian) * (this.speed * dt);
-            let dy = Math.sin(rotationInRadian) * (this.speed * dt);
+            let dx = Math.cos(rotationInRadian) * (this.velocity * dt);
+            let dy = Math.sin(rotationInRadian) * (this.velocity * dt);
 
             // Forward/backward
             if (keysDown && keysDown.ArrowUp == true) {
@@ -63,11 +64,11 @@ class Tank extends Entity {
 
             // Rotate right/left
             if (keysDown && keysDown.ArrowRight == true) {
-                this.rotation += this.rotationSpeed * dt;
+                this.rotation += this.rotationVelocity * dt;
                 socket.emit("tank rotation", { "clientId": this.clientId, "rot": this.rotation });
             }
             if (keysDown && keysDown.ArrowLeft == true) {
-                this.rotation -= this.rotationSpeed * dt;
+                this.rotation -= this.rotationVelocity * dt;
                 socket.emit("tank rotation", { "clientId": this.clientId, "rot": this.rotation });
             }
             // Wrap around

@@ -33,7 +33,7 @@ const setupFullScreen = function () {
     window.globals.uppergroundCanv.width = window.innerWidth;
     window.globals.uppergroundCanv.height = window.innerHeight;
     // Reload erased map due to resize
-    //createWorld(window.globals.backgroundCtx);
+    createWorld(window.globals.backgroundCtx);
 
     addEventListener("resize", setupFullScreen);
 }
@@ -73,43 +73,44 @@ const loadImageElementsThenStartGame = function () {
     }
 }
 
-/*** Every Frame ***/
 const startGame = function () {
     setupKeyboardHandler(window.globals.keysDown);
     setupFullScreen();
-    //createWorld(window.globals.backgroundCtx);
+    createWorld(window.globals.backgroundCtx);
 
     // Create the new player
     window.globals.clientSocket.on("create tank", function (data) {
-        let tank = new Tank(
-            data.state.pos,
-            data.state.rot,
-            null,
-            {
-                "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
-                "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
-            },
-            spriteSheetsData,
-            data
-        );
-        window.globals.entities.push(tank);
-    });
-    // Create existing players
-    window.globals.clientSocket.on("create tanks", function (data) {
-        for (let i = 0; i < data.length; i++) {
-            const d = data[i];
-            let tank = new Tank(
-                d.state.pos,
-                d.state.rot,
+        window.globals.entities.push(
+            new Tank(
+                data.state.pos,
+                data.state.rot,
                 null,
                 {
                     "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
                     "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
                 },
                 spriteSheetsData,
-                d
+                data
+            )
+        );
+    });
+    // Create existing players
+    window.globals.clientSocket.on("create tanks", function (data) {
+        for (let i = 0; i < data.length; i++) {
+            const d = data[i];
+            window.globals.entities.push(
+                new Tank(
+                    d.state.pos,
+                    d.state.rot,
+                    null,
+                    {
+                        "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
+                        "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
+                    },
+                    spriteSheetsData,
+                    d
+                )
             );
-            window.globals.entities.push(tank);
         }
     });
     // On server request, remove a particular tank
@@ -121,7 +122,7 @@ const startGame = function () {
             }
         }
     });
-    // On server disconnected, 
+    // On server disconnect, stop game
     window.globals.clientSocket.on("disconnect", function () {
         // TODO: this is responsibility of UI layer!
         const message = document.createElement("H1");
