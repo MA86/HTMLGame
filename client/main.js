@@ -3,6 +3,7 @@
 import * as spriteSheetsData from './spritesheetsData.js';
 import { Tank } from './entities/tank.js';
 import { TerrainLayer } from './entities/terrainlayer.js';
+import { detectCollision } from './utils/collision.js';
 
 const setupKeyboardHandler = function (dic) {
     addEventListener("keydown", function (e) {
@@ -152,6 +153,9 @@ const startGame = function () {
         for (let i = 0; i < window.globals.entities.length; i++) {
             window.globals.entities[i].update(window.globals.keysDown, delta, window.globals.clientSocket);
         }
+        // Detect collision
+        detectCollision(window.globals.entities);
+        // Draw entities of middle-canvas
         for (let i = 0; i < window.globals.entities.length; i++) {
             window.globals.entities[i].render(window.globals.middlegroundCtx);
         }

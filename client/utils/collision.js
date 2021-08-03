@@ -6,7 +6,7 @@
  * @ https://spicyyoghurt.com
  */
 
-const detectCollision = function (objA, objB, entities) {
+const detectCollision = function (entities) {
     let objA;
     let objB;
 
@@ -21,16 +21,16 @@ const detectCollision = function (objA, objB, entities) {
             objB = entities[j];
             // This efficient compare algorithm is borrowed from Spicy Yoghurt
             if (
-                objB.x > objA.width + objA.x ||
-                objA.x > objB.width + objB.x ||
-                objB.y > objA.height + objA.y ||
-                objA.y > objB.height + objB.y
+                objB.position.x > objA.width + objA.position.x ||
+                objA.position.x > objB.width + objB.position.x ||
+                objB.position.y > objA.height + objA.position.y ||
+                objA.position.y > objB.height + objB.position.y
             ) {
-                objA.isColliding = false;
-                objB.isColliding = false;
+                // Do nothing
             } else {
                 objA.isColliding = true;
                 objB.isColliding = true;
+                console.log("colliding");
             }
         }
     }
