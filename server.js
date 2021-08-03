@@ -1,3 +1,5 @@
+"use strict";
+
 const process = require("process");
 // Import Express
 const express = require("express");
