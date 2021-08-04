@@ -7,9 +7,6 @@ class Tank extends Entity {
         super(pos, rot, parent);
         this.velocity = 70;             // Unit: PPS       
         this.rotationVelocity = 25;     // Unit: DPS
-        this.isColliding = false;
-        this.height = ssData.mSixTankBodyData.frames[0].frame.h;
-        this.width = ssData.mSixTankBodyData.frames[0].frame.w;
         this.clientId = data.clientId;
 
         this.children.push(
