@@ -148,14 +148,14 @@ const startGame = function () {
         // Clear middle-canvas
         window.globals.middlegroundCtx.clearRect(0, 0, window.globals.middlegroundCanv.width, window.globals.middlegroundCanv.height);
 
-        // Update/render entities of middle-canvas
+        // Update entities
         for (let i = 0; i < window.globals.entities.length; i++) {
             window.globals.entities[i].update(window.globals.keysDown, delta, window.globals.clientSocket);
         }
 
         // Detect collision here
 
-        // Draw entities of middle-canvas
+        // Draw entities
         for (let i = 0; i < window.globals.entities.length; i++) {
             window.globals.entities[i].render(window.globals.middlegroundCtx);
         }
