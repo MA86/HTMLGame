@@ -5,80 +5,66 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
     <script>
         function Start() {
+            /*** CLASS DEFINITIONS ***/
+            class Tank {
+                constructor() {
+                    this.body = Bodies.rectangle(300, 0, 100, 100, {
+                        render: {
+                            sprite: {
+                                texture: "mSixTankBody.png",
+                                isStatic: true,
+                            }
+                        }
+                    });
+                }
+            }
+
             // Globals
             window.globals = {};
             window.globals.canvas = document.getElementById("canvas");
             window.globals.context = window.globals.canvas.getContext("2d");
-            window.globals.keysDown = {};
-            window.globals.entities = [];
-            window.globals.imagePaths = [
-                "./images_and_data/ground.png",
-                "./images_and_data/mSixTankBody.png",
-                "./images_and_data/mSixTankTurret.png",
-            ];
-            window.globals.images = {};
+
+            // Physics APIs (aliases)
+            var Engine = Matter.Engine;         // For updating physics.
+            var Render = Matter.Render;         // For rendering results of Engine.
+            var Bodies = Matter.Bodies;         // To use a pre-made Body.
+            var Composite = Matter.Composite;   // Container for entity made of multiple parts.
+            var Body = Matter.Body;             // To make a custom Body.
+            var Runner = Matter.Runner;         // Optional game loop (Auto updates Engine).
 
             // Set canvas size
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            // Reset canvas size
-            window.onresize = function (event) {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-
-            // Physics APIs
-            var Engine = Matter.Engine;     // For updating physics.
-            var Render = Matter.Render;     // For rendering results of Engine.
-            var Runner = Matter.Runner;     // Optional game loop (Auto updates Engine).
-            // If you have own game loop, use Engine.update(eng, dt)
-            // in your loop.
-            var Body = Matter.Body;         // To make body that can be simulated by Engine.
-            var Bodies = Matter.Bodies;     // To make body...
-            var Composite = Matter.Composite;   // Container for entity made of multiple parts.
+            window.globals.canvas.width = window.innerWidth;
+            window.globals.canvas.height = window.innerHeight;
 
             // Create a physics engine
             var engine = Engine.create();
 
+            // Create a generic renderer
+            var render = Render.create({
+                canvas: window.globals.canvas,
+                engine: engine,
+                options: {
+                    wireframes: false
+                }
+            });
+
             // Create entities
-            var boxA = Bodies.rectangle(400, 200, 80, 80);
-            var boxB = Bodies.rectangle(450, 50, 80, 80);
+            var tank = new Tank();
             var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
             // Add all entities to the physics engine
-            Composite.add(engine.world, [boxA, boxB, ground]);
+            Composite.add(engine.world, [tank.body, ground]);
 
-            var dt = 0;
-            var timeNow = 0;
-            var timeThen = 0;
+            // Start the renderer
+            Render.run(render);
+
             /*** Game Loop ***/
-            (function gameLoop() {
+            (function gameLoop(timeStamp) {
                 // Run Game Loop every frame
                 window.requestAnimationFrame(gameLoop);
 
-                // Calculate time elapsed between two frames
-                timeNow = timeStamp;
-                dt = (timeNow - timeThen) / 1000;
-
                 // Update physics
                 Engine.update(engine, 1000 / 60);
-
-                // TODO: Based on updated physics parameters, a) Update entities b) Draw entities //
-
-                // Update entities
-                for (let i = 0; i < window.globals.entities.length; i++) {
-                    window.globals.entities[i].update(window.globals.keysDown, dt, window.globals.clientSocket);
-                }
-
-                // Clear canvas
-                canvas.clearRect(0, 0, canvas.width, canvas.height);
-
-                // Draw entities
-                for (let i = 0; i < window.globals.entities.length; i++) {
-                    window.globals.entities[i].render(window.globals.middlegroundCtx);
-                }
-
-                timeThen = timeNow;
             })();
         }
     </script>
