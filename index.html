@@ -5,9 +5,19 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
     <script>
         function Start() {
-            // Get canvas context
-            var canvas = document.getElementById("canvas");
-            var context = canvas.getContext("2d");
+            // Globals
+            window.globals = {};
+            window.globals.canvas = document.getElementById("canvas");
+            window.globals.context = window.globals.canvas.getContext("2d");
+            window.globals.keysDown = {};
+            window.globals.entities = [];
+            window.globals.imagePaths = [
+                "./images_and_data/ground.png",
+                "./images_and_data/mSixTankBody.png",
+                "./images_and_data/mSixTankTurret.png",
+            ];
+            window.globals.images = {};
+
             // Set canvas size
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
@@ -38,46 +48,38 @@
             // Add all entities to the physics engine
             Composite.add(engine.world, [boxA, boxB, ground]);
 
+            var dt = 0;
+            var timeNow = 0;
+            var timeThen = 0;
             /*** Game Loop ***/
             (function gameLoop() {
-                // Request frame
+                // Run Game Loop every frame
                 window.requestAnimationFrame(gameLoop);
+
+                // Calculate time elapsed between two frames
+                timeNow = timeStamp;
+                dt = (timeNow - timeThen) / 1000;
+
                 // Update physics
                 Engine.update(engine, 1000 / 60);
 
-                // Based on updated physics parameters, 
-                // Update entities
-                // Draw entities
-            })();
-
-            var delta = 0;
-            var timeNow = 0;
-            var timeThen = 0;
-            const mainLoop = function (timeStamp) {
-                // Calculate Time between two frames
-                timeNow = (timeStamp == undefined) ? 0 : timeStamp;
-                delta = (timeNow - timeThen) / 1000;
-
-                // Clear middle-canvas
-                window.globals.middlegroundCtx.clearRect(0, 0, window.globals.middlegroundCanv.width, window.globals.middlegroundCanv.height);
+                // TODO: Based on updated physics parameters, a) Update entities b) Draw entities //
 
                 // Update entities
                 for (let i = 0; i < window.globals.entities.length; i++) {
-                    window.globals.entities[i].update(window.globals.keysDown, delta, window.globals.clientSocket);
+                    window.globals.entities[i].update(window.globals.keysDown, dt, window.globals.clientSocket);
                 }
 
-                // Detect collision here
+                // Clear canvas
+                canvas.clearRect(0, 0, canvas.width, canvas.height);
 
                 // Draw entities
                 for (let i = 0; i < window.globals.entities.length; i++) {
                     window.globals.entities[i].render(window.globals.middlegroundCtx);
                 }
 
-                // Call main loop again ASAP
-                requestAnimationFrame(mainLoop);
                 timeThen = timeNow;
-            }
-            mainLoop();
+            })();
         }
     </script>
 </head>
