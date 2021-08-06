@@ -27,31 +27,57 @@
             var Bodies = Matter.Bodies;     // To make body...
             var Composite = Matter.Composite;   // Container for entity made of multiple parts.
 
-            // Create an engine
+            // Create a physics engine
             var engine = Engine.create();
 
-            // Create a renderer
-            var render = Render.create({
-                element: document.getElementById("canvas-div"),
-                engine: engine
-            });
-
-            // Create bodies
+            // Create entities
             var boxA = Bodies.rectangle(400, 200, 80, 80);
             var boxB = Bodies.rectangle(450, 50, 80, 80);
             var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
-            // Add all of the bodies to the world
+            // Add all entities to the physics engine
             Composite.add(engine.world, [boxA, boxB, ground]);
 
-            // Run the renderer
-            Render.run(render);
+            /*** Game Loop ***/
+            (function gameLoop() {
+                // Request frame
+                window.requestAnimationFrame(gameLoop);
+                // Update physics
+                Engine.update(engine, 1000 / 60);
 
-            // Create runner
-            var runner = Runner.create();
+                // Based on updated physics parameters, 
+                // Update entities
+                // Draw entities
+            })();
 
-            // Run the engine
-            Runner.run(runner, engine);
+            var delta = 0;
+            var timeNow = 0;
+            var timeThen = 0;
+            const mainLoop = function (timeStamp) {
+                // Calculate Time between two frames
+                timeNow = (timeStamp == undefined) ? 0 : timeStamp;
+                delta = (timeNow - timeThen) / 1000;
+
+                // Clear middle-canvas
+                window.globals.middlegroundCtx.clearRect(0, 0, window.globals.middlegroundCanv.width, window.globals.middlegroundCanv.height);
+
+                // Update entities
+                for (let i = 0; i < window.globals.entities.length; i++) {
+                    window.globals.entities[i].update(window.globals.keysDown, delta, window.globals.clientSocket);
+                }
+
+                // Detect collision here
+
+                // Draw entities
+                for (let i = 0; i < window.globals.entities.length; i++) {
+                    window.globals.entities[i].render(window.globals.middlegroundCtx);
+                }
+
+                // Call main loop again ASAP
+                requestAnimationFrame(mainLoop);
+                timeThen = timeNow;
+            }
+            mainLoop();
         }
     </script>
 </head>
