@@ -6,16 +6,41 @@
     <script>
         function Start() {
             /*** CLASS DEFINITIONS ***/
-            class Tank {
+            class Hull {
                 constructor() {
-                    this.body = Bodies.rectangle(300, 0, 100, 100, {
+                    this.position = 0;
+                    this.rotation = 0;
+                    this.body = Bodies.rectangle(350, 0, 270, 111, {
                         render: {
                             sprite: {
-                                texture: "mSixTankBody.png",
-                                isStatic: true,
+                                texture: "./client/images_and_data/mSixTankBody.png",
                             }
-                        }
+                        },
+                        isStatic: false
                     });
+                }
+            }
+
+            class Turret {
+                constructor() {
+                    this.position = 0;
+                    this.rotation = 0;
+                    this.body = Bodies.rectangle(350, 0, 10, 10, {
+                        render: {
+                            sprite: {
+                                texture: "./client/images_and_data/mSixTankTurret.png",
+                            }
+                        },
+                        isStatic: false
+                    });
+                }
+            }
+
+            class MSixTank {
+                constructor(options) {
+                    this.position = 0;
+                    this.rotation = 0;
+                    this.body = Body.create(options);
                 }
             }
 
@@ -31,6 +56,7 @@
             var Composite = Matter.Composite;   // Container for entity made of multiple parts.
             var Body = Matter.Body;             // To make a custom Body.
             var Runner = Matter.Runner;         // Optional game loop (Auto updates Engine).
+            var World = Matter.World;
 
             // Set canvas size
             window.globals.canvas.width = window.innerWidth;
@@ -39,7 +65,7 @@
             // Create a physics engine
             var engine = Engine.create();
 
-            // Create a generic renderer
+            // Create a renderer
             var render = Render.create({
                 canvas: window.globals.canvas,
                 engine: engine,
@@ -47,16 +73,17 @@
                     wireframes: false
                 }
             });
-
-            // Create entities
-            var tank = new Tank();
-            var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-
-            // Add all entities to the physics engine
-            Composite.add(engine.world, [tank.body, ground]);
-
             // Start the renderer
             Render.run(render);
+
+            // Create entities
+            var mSixTank = new MSixTank({
+                parts: [new Hull().body, new Turret().body]
+            });
+            var test = Bodies.rectangle(200, 300, 200, 200);
+            var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+            Composite.add(engine.world, [ground, mSixTank.body, test]);
 
             /*** Game Loop ***/
             (function gameLoop(timeStamp) {
