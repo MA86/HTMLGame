@@ -6,41 +6,101 @@
     <script>
         function Start() {
             /*** CLASS DEFINITIONS ***/
-            class Hull {
-                constructor() {
-                    this.position = 0;
-                    this.rotation = 0;
-                    this.body = Bodies.rectangle(350, 0, 270, 111, {
-                        render: {
-                            sprite: {
-                                texture: "./client/images_and_data/mSixTankBody.png",
-                            }
-                        },
-                        isStatic: false
-                    });
+            class Entity {
+                constructor(pos, rot, parent) {
+                    this.position = pos;
+                    this.rotation = rot;
+                    this.parent = parent;
+                    this.children = [];
+                    if (parent != null)
+                        parent.children.push(this);
+                }
+
+                render(ctx) {
+                    this.renderThis(ctx);
+
+                    for (let i = 0; i < this.children.length; i++) {
+                        const child = this.children[i];
+                        child.render(ctx);
+                    }
+                }
+
+                renderThis(ctx) {
+                    // Derived class defines this method
+                }
+
+                update(keysDown, dt) {
+                    this.updateThis(keysDown, dt);
+
+                    for (let i = 0; i < this.children.length; i++) {
+                        const child = this.children[i];
+                        child.update(keysDown, dt);
+                    }
+                }
+
+                updateThis(keysdown, dt) {
+                    // Derived class defines this method
                 }
             }
 
-            class Turret {
-                constructor() {
-                    this.position = 0;
-                    this.rotation = 0;
-                    this.body = Bodies.rectangle(350, 0, 10, 10, {
-                        render: {
-                            sprite: {
-                                texture: "./client/images_and_data/mSixTankTurret.png",
-                            }
-                        },
+            class Tank extends Entity {
+                constructor(ss, ssData) {
+                    super({ x: 300, y: 300 }, 43, null);
+                    this.body = Bodies.rectangle(this.position.x, this.position.y, 270, 111, {
                         isStatic: false
                     });
-                }
-            }
 
-            class MSixTank {
-                constructor(options) {
-                    this.position = 0;
-                    this.rotation = 0;
-                    this.body = Body.create(options);
+                    // Variables used for rendering this object
+                    this.index = 0;
+                    this.framesPerSecond = framesPerSecond;
+                    this.timeTracker = 0;
+                    this.spriteSheetData = ssData;
+                    this.spriteSheet = ss;
+                }
+
+                updateThis(keysDown, dt) {
+                    // Forward/backward
+                    if (keysDown && keysDown.ArrowUp == true) {
+                        Body.applyForce(
+                            this.body, { x: this.body.position.x, y: this.body.position.y }, { x: 0, y: 0.05 }
+                        );
+                    }
+                    if (keysDown && keysDown.ArrowDown == true) {
+                        Body.applyForce(
+                            this.body, { x: this.body.position.x, y: this.body.position.y }, { x: 0, y: -0.05 }
+                        );
+                    }
+
+                    // Right/left
+                    if (keysDown && keysDown.ArrowRight == true) {
+                        this.rotation += this.rotationVelocity * dt;
+                    }
+                    if (keysDown && keysDown.ArrowLeft == true) {
+                        this.rotation -= this.rotationVelocity * dt;
+                    }
+
+                    // Update index
+                    this.timeTracker += dt;
+                    let delay = 1 / this.framesPerSecond;
+                    if (this.timeTracker >= delay) {
+                        this.index += 1;
+                        this.index = this.index % this.spriteSheetData.frames.length;
+                        this.timeTracker = 0;
+                    }
+                }
+
+                renderThis(ctx) {
+                    ctx.drawImage(
+                        this.spriteSheet,
+                        this.spriteSheetData.frames[this.index].frame.x,
+                        this.spriteSheetData.frames[this.index].frame.y,
+                        this.spriteSheetData.frames[this.index].frame.w,
+                        this.spriteSheetData.frames[this.index].frame.h,
+                        this.body.position.x,
+                        this.body.position.y,
+                        this.spriteSheetData.frames[this.index].frame.w,
+                        this.spriteSheetData.frames[this.index].frame.h
+                    );
                 }
             }
 
@@ -77,13 +137,10 @@
             Render.run(render);
 
             // Create entities
-            var mSixTank = new MSixTank({
-                parts: [new Hull().body, new Turret().body]
-            });
             var test = Bodies.rectangle(200, 300, 200, 200);
             var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
-            Composite.add(engine.world, [ground, mSixTank.body, test]);
+            Composite.add(engine.world, [ground, test]);
 
             /*** Game Loop ***/
             (function gameLoop(timeStamp) {
