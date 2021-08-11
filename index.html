@@ -3,26 +3,51 @@
 
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+    <script src="./client/images_and_data/mSixTankBodyData.js"></script>
     <script>
-        function Start() {
-            /*** CLASS DEFINITIONS ***/
+        function onPageLoad() {
+            /*** GLOBAL VARIABLES, APIs, CLASS, AND FUNCTION DEFINITIONS ***/
+            window.globals = {};
+            window.globals.canvas = document.getElementById("canvas");
+            window.globals.context = window.globals.canvas.getContext("2d");
+            window.globals.keysDown = {};
+            window.globals.imagePaths = [
+                "./client/images_and_data/ground.png",
+                "./client/images_and_data/mSixTankBody.png",
+                "./client/images_and_data/mSixTankTurret.png",
+            ];
+            window.globals.images = {};
+
+            // Physics APIs (aliases)
+            var Engine = Matter.Engine;         // For updating physics.
+            var Render = Matter.Render;         // For rendering results of Engine.
+            var Bodies = Matter.Bodies;         // To use a pre-made Body.
+            var Composite = Matter.Composite;   // Container for entity made of multiple parts.
+            var Body = Matter.Body;             // To make a custom Body.
+            var Runner = Matter.Runner;         // Optional game loop (Auto updates Engine).
+            var World = Matter.World;
+
             class Entity {
-                constructor(pos, rot, parent) {
-                    this.position = pos;
-                    this.rotation = rot;
-                    this.parent = parent;
+                constructor(body, parent) {
+                    this.body = body;
                     this.children = [];
                     if (parent != null)
                         parent.children.push(this);
                 }
 
                 render(ctx) {
+                    ctx.save();
+                    ctx.translate(this.body.position.x, this.body.position.y);
+                    ctx.rotate(this.body.angle);
+
                     this.renderThis(ctx);
 
                     for (let i = 0; i < this.children.length; i++) {
                         const child = this.children[i];
                         child.render(ctx);
                     }
+
+                    ctx.restore();
                 }
 
                 renderThis(ctx) {
@@ -44,39 +69,68 @@
             }
 
             class Tank extends Entity {
-                constructor(ss, ssData) {
-                    super({ x: 300, y: 300 }, 43, null);
-                    this.body = Bodies.rectangle(this.position.x, this.position.y, 270, 111, {
-                        isStatic: false
-                    });
+                constructor(ss, ssData, fps) {
+                    super(
+                        Bodies.rectangle(200, 0, 270, 111, {
+                            isStatic: false
+                        }),
+                        null
+                    );
+                    this.speed = 0.01;
 
                     // Variables used for rendering this object
                     this.index = 0;
-                    this.framesPerSecond = framesPerSecond;
+                    this.framesPerSecond = fps;
                     this.timeTracker = 0;
                     this.spriteSheetData = ssData;
                     this.spriteSheet = ss;
                 }
 
+                renderThis(ctx) {
+                    let ctxCenter = {
+                        "x": this.spriteSheetData.frames[this.index].frame.w / 2,
+                        "y": this.spriteSheetData.frames[this.index].frame.h / 2
+                    };
+                    ctx.drawImage(
+                        this.spriteSheet,
+                        this.spriteSheetData.frames[this.index].frame.x,
+                        this.spriteSheetData.frames[this.index].frame.y,
+                        this.spriteSheetData.frames[this.index].frame.w,
+                        this.spriteSheetData.frames[this.index].frame.h,
+                        -ctxCenter.x,
+                        -ctxCenter.y,
+                        this.spriteSheetData.frames[this.index].frame.w,
+                        this.spriteSheetData.frames[this.index].frame.h
+                    );
+                }
+
                 updateThis(keysDown, dt) {
+                    let rotationInRadian = this.rotation * Math.PI / 180;
+                    let dx = Math.cos(this.body.angle) * (this.speed);
+                    let dy = Math.sin(this.body.angle) * (this.speed);
+
                     // Forward/backward
                     if (keysDown && keysDown.ArrowUp == true) {
                         Body.applyForce(
-                            this.body, { x: this.body.position.x, y: this.body.position.y }, { x: 0, y: 0.05 }
+                            this.body,
+                            { x: this.body.position.x, y: this.body.position.y },
+                            { x: dx, y: dy }
                         );
                     }
                     if (keysDown && keysDown.ArrowDown == true) {
                         Body.applyForce(
-                            this.body, { x: this.body.position.x, y: this.body.position.y }, { x: 0, y: -0.05 }
+                            this.body,
+                            { x: this.body.position.x, y: this.body.position.y },
+                            { x: -dx, y: -dy }
                         );
                     }
 
                     // Right/left
                     if (keysDown && keysDown.ArrowRight == true) {
-                        this.rotation += this.rotationVelocity * dt;
+                        this.body.torque = 3;
                     }
                     if (keysDown && keysDown.ArrowLeft == true) {
-                        this.rotation -= this.rotationVelocity * dt;
+                        this.body.torque = -3;
                     }
 
                     // Update index
@@ -88,73 +142,108 @@
                         this.timeTracker = 0;
                     }
                 }
-
-                renderThis(ctx) {
-                    ctx.drawImage(
-                        this.spriteSheet,
-                        this.spriteSheetData.frames[this.index].frame.x,
-                        this.spriteSheetData.frames[this.index].frame.y,
-                        this.spriteSheetData.frames[this.index].frame.w,
-                        this.spriteSheetData.frames[this.index].frame.h,
-                        this.body.position.x,
-                        this.body.position.y,
-                        this.spriteSheetData.frames[this.index].frame.w,
-                        this.spriteSheetData.frames[this.index].frame.h
-                    );
-                }
             }
 
-            // Globals
-            window.globals = {};
-            window.globals.canvas = document.getElementById("canvas");
-            window.globals.context = window.globals.canvas.getContext("2d");
+            const setupKeyboardHandler = function (dic) {
+                addEventListener("keydown", function (e) {
+                    dic[e.code] = true;
+                    switch (e.code) {
+                        case "ArrowUp":
+                        case "ArrowDown":
+                        case "ArrowLeft":
+                        case "ArrowRight":
+                        case "Space":
+                            e.preventDefault();
+                            break;
+                        default:
+                            break;
+                    }
+                }, false);
 
-            // Physics APIs (aliases)
-            var Engine = Matter.Engine;         // For updating physics.
-            var Render = Matter.Render;         // For rendering results of Engine.
-            var Bodies = Matter.Bodies;         // To use a pre-made Body.
-            var Composite = Matter.Composite;   // Container for entity made of multiple parts.
-            var Body = Matter.Body;             // To make a custom Body.
-            var Runner = Matter.Runner;         // Optional game loop (Auto updates Engine).
-            var World = Matter.World;
+                addEventListener("keyup", function (e) {
+                    delete dic[e.code];
+                }, false);
+            }
 
-            // Set canvas size
-            window.globals.canvas.width = window.innerWidth;
-            window.globals.canvas.height = window.innerHeight;
+                // Launching Point
+                ; (function () {
+                    let numImagesLoaded = 0;
+                    let numImagesRequested = window.globals.imagePaths.length;
+                    for (let i = 0; i < numImagesRequested; i++) {
+                        let image = new Image();
+                        image.src = window.globals.imagePaths[i];
 
-            // Create a physics engine
-            var engine = Engine.create();
+                        image.onload = function () {
+                            window.globals.images[window.globals.imagePaths[i]] = image;
+                            numImagesLoaded++;
+                            if (numImagesLoaded == numImagesRequested) {
+                                Start();
+                            }
+                        }
+                    }
+                })();
 
-            // Create a renderer
-            var render = Render.create({
-                canvas: window.globals.canvas,
-                engine: engine,
-                options: {
-                    wireframes: false
-                }
-            });
-            // Start the renderer
-            Render.run(render);
+            const Start = function () {
+                setupKeyboardHandler(window.globals.keysDown);
+                // Set canvas size
+                window.globals.canvas.width = window.innerWidth;
+                window.globals.canvas.height = window.innerHeight;
 
-            // Create entities
-            var test = Bodies.rectangle(200, 300, 200, 200);
-            var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+                // Create a physics engine
+                var engine = Engine.create({
+                    gravity: { x: 0, y: 0 }
+                });
 
-            Composite.add(engine.world, [ground, test]);
+                // Debug renderer
+                var render = Render.create({
+                    canvas: window.globals.canvas,
+                    engine: engine,
+                    options: {
+                        wireframes: true
+                    }
+                });
+                // Start debug renderer
+                Render.run(render);
 
-            /*** Game Loop ***/
-            (function gameLoop(timeStamp) {
-                // Run Game Loop every frame
-                window.requestAnimationFrame(gameLoop);
+                // Create entities
+                var mSixTank = new Tank(
+                    window.globals.images["./client/images_and_data/mSixTankBody.png"],
+                    mSixTankBodyData,
+                    0
+                )
+                //var test = Bodies.rectangle(300, 400, 200, 200);
+                var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
-                // Update physics
-                Engine.update(engine, 1000 / 60);
-            })();
+                Composite.add(engine.world, [ground, mSixTank.body]);
+
+                /*** Game Loop ***/
+                (function gameLoop(timeStamp) {
+                    // Update entities
+                    mSixTank.update(window.globals.keysDown, 0);
+
+                    // Update physics
+                    Engine.update(engine, 1000 / 60);
+
+                    // Clear canvas
+                    //window.globals.context.clearRect(
+                    // 0,
+                    // 0,
+                    // window.globals.canvas.width,
+                    // window.globals.canvas.height
+                    //);
+
+                    // Draw entities
+                    mSixTank.render(window.globals.context);
+
+                    // Request to run Game Loop again
+                    window.requestAnimationFrame(gameLoop);
+                })();
+            }
         }
     </script>
 </head>
 
-<body onload="Start()">
+<body onload="onPageLoad()">
     <div id="canvas-div">
         <canvas id="canvas" width="1000" height="1000" style="position: absolute; z-index: 0;"></canvas>
     </div>
