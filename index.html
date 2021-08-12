@@ -4,6 +4,7 @@
 <head>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
     <script src="./client/images_and_data/mSixTankBodyData.js"></script>
+    <script src="./client/images_and_data/mSixTankTurretData.js"></script>
     <script>
         function onPageLoad() {
             /*** GLOBAL VARIABLES, APIs, CLASS, AND FUNCTION DEFINITIONS ***/
@@ -28,11 +29,9 @@
             var World = Matter.World;
 
             class Entity {
-                constructor(body, parent) {
+                constructor(body) {
                     this.body = body;
                     this.children = [];
-                    if (parent != null)
-                        parent.children.push(this);
                 }
 
                 render(ctx) {
@@ -68,15 +67,88 @@
                 }
             }
 
+            class Turret extends Entity {
+                constructor(ss, ssData, fps, parent) {
+                    super(
+                        Bodies.rectangle(
+                            0,
+                            0,
+                            100,
+                            100,
+                            {
+                                isStatic: false,
+                                frictionAir: 0.09,
+                                restitution: 0.02,
+                                //density: 0.005,
+                                //friction: 0.1,
+                                //inverseInertia: 1,
+                                //inertia: 0,
+                                //frictionStatic: 2,
+                            })
+                    );
+                    this.speed = 20;
+
+                    // Variables used for rendering this object
+                    this.index = 0;
+                    this.framesPerSecond = fps;
+                    this.timeTracker = 0;
+                    this.spriteSheetData = ssData;
+                    this.spriteSheet = ss;
+                }
+
+                renderThis(ctx) {
+                    let ctxCenter = {
+                        "x": this.spriteSheetData.frames[this.index].frame.w / 2,
+                        "y": this.spriteSheetData.frames[this.index].frame.h / 2
+                    };
+                    ctx.drawImage(
+                        this.spriteSheet,
+                        this.spriteSheetData.frames[this.index].frame.x,
+                        this.spriteSheetData.frames[this.index].frame.y,
+                        this.spriteSheetData.frames[this.index].frame.w,
+                        this.spriteSheetData.frames[this.index].frame.h,
+                        -ctxCenter.x,
+                        -ctxCenter.y,
+                        this.spriteSheetData.frames[this.index].frame.w,
+                        this.spriteSheetData.frames[this.index].frame.h
+                    );
+                }
+
+                updateThis(keysDown, dt) {
+                    // Rotate
+                    if (keysDown && keysDown.KeyD == true) {
+                        this.body.torque = 0.1;
+                    }
+                    if (keysDown && keysDown.KeyA == true) {
+                        this.body.torque = -0.1;
+                    }
+
+                    // Update index
+                    this.timeTracker += dt;
+                    let delay = 1 / this.framesPerSecond;
+                    if (this.timeTracker >= delay) {
+                        this.index += 1;
+                        this.index = this.index % this.spriteSheetData.frames.length;
+                        this.timeTracker = 0;
+                    }
+                }
+            }
+
             class Tank extends Entity {
                 constructor(ss, ssData, fps) {
                     super(
-                        Bodies.rectangle(200, 0, 270, 111, {
-                            isStatic: false
-                        }),
-                        null
+                        Bodies.rectangle(200, 0, 240, 100, {
+                            isStatic: false,
+                            //density: 0.005,
+                            //friction: 0.1,
+                            frictionAir: 0.08,
+                            //inverseInertia: 1,
+                            //inertia: 0,
+                            //frictionStatic: 2,
+                            restitution: 0.02,
+                        })
                     );
-                    this.speed = 0.01;
+                    this.speed = 0.009;
 
                     // Variables used for rendering this object
                     this.index = 0;
@@ -127,10 +199,10 @@
 
                     // Right/left
                     if (keysDown && keysDown.ArrowRight == true) {
-                        this.body.torque = 3;
+                        this.body.torque = 1;
                     }
                     if (keysDown && keysDown.ArrowLeft == true) {
-                        this.body.torque = -3;
+                        this.body.torque = -1;
                     }
 
                     // Update index
@@ -191,7 +263,10 @@
 
                 // Create a physics engine
                 var engine = Engine.create({
-                    gravity: { x: 0, y: 0 }
+                    gravity: { x: 0, y: 0 },
+                    //enableSleeping: true,
+                    //gravity: {x: 3, y:4},
+                    //timing: {timeScale: 0.1},
                 });
 
                 // Debug renderer
@@ -210,11 +285,20 @@
                     window.globals.images["./client/images_and_data/mSixTankBody.png"],
                     mSixTankBodyData,
                     0
-                )
+                );
+                mSixTank.children.push(
+                    new Turret(
+                        window.globals.images["./client/images_and_data/mSixTankTurret.png"],
+                        mSixTankTurretData,
+                        0,
+                        mSixTank
+                    )
+                );
+
                 //var test = Bodies.rectangle(300, 400, 200, 200);
                 var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
-                Composite.add(engine.world, [ground, mSixTank.body]);
+                Composite.add(engine.world, [ground, mSixTank.body, mSixTank.children[0].body]);
 
                 /*** Game Loop ***/
                 (function gameLoop(timeStamp) {

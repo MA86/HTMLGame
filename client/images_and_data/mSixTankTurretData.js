@@ -34,5 +34,3 @@ let mSixTankTurretData = {
 		"scale": "1"
 	}
 }
-
-export { mSixTankTurretData };
