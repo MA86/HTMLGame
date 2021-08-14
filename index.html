@@ -75,13 +75,14 @@
                     super(
                         Bodies.rectangle(0, 0, 50, 50, {
                             isStatic: false,
-                            frictionAir: 0.08,
-                            restitution: 0.02,
-                            density: 0.005,
+                            frictionAir: 0.1,
+                            restitution: 0,
+                            //density: 0.005,
                             //friction: 0,
                             //inverseInertia: 1,
                             //inertia: Infinity,
                             //frictionStatic: 2,
+                            isSensor: true
                         })
                     );
                     this.speed = 20;
@@ -115,8 +116,7 @@
                 updateThis(keysDown, dt) {
                     // Rotate
                     if (keysDown && keysDown.KeyD == true) {
-                        //this.body.torque = 0.1;
-                        Body.rotate(this.body, 0.1)
+                        this.body.torque = 0.1;
                     }
                     if (keysDown && keysDown.KeyA == true) {
                         this.body.torque = -0.1;
@@ -136,18 +136,18 @@
             class Tank extends Entity {
                 constructor(ss, ssData, fps) {
                     super(
-                        Bodies.rectangle(0, 0, 240, 100, {
+                        Bodies.rectangle(300, 0, 240, 100, {
                             isStatic: false,
-                            frictionAir: 0.08,
-                            restitution: 0.02,
-                            density: 0.005,
+                            frictionAir: 0.09,
+                            restitution: 0.1,
+                            //density: 0.005,
                             //friction: 0,
                             //inverseInertia: 1,
                             //inertia: Infinity,
                             //frictionStatic: 2,
                         })
                     );
-                    this.speed = 0.005;
+                    this.speed = 0.02;
 
                     // Variables used for rendering this object
                     this.index = 0;
@@ -176,7 +176,6 @@
                 }
 
                 updateThis(keysDown, dt) {
-                    let rotationInRadian = this.rotation * Math.PI / 180;
                     let dx = Math.cos(this.body.angle) * (this.speed);
                     let dy = Math.sin(this.body.angle) * (this.speed);
 
@@ -292,26 +291,10 @@
                         mSixTank
                     )
                 );
-                var compoundBodyForHullTurret = Body.create({ isStatic: false });
-                Body.setParts(compoundBodyForHullTurret, [mSixTank.children[0].body, mSixTank.body]);
-                Body.setPosition(compoundBodyForHullTurret, { x: 0, y: 0 });
-
-
-                //test
-
-                var partC = Bodies.circle(0, 0, 30),
-                    partD = Bodies.circle(10, 0, 30);
-
-                var compoundBodyB = Bodies.rectangle(0, 0, 30, 30);
-                Body.setParts(compoundBodyB, [partC, partD]);
-                Body.setPosition(compoundBodyB, { x: 0, y: 0 })
-
-                Composite.add(engine.world, [compoundBodyForHullTurret]);
-                //test
 
                 var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
-                Composite.add(engine.world, [ground]);
+                Composite.add(engine.world, [ground, mSixTank.children[0].body, mSixTank.body]);
 
                 /*** Game Loop ***/
                 (function gameLoop(timeStamp) {
