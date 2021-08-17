@@ -235,6 +235,25 @@
                 }, false);
             }
 
+            // TODO: remake or reuse something similar to this:
+            const createWorld = function (bgCtx) {
+                let mapSS = window.globals.images["./images_and_data/ground.png"];
+                let map = new TerrainLayer(
+                    { "x": 0, "y": 0 },
+                    0,
+                    null,
+                    30,
+                    30,
+                    mapSS,
+                    128,
+                    8,
+                    8
+                );
+                map.fill(8);
+                map.render(bgCtx);
+            }
+                // TODO: end
+
                 // Launching Point
                 ; (function () {
                     let numImagesLoaded = 0;
