@@ -15,7 +15,7 @@
             window.globals.context = window.globals.canvas.getContext("2d");
             window.globals.keysDown = {};
             window.globals.images = {};
-            window.globals.bodies = [];
+            window.globals.entities = [];
             window.globals.imagePaths = [
                 "./client/images_and_data/ground.png",
                 "./client/images_and_data/mSixTankBody.png",
@@ -82,7 +82,7 @@
                             //inverseInertia: 1,
                             //inertia: Infinity,
                             //frictionStatic: 2,
-                            isSensor: true
+                            isSensor: true // Turn off body for now!
                         })
                     );
                     this.speed = 20;
@@ -146,6 +146,14 @@
                             //inertia: Infinity,
                             //frictionStatic: 2,
                         })
+                    );
+                    this.children.push(
+                        new Turret(
+                            window.globals.images["./client/images_and_data/mSixTankTurret.png"],
+                            mSixTankTurretData,
+                            0,
+                            this
+                        )
                     );
                     this.speed = 0.02;
 
@@ -235,79 +243,6 @@
                 }, false);
             }
 
-            // TODO: remake or reuse something similar to this:
-            class TerrainLayer extends Entity {
-                constructor(pos, rot, parent, numCols, numRows, ssImage, tSize, numColsImage, numRowsImage,) {
-                    super(pos, rot, parent);
-                    this.ssImage = ssImage;
-                    this.tSize = tSize;
-                    this.numColsImage = numColsImage;
-                    this.numColsRows = numRowsImage;
-                    this.mapCols = numCols;
-                    this.mapRows = numRows;
-                    this.tiles = []
-                    this.fill(-1);
-                    this.drawn = false;
-                }
-
-                fill(value) {
-                    this.tiles = []
-                    for (let i = 0; i < this.mapCols * this.mapRows; i++) {
-                        this.tiles.push(value);
-                    }
-                }
-
-                renderThis(ctx) {
-                    if (this.drawn == false) {
-                        for (let i = 0; i < this.tiles.length; i++) {
-                            let mapRow = Math.trunc(i / this.mapCols);
-                            let mapCol = i % this.mapCols;
-                            let mapX = mapCol * this.tSize;
-                            let mapY = mapRow * this.tSize;
-
-                            const imageNumber = this.tiles[i];
-                            let imageRow = Math.trunc(imageNumber / this.numColsImage);
-                            let imageColumn = imageNumber % this.numColsImage;
-                            let imageX = imageColumn * this.tSize;
-                            let imageY = imageRow * this.tSize;
-
-                            if (imageNumber !== -1) {
-                                ctx.drawImage(
-                                    this.ssImage,
-                                    imageX,    // source x
-                                    imageY,    // source y
-                                    this.tSize,
-                                    this.tSize,
-                                    mapX,     // dest x
-                                    mapY,     // dest y
-                                    this.tSize,
-                                    this.tSize
-                                );
-                            }
-                        }
-                        this.drawn = true;
-                    }
-                }
-            }
-
-            const createWorld = function (bgCtx) {
-                let mapSS = window.globals.images["./images_and_data/ground.png"];
-                let map = new TerrainLayer(
-                    { "x": 0, "y": 0 },
-                    0,
-                    null,
-                    30,
-                    30,
-                    mapSS,
-                    128,
-                    8,
-                    8
-                );
-                map.fill(8);
-                map.render(bgCtx);
-            }
-                // TODO: end
-
                 // Launching Point
                 ; (function () {
                     let numImagesLoaded = 0;
@@ -351,28 +286,24 @@
                 Render.run(render);
 
                 // Create entities
-                var mSixTank = new Tank(
-                    window.globals.images["./client/images_and_data/mSixTankBody.png"],
-                    mSixTankBodyData,
-                    0
-                );
-                mSixTank.children.push(
-                    new Turret(
-                        window.globals.images["./client/images_and_data/mSixTankTurret.png"],
-                        mSixTankTurretData,
-                        0,
-                        mSixTank
+                window.globals.entities.push(
+                    new Tank(
+                        window.globals.images["./client/images_and_data/mSixTankBody.png"],
+                        mSixTankBodyData,
+                        0
                     )
                 );
 
                 var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-
+                // TODO, create remove body from turret, add bodies array, add array to world
                 Composite.add(engine.world, [ground, mSixTank.children[0].body, mSixTank.body]);
 
                 /*** Game Loop ***/
                 (function gameLoop(timeStamp) {
                     // Update entities
-                    mSixTank.update(window.globals.keysDown, 0);
+                    for (let i = 0; i < window.globals.entities.length; i++) {
+                        window.globals.entities[i].update(window.globals.keysDown, delta);
+                    }
 
                     // Update physics
                     Engine.update(engine, 1000 / 60);
@@ -386,7 +317,9 @@
                     //);
 
                     // Draw entities
-                    mSixTank.render(window.globals.context);
+                    for (let i = 0; i < window.globals.entities.length; i++) {
+                        window.globals.entities[i].render(window.globals.canvas);
+                    }
 
                     // Request to run Game Loop again
                     window.requestAnimationFrame(gameLoop);
