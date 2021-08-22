@@ -29,7 +29,7 @@
             var Composite = Matter.Composite;   // Container for entity made of multiple parts.
             var Body = Matter.Body;             // To make a custom Body.
             var Runner = Matter.Runner;         // Optional game loop (Auto updates Engine).
-            var World = Matter.World;
+            var Composite = Matter.World;
 
             class Entity {
                 constructor(body) {
@@ -138,10 +138,10 @@
                     super(
                         Bodies.rectangle(300, 0, 240, 100, {
                             isStatic: false,
-                            frictionAir: 0.09,
+                            frictionAir: 0.9,
                             restitution: 0.1,
-                            //density: 0.005,
-                            //friction: 0,
+                            density: 0.5,
+                            friction: 1,
                             //inverseInertia: 1,
                             //inertia: Infinity,
                             //frictionStatic: 2,
@@ -155,7 +155,8 @@
                             this
                         )
                     );
-                    this.speed = 0.02;
+                    this.speed = 5;
+                    this.rotationSpeed = 360;
 
                     // Variables used for rendering this object
                     this.index = 0;
@@ -184,8 +185,8 @@
                 }
 
                 updateThis(keysDown, dt) {
-                    let dx = Math.cos(this.body.angle) * (this.speed);
-                    let dy = Math.sin(this.body.angle) * (this.speed);
+                    let dx = Math.cos(this.body.angle) * (this.speed * dt);
+                    let dy = Math.sin(this.body.angle) * (this.speed * dt);
 
                     // Forward/backward
                     if (keysDown && keysDown.ArrowUp == true) {
@@ -205,10 +206,10 @@
 
                     // Right/left
                     if (keysDown && keysDown.ArrowRight == true) {
-                        this.body.torque = 1;
+                        this.body.torque = this.rotationSpeed * dt;
                     }
                     if (keysDown && keysDown.ArrowLeft == true) {
-                        this.body.torque = -1;
+                        this.body.torque = -this.rotationSpeed * dt;
                     }
 
                     // Update index
@@ -285,21 +286,28 @@
                 });
                 Render.run(render);
 
-                // Create entities
-                window.globals.entities.push(
-                    new Tank(
-                        window.globals.images["./client/images_and_data/mSixTankBody.png"],
-                        mSixTankBodyData,
-                        0
-                    )
+                // Create tank
+                var mSixTank = new Tank(
+                    window.globals.images["./client/images_and_data/mSixTankBody.png"],
+                    mSixTankBodyData,
+                    0
                 );
+                window.globals.entities.push(mSixTank);
+                Composite.add(engine.world, [mSixTank.body]);
 
-                var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
-                // TODO, create remove body from turret, add bodies array, add array to world
-                Composite.add(engine.world, [ground, mSixTank.children[0].body, mSixTank.body]);
+                // Create box
+                var box = Bodies.rectangle(400, 400, 50, 50, { isStatic: true });
+                Composite.add(engine.world, [box]);
 
                 /*** Game Loop ***/
+                var delta = 0;
+                var timeNow = 0;
+                var timeThen = 0;
                 (function gameLoop(timeStamp) {
+                    // Calculate Time between two frames
+                    timeNow = (timeStamp == undefined) ? 0 : timeStamp;
+                    delta = (timeNow - timeThen) / 1000;
+
                     // Update entities
                     for (let i = 0; i < window.globals.entities.length; i++) {
                         window.globals.entities[i].update(window.globals.keysDown, delta);
@@ -318,11 +326,12 @@
 
                     // Draw entities
                     for (let i = 0; i < window.globals.entities.length; i++) {
-                        window.globals.entities[i].render(window.globals.canvas);
+                        window.globals.entities[i].render(window.globals.context);
                     }
 
                     // Request to run Game Loop again
                     window.requestAnimationFrame(gameLoop);
+                    timeThen = timeNow;
                 })();
             }
         }
