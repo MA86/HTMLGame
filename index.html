@@ -32,15 +32,21 @@
             var Composite = Matter.World;
 
             class Entity {
-                constructor(body) {
-                    this.body = body;
+                constructor(body, isChild = false) {
+                    if (!isChild) {
+                        this.position = { x: body.position.x, y: body.position.y };
+                        this.rotation = body.angle;
+                    } else {
+                        this.position = { x: 0, y: 0 };
+                        //this.rotation = 
+                    }
                     this.children = [];
                 }
 
                 render(ctx) {
                     ctx.save();
-                    ctx.translate(this.body.position.x, this.body.position.y);
-                    ctx.rotate(this.body.angle);
+                    ctx.translate(this.position.x, this.position.y);
+                    ctx.rotate(this.rotation);
 
                     this.renderThis(ctx);
 
@@ -73,7 +79,7 @@
             class Turret extends Entity {
                 constructor(ss, ssData, fps, parent) {
                     super(
-                        Bodies.rectangle(0, 0, 50, 50, {
+                        Bodies.rectangle(parent.body.position.x, parent.body.position.y, 50, 50, {
                             isStatic: false,
                             frictionAir: 0.1,
                             restitution: 0,
@@ -116,10 +122,10 @@
                 updateThis(keysDown, dt) {
                     // Rotate
                     if (keysDown && keysDown.KeyD == true) {
-                        this.body.torque = 0.1;
+                        this.position.torque = 0.1;
                     }
                     if (keysDown && keysDown.KeyA == true) {
-                        this.body.torque = -0.1;
+                        this.position.torque = -0.1;
                     }
 
                     // Update index
@@ -185,31 +191,31 @@
                 }
 
                 updateThis(keysDown, dt) {
-                    let dx = Math.cos(this.body.angle) * (this.speed * dt);
-                    let dy = Math.sin(this.body.angle) * (this.speed * dt);
+                    let dx = Math.cos(this.position.angle) * (this.speed * dt);
+                    let dy = Math.sin(this.position.angle) * (this.speed * dt);
 
                     // Forward/backward
                     if (keysDown && keysDown.ArrowUp == true) {
                         Body.applyForce(
-                            this.body,
-                            { x: this.body.position.x, y: this.body.position.y },
+                            this.position,
+                            { x: this.position.position.x, y: this.position.position.y },
                             { x: dx, y: dy }
                         );
                     }
                     if (keysDown && keysDown.ArrowDown == true) {
                         Body.applyForce(
-                            this.body,
-                            { x: this.body.position.x, y: this.body.position.y },
+                            this.position,
+                            { x: this.position.position.x, y: this.position.position.y },
                             { x: -dx, y: -dy }
                         );
                     }
 
                     // Right/left
                     if (keysDown && keysDown.ArrowRight == true) {
-                        this.body.torque = this.rotationSpeed * dt;
+                        this.position.torque = this.rotationSpeed * dt;
                     }
                     if (keysDown && keysDown.ArrowLeft == true) {
-                        this.body.torque = -this.rotationSpeed * dt;
+                        this.position.torque = -this.rotationSpeed * dt;
                     }
 
                     // Update index
@@ -293,7 +299,7 @@
                     0
                 );
                 window.globals.entities.push(mSixTank);
-                Composite.add(engine.world, [mSixTank.body, mSixTank.children[0].body]);
+                Composite.add(engine.world, [mSixTank.position, mSixTank.children[0].body]);
                 // TODO: turn turret body into signal, place it on tank position, see what happens
                 // Create box
                 var box = Bodies.rectangle(400, 400, 50, 50, { isStatic: true });
