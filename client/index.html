@@ -3,17 +3,15 @@
 
 <head>
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script>
+
     <script type="module" src="/spritesheetsData.js"></script>
     <script type="module" src="/main.js"></script>
-
-    <link rel="stylesheet" type="text/css" href="/styles/game.css">
 </head>
 
 <body>
-    <div id="canvas-div" style="position: relative;">
-        <canvas id="bg-canvas" style="position: absolute; z-index: 0;"></canvas>
-        <canvas id="mg-canvas" style="position: absolute; z-index: 1;"></canvas>
-        <canvas id="ug-canvas" style="position: absolute; z-index: 2;"></canvas>
+    <div id="canvas-div">
+        <canvas id="canvas" width="1000" height="1000" style="position: absolute; z-index: 0;"></canvas>
     </div>
 </body>
 

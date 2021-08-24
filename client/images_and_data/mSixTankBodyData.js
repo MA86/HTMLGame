@@ -35,4 +35,4 @@ let mSixTankBodyData = {
 	}
 }
 
-//export { mSixTankBodyData };
+export { mSixTankBodyData };

@@ -2,190 +2,159 @@
 
 import * as spriteSheetsData from './spritesheetsData.js';
 import { Tank } from './entities/tank.js';
-import { TerrainLayer } from './entities/terrainlayer.js';
-
-const setupKeyboardHandler = function (dic) {
-    addEventListener("keydown", function (e) {
-        dic[e.code] = true;
-        switch (e.code) {
-            case "ArrowUp":
-            case "ArrowDown":
-            case "ArrowLeft":
-            case "ArrowRight":
-            case "Space":
-                e.preventDefault();
-                break;
-            default:
-                break;
-        }
-    }, false);
-
-    addEventListener("keyup", function (e) {
-        delete dic[e.code];
-    }, false);
-}
-
-const setupFullScreen = function () {
-    window.globals.backgroundCanv.width = window.innerWidth;
-    window.globals.backgroundCanv.height = window.innerHeight;
-    window.globals.middlegroundCanv.width = window.innerWidth;
-    window.globals.middlegroundCanv.height = window.innerHeight;
-    window.globals.uppergroundCanv.width = window.innerWidth;
-    window.globals.uppergroundCanv.height = window.innerHeight;
-    // Reload erased map due to resize
-    //createWorld(window.globals.backgroundCtx);
-
-    addEventListener("resize", setupFullScreen);
-}
-
-const createWorld = function (bgCtx) {
-    let mapSS = window.globals.images["./images_and_data/ground.png"];
-    let map = new TerrainLayer(
-        { "x": 0, "y": 0 },
-        0,
-        null,
-        30,
-        30,
-        mapSS,
-        128,
-        8,
-        8
-    );
-    map.fill(8);
-    map.render(bgCtx);
-}
-
-// Load image elements into array
-const loadImageElementsThenStartGame = function () {
-    let numImagesLoaded = 0;
-    let numImagesRequested = window.globals.imagePaths.length;
-    for (let i = 0; i < numImagesRequested; i++) {
-        let image = new Image();
-        image.src = window.globals.imagePaths[i];
-
-        image.onload = function () {
-            window.globals.images[window.globals.imagePaths[i]] = image;
-            numImagesLoaded++;
-            if (numImagesLoaded == numImagesRequested) {
-                startGame();
-            }
-        }
-    }
-}
-
-const startGame = function () {
-    setupKeyboardHandler(window.globals.keysDown);
-    setupFullScreen();
-    // createWorld(window.globals.backgroundCtx);
-
-    // Create the new player
-    window.globals.clientSocket.on("create tank", function (data) {
-        window.globals.entities.push(
-            new Tank(
-                data.state.pos,
-                data.state.rot,
-                null,
-                {
-                    "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
-                    "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
-                },
-                spriteSheetsData,
-                data
-            )
-        );
-    });
-    // Create existing players
-    window.globals.clientSocket.on("create tanks", function (data) {
-        for (let i = 0; i < data.length; i++) {
-            const d = data[i];
-            window.globals.entities.push(
-                new Tank(
-                    d.state.pos,
-                    d.state.rot,
-                    null,
-                    {
-                        "tank": window.globals.images["./images_and_data/mSixTankBody.png"],
-                        "turret": window.globals.images["./images_and_data/mSixTankTurret.png"]
-                    },
-                    spriteSheetsData,
-                    d
-                )
-            );
-        }
-    });
-    // On server request, remove a particular tank
-    window.globals.clientSocket.on("remove tank", function (id) {
-        for (let i = 0; i < window.globals.entities.length; i++) {
-            const tank = window.globals.entities[i];
-            if (tank.clientId == id) {
-                window.globals.entities.splice(i, 1);
-            }
-        }
-    });
-    // On server disconnect, stop game
-    window.globals.clientSocket.on("disconnect", function () {
-        // TODO: this is responsibility of UI layer!
-        const message = document.createElement("H1");
-        message.innerHTML = "Server is down, please try again later!";
-        message.setAttribute()
-        document.getElementById("canvas-div").appendChild(message);
-
-        //for (let i = 0; i < window.globals.entities.length; i++) {
-        //window.globals.entities.pop();
-        //}
-        window.globals.clientSocket.disconnect();
-        // TODO: stop game loop!
-    });
-
-    var delta = 0;
-    var timeNow = 0;
-    var timeThen = 0;
-    const mainLoop = function (timeStamp) {
-        // Calculate Time between two frames
-        timeNow = (timeStamp == undefined) ? 0 : timeStamp;
-        delta = (timeNow - timeThen) / 1000;
-
-        // Clear middle-canvas
-        window.globals.middlegroundCtx.clearRect(0, 0, window.globals.middlegroundCanv.width, window.globals.middlegroundCanv.height);
-
-        // Update entities
-        for (let i = 0; i < window.globals.entities.length; i++) {
-            window.globals.entities[i].update(window.globals.keysDown, delta, window.globals.clientSocket);
-        }
-
-        // Detect collision here
-
-        // Draw entities
-        for (let i = 0; i < window.globals.entities.length; i++) {
-            window.globals.entities[i].render(window.globals.middlegroundCtx);
-        }
-
-        // Call main loop again ASAP
-        requestAnimationFrame(mainLoop);
-        timeThen = timeNow;
-    }
-    mainLoop();
-}
 
 /*** On Window Load ***/
 addEventListener("load", function (e) {
-    // Global objects
+    // Global Variables 
     window.globals = {};
-    window.globals.backgroundCanv = document.getElementById("bg-canvas");    // For static stuff
-    window.globals.middlegroundCanv = document.getElementById("mg-canvas");  // For frames stuff
-    window.globals.uppergroundCanv = document.getElementById("ug-canvas");   // For event stuff
-    window.globals.backgroundCtx = window.globals.backgroundCanv.getContext("2d");
-    window.globals.middlegroundCtx = window.globals.middlegroundCanv.getContext("2d");
-    window.globals.uppergroundCtx = window.globals.uppergroundCanv.getContext("2d");
+    window.globals.canvas = document.getElementById("canvas");
+    window.globals.context = window.globals.canvas.getContext("2d");
     window.globals.keysDown = {};
+    window.globals.images = {};
     window.globals.entities = [];
     window.globals.imagePaths = [
-        "./images_and_data/ground.png",
-        "./images_and_data/mSixTankBody.png",
-        "./images_and_data/mSixTankTurret.png",
+        "./client/images_and_data/ground.png",
+        "./client/images_and_data/mSixTankBody.png",
+        "./client/images_and_data/mSixTankTurret.png",
     ];
-    window.globals.images = {};
-    window.globals.clientSocket = io();
 
-    loadImageElementsThenStartGame();
+    // Matter APIs (aliases)
+    var Engine = Matter.Engine;         // For updating physics.
+    var Render = Matter.Render;         // For rendering results of Engine.
+    var Bodies = Matter.Bodies;         // To use a pre-made Body.
+    var Composite = Matter.Composite;   // Container for entity made of multiple parts.
+    var Body = Matter.Body;             // To make a custom Body.
+    var Runner = Matter.Runner;         // Optional game loop (Auto updates Engine).
+    var Composite = Matter.World;
+
+    const setupKeyboardHandler = function (dic) {
+        addEventListener("keydown", function (e) {
+            dic[e.code] = true;
+            switch (e.code) {
+                case "ArrowUp":
+                case "ArrowDown":
+                case "ArrowLeft":
+                case "ArrowRight":
+                case "Space":
+                    e.preventDefault();
+                    break;
+                default:
+                    break;
+            }
+        }, false);
+
+        addEventListener("keyup", function (e) {
+            delete dic[e.code];
+        }, false);
+    }
+
+        // *** Starting Point and Image Loading *** //
+        ; (function () {
+            let numImagesLoaded = 0;
+            let numImagesRequested = window.globals.imagePaths.length;
+            for (let i = 0; i < numImagesRequested; i++) {
+                let image = new Image();
+                image.src = window.globals.imagePaths[i];
+
+                image.onload = function () {
+                    window.globals.images[window.globals.imagePaths[i]] = image;
+                    numImagesLoaded++;
+                    if (numImagesLoaded == numImagesRequested) {
+                        // Start only when all images are loaded
+                        Start();
+                    }
+                }
+            }
+        })();
+
+    const Start = function () {
+        setupKeyboardHandler(window.globals.keysDown);
+        // Set canvas size
+        window.globals.canvas.width = window.innerWidth;
+        window.globals.canvas.height = window.innerHeight;
+
+        // Create a physics engine
+        var engine = Engine.create({
+            gravity: { x: 0, y: 0 },
+            //enableSleeping: true,
+            //gravity: {x: 3, y:4},
+            //timing: {timeScale: 0.1},
+        });
+
+        // *** Use For Debugging to Visualize Bodies *** //
+        var render = Render.create({
+            canvas: window.globals.canvas,
+            engine: engine,
+            options: {
+                wireframes: true,
+                background: "transparent"
+            }
+        });
+        Render.run(render);
+
+        // Create tank
+        var mSixTank = new Tank(
+            {
+                tank: window.globals.images["./client/images_and_data/mSixTankBody.png"],
+                turret: window.globals.images["./client/images_and_data/mSixTankTurret.png"]
+            },
+            {
+                tankData: spriteSheetsData.mSixTankBodyData,
+                turretData: spriteSheetsData.mSixTankTurretData
+            },
+            0,
+            Bodies
+        );
+        window.globals.entities.push(mSixTank);
+        Composite.add(engine.world, [mSixTank.body, mSixTank.children[0].body]);
+
+        // Create box for testing
+        var box = Bodies.circle(200, 200, 50, {
+            isStatic: false,
+            restitution: 0.5,
+            render: {
+                sprite: {
+                    //texture: "./ball.png",
+                    //xScale: 1 / 6.5,
+                    //yScale: 1 / 6.5
+                }
+            }
+        });
+        Composite.add(engine.world, [box]);
+
+        /*** Game Loop ***/
+        var delta = 0;
+        var timeNow = 0;
+        var timeThen = 0;
+        (function gameLoop(timeStamp) {
+            // Calculate Time between two frames
+            timeNow = (timeStamp == undefined) ? 0 : timeStamp;
+            delta = (timeNow - timeThen) / 1000;
+
+            // Update entities
+            for (let i = 0; i < window.globals.entities.length; i++) {
+                window.globals.entities[i].update(window.globals.keysDown, delta, Body);
+            }
+
+            // Update physics
+            Engine.update(engine, 1000 / 60);
+
+            // Clear canvas when default renderer is not used
+            //window.globals.context.clearRect(
+            // 0,
+            // 0,
+            // window.globals.canvas.width,
+            // window.globals.canvas.height
+            //);
+
+            // Draw entities
+            for (let i = 0; i < window.globals.entities.length; i++) {
+                window.globals.entities[i].render(window.globals.context);
+            }
+
+            // Request to run Game Loop again
+            window.requestAnimationFrame(gameLoop);
+            timeThen = timeNow;
+        })();
+    }
 });

@@ -2,7 +2,6 @@
     "name": "Tank Game",
     "version": "0.1.0",
     "description": "A tank game in development.",
-    "main": "main.js",
     "dependencies": {
         "express": "^4.17.1",
         "matter-js": "^0.17.1",

@@ -29,6 +29,7 @@ const spawnPoint = function () {
     // Return the location
 }
 
+/*
 // When a new client connects
 serverSocket.on("connection", function (socket) {
     console.log("a client connected");
@@ -93,6 +94,7 @@ serverSocket.on("connection", function (socket) {
         });
     }, 500);
 });
+*/
 
 // Start HTTP server, listening on port 8000
 httpServer.listen(8000, function () {

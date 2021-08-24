@@ -1,24 +1,36 @@
 class Entity {
-    constructor(pos, rot, parent) {
-        this.position = pos;
-        this.rotation = rot;
-        this.parent = parent;
+    constructor(body, isChild = false) {
+        this.isChild = isChild;
+        if (this.isChild) {
+            this.position = { x: 0, y: 0 };
+            this.rotation = 0;
+        }
+        this.body = body;
         this.children = [];
-        if (parent != null)
-            parent.children.push(this);
     }
 
     render(ctx) {
-        ctx.save();
-        ctx.translate(this.position.x, this.position.y);
-        ctx.rotate(this.rotation * Math.PI / 180);
+        if (this.isChild) {
+            // If child, move context to local position
+            ctx.save();
+            ctx.translate(this.position.x, this.position.y);
+            ctx.rotate(this.body.angle);
+        } else {
+            // If parent, move context to global position
+            ctx.save();
+            ctx.translate(this.body.position.x, this.body.position.y);
+            ctx.rotate(this.body.angle);
+        }
 
+        // Render image
         this.renderThis(ctx);
-
+        // Render children's images
         for (let i = 0; i < this.children.length; i++) {
             const child = this.children[i];
             child.render(ctx);
         }
+
+        // Restore context
         ctx.restore();
     }
 
@@ -26,15 +38,18 @@ class Entity {
         // Derived class defines this method
     }
 
-    update(keysDown, dt, socket) {
-        this.updateThis(keysDown, dt, socket);
+    update(keysDown, dt, Body) {
+        // Apply physics
+        this.updateThis(keysDown, dt, Body);
+
+        // Apply children's physics
         for (let i = 0; i < this.children.length; i++) {
             const child = this.children[i];
-            child.update(keysDown, dt, socket);
+            child.update(keysDown, dt, Body);
         }
     }
 
-    updateThis(keysdown, dt, socket) {
+    updateThis(keysdown, dt, Body) {
         // Derived class defines this method
     }
 }
