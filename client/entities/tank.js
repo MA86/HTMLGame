@@ -4,7 +4,7 @@ import { Turret } from './turret.js';
 class Tank extends Entity {
     constructor(ss, ssData, fps, Bodies) {
         super(
-            Bodies.rectangle(100, 100, 240, 100, {
+            Bodies.rectangle(100, 100, 225, 100, {
                 isStatic: false,
                 frictionAir: 0.9,
                 restitution: 0.1,

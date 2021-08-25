@@ -3,7 +3,7 @@ import { Entity } from './entity.js';
 class Turret extends Entity {
     constructor(ss, ssData, fps, parent, Bodies) {
         super(
-            Bodies.rectangle(parent.body.position.x, parent.body.position.y, 300, 10, {
+            Bodies.rectangle(parent.body.position.x, parent.body.position.y, 200, 12, {
                 isStatic: false,
                 frictionAir: 0.1,
                 restitution: 0,
@@ -19,7 +19,7 @@ class Turret extends Entity {
         );
         this.parent = parent;
         this.angle = 0;
-        this.speed = 20;
+        this.speed = 45;
 
         // Variables used for rendering this object
         this.index = 0;

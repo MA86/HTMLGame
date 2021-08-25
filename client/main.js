@@ -13,12 +13,11 @@ addEventListener("load", function (e) {
     window.globals.images = {};
     window.globals.entities = [];
     window.globals.imagePaths = [
-        "./client/images_and_data/ground.png",
-        "./client/images_and_data/mSixTankBody.png",
-        "./client/images_and_data/mSixTankTurret.png",
+        "./images_and_data/mSixTankBodyu.png",
+        "./images_and_data/mSixTankTurret.png",
     ];
 
-    // Matter APIs (aliases)
+    // Global MatterJS Variables (aliases)
     var Engine = Matter.Engine;         // For updating physics.
     var Render = Matter.Render;         // For rendering results of Engine.
     var Bodies = Matter.Bodies;         // To use a pre-made Body.
@@ -95,8 +94,8 @@ addEventListener("load", function (e) {
         // Create tank
         var mSixTank = new Tank(
             {
-                tank: window.globals.images["./client/images_and_data/mSixTankBody.png"],
-                turret: window.globals.images["./client/images_and_data/mSixTankTurret.png"]
+                tank: window.globals.images["./images_and_data/mSixTankBodyu.png"],
+                turret: window.globals.images["./images_and_data/mSixTankTurret.png"]
             },
             {
                 tankData: spriteSheetsData.mSixTankBodyData,
@@ -141,10 +140,10 @@ addEventListener("load", function (e) {
 
             // Clear canvas when default renderer is not used
             //window.globals.context.clearRect(
-            // 0,
-            // 0,
-            // window.globals.canvas.width,
-            // window.globals.canvas.height
+            //    0,
+            //    0,
+            //    window.globals.canvas.width,
+            //    window.globals.canvas.height
             //);
 
             // Draw entities

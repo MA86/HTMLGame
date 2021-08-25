@@ -5,7 +5,7 @@ let mSixTankBodyData = {
 			"frame": {
 				"x": 1,
 				"y": 1,
-				"w": 270,
+				"w": 243,
 				"h": 111
 			},
 			"rotated": false,
@@ -13,11 +13,11 @@ let mSixTankBodyData = {
 			"spriteSourceSize": {
 				"x": 0,
 				"y": 0,
-				"w": 270,
+				"w": 243,
 				"h": 111
 			},
 			"sourceSize": {
-				"w": 270,
+				"w": 243,
 				"h": 111
 			}
 		}
