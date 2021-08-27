@@ -132,7 +132,7 @@ addEventListener("load", function (e) {
 
             // Update entities
             for (let i = 0; i < window.globals.entities.length; i++) {
-                window.globals.entities[i].update(window.globals.keysDown, delta, Body);
+                window.globals.entities[i].update(window.globals.keysDown, delta, Body, window.globals.context);
             }
 
             // Update physics

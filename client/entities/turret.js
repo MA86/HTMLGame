@@ -47,12 +47,17 @@ class Turret extends Entity {
         );
     }
 
-    updateThis(keysDown, dt, Body) {
-        //TODO: Set body position to paren
-        //let pos = { x: this.parent.body.position.x, y: this.parent.body.position.y };
-        Body.setPosition(this.body, this.parent.body.position);
+    updateThis(keysDown, dt, Body, ctx) {
+        //TODO
+
         //this.angle = this.body.angle + this.parent.body.angle;
-        //Body.setAngle(this.body, this.angle);
+        ctx.save();
+        ctx.translate(this.parent.body.position.x, this.parent.body.position.y);
+        ctx.rotate(this.parent.body.angle);
+
+        Body.setPosition(this.body, this.parent.body.position);
+        Body.setAngle(this.body, this.angle);
+        ctx.restore();
 
         // Rotate
         if (keysDown && keysDown.KeyD == true) {

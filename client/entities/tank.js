@@ -56,11 +56,11 @@ class Tank extends Entity {
     }
 
     updateThis(keysDown, dt, Body) {
-        // Facing-direction force vector
+        // Prepare a force vector
         let dx = Math.cos(this.body.angle) * (this.speed * dt);
         let dy = Math.sin(this.body.angle) * (this.speed * dt);
 
-        // Forward/backward
+        // Apply the force vector for forward/backward movement
         if (keysDown && keysDown.ArrowUp == true) {
             Body.applyForce(
                 this.body,
