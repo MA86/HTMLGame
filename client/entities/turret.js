@@ -50,8 +50,23 @@ class Turret extends Entity {
     updateThis(keysDown, dt, Body, ctx) {
         //TODO
         Body.setPosition(this.body, this.parent.body.position);
-        Body.setAngle(this.body, 0);
-        Body.rotate(this.body, this.parent.body.angle);
+        let turretAngle = Math.abs(this.body.angle); ///
+        let tankAngle = Math.abs(this.parent.body.angle); ///
+        if (this.parent.flag) {
+            /*
+            if (turretAngle >= tankAngle) {
+                let angle = turretAngle - tankAngle;
+                Body.setAngle(this.body, 0);
+                Body.setAngle(this.body, this.parent.body.angle + angle);
+            }
+            if (tankAngle > turretAngle) {
+                let angle = tankAngle - turretAngle;
+                Body.setAngle(this.body, 0);
+                Body.setAngle(this.body, this.parent.body.angle + angle);
+            }///
+            this.parent.flag = false; */
+            Body.rotate(this.body, this.parent.body.angle);
+        }//
 
         // Rotate
         if (keysDown && keysDown.KeyD == true) {

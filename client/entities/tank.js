@@ -28,6 +28,7 @@ class Tank extends Entity {
         );
         this.speed = 6;
         this.rotationSpeed = 380;
+        this.flag = false;///
 
         // Variables used for rendering this object
         this.index = 0;
@@ -76,12 +77,14 @@ class Tank extends Entity {
             );
         }
 
-        // Right/left
+        // Right/left turn
         if (keysDown && keysDown.ArrowRight == true) {
             this.body.torque = this.rotationSpeed * dt;
+            this.flag = true;///
         }
         if (keysDown && keysDown.ArrowLeft == true) {
             this.body.torque = -this.rotationSpeed * dt;
+            this.flag = true;///
         }
 
         // Update index
