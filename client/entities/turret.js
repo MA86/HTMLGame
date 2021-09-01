@@ -50,6 +50,10 @@ class Turret extends Entity {
     updateThis(keysDown, dt, Body, ctx) {
         //TODO
         Body.setPosition(this.body, this.parent.body.position);
+        Body.setAngle(this.body, this.parent.body.angle);
+        ctx.save();
+        ctx.translate(this.body.position.x, this.body.position.y);
+        ctx.rotate(this.body.angle);
 
         // Rotate
         if (keysDown && keysDown.KeyD == true) {
