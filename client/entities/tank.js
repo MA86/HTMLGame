@@ -23,7 +23,8 @@ class Tank extends Entity {
                 ssData.turretData,
                 0,
                 this,
-                Bodies
+                Bodies,
+                true
             )
         );
         this.speed = 6;

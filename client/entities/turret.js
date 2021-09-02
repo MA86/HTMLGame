@@ -1,7 +1,7 @@
 import { Entity } from './entity.js';
 
 class Turret extends Entity {
-    constructor(ss, ssData, fps, parent, Bodies) {
+    constructor(ss, ssData, fps, parent, Bodies, isChild) {
         super(
             Bodies.rectangle(parent.body.position.x, parent.body.position.y, 200, 12, {
                 isStatic: false,
@@ -18,7 +18,7 @@ class Turret extends Entity {
             true
         );
         this.parent = parent;
-        this.angle = 0;
+        this.rotation = 0;
         this.speed = 45;
 
         // Variables used for rendering this object
@@ -50,19 +50,18 @@ class Turret extends Entity {
     updateThis(keysDown, dt, Body, ctx) {
         //TODO
         Body.setPosition(this.body, this.parent.body.position);
-        Body.setAngle(this.body, this.parent.body.angle);
-        ctx.save();
-        ctx.translate(this.body.position.x, this.body.position.y);
-        ctx.rotate(this.body.angle);
+        Body.setAngle(this.body, this.parent.body.angle + this.rotation);
 
         // Rotate
         if (keysDown && keysDown.KeyD == true) {
-            Body.rotate(this.body, this.parent.body.angle);
-            this.body.torque = 0.1;
+            //Body.rotate(this.body, this.parent.body.angle);
+            //this.body.torque = 0.1;
+            this.rotation += 0.0174533;
         }
         if (keysDown && keysDown.KeyA == true) {
-            Body.rotate(this.body, this.parent.body.angle);
-            this.body.torque = -0.1;
+            //Body.rotate(this.body, this.parent.body.angle);
+            //this.body.torque = -0.1;
+            this.rotation -= 0.0174533;
         }
 
         // Update index
