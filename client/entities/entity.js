@@ -3,7 +3,7 @@ class Entity {
         this.isChild = isChild;
         if (this.isChild) {
             this.position = { x: 0, y: 0 };
-            this.rotation = 0;
+            this.angle = 0;
         }
         this.body = body;
         this.children = [];

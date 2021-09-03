@@ -18,7 +18,7 @@ class Turret extends Entity {
             true
         );
         this.parent = parent;
-        this.rotation = 0;
+        this.angle = 0;
         this.speed = 45;
 
         // Variables used for rendering this object
@@ -50,18 +50,21 @@ class Turret extends Entity {
     updateThis(keysDown, dt, Body, ctx) {
         //TODO
         Body.setPosition(this.body, this.parent.body.position);
-        Body.setAngle(this.body, this.parent.body.angle + this.rotation);
+        Body.setAngle(this.body, this.parent.body.angle + this.angle);
+        //Body.rotate(this.body, this.parent.body.angle);
 
         // Rotate
         if (keysDown && keysDown.KeyD == true) {
             //Body.rotate(this.body, this.parent.body.angle);
-            //this.body.torque = 0.1;
-            this.rotation += 0.0174533;
+            this.body.torque = 0.1;
+            this.angle = this.body.angle;
+            //this.rotation += 0.0174533;
         }
         if (keysDown && keysDown.KeyA == true) {
             //Body.rotate(this.body, this.parent.body.angle);
-            //this.body.torque = -0.1;
-            this.rotation -= 0.0174533;
+            this.body.torque = -0.1;
+            this.angle = this.body.angle;
+            //this.rotation -= 0.0174533;
         }
 
         // Update index
