@@ -25,6 +25,7 @@ addEventListener("load", function () {
         Render = Matter.Render,
         Runner = Matter.Runner,
         Bodies = Matter.Bodies,
+        Body = Matter.Body,
         Composite = Matter.Composite;
 
     window.globals = {};
@@ -51,8 +52,12 @@ addEventListener("load", function () {
     var boxB = Bodies.rectangle(450, 50, 80, 80);
     var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
+    var compoundBody = Body.create({
+        parts: [boxA, boxB]
+    });
+
     // add all of the bodies to the world
-    Composite.add(engine.world, [boxA, boxB, ground]);
+    Composite.add(engine.world, [compoundBody, ground]);
 
     // run the renderer
     Render.run(render);
@@ -67,10 +72,12 @@ addEventListener("load", function () {
         window.requestAnimationFrame(run);
 
         if (window.globals.keysDown && window.globals.keysDown.KeyD == true) {
-            boxA.torque = 0.1;
+            //compoundBody.parts[0].torque = 0.1;
+            Body.rotate(boxA, 0.0174533);
         }
         if (window.globals.keysDown && window.globals.keysDown.KeyA == true) {
-            boxA.torque = -0.1;
+            //boxA.torque = -0.1;
+            Body.rotate(boxA, -0.0174533);
         }
 
         Engine.update(engine, 1000 / 60);
