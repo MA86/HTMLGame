@@ -48,9 +48,14 @@ addEventListener("load", function () {
     });
 
     // create two boxes and a ground
-    var boxA = Bodies.rectangle(400, 200, 80, 80);
-    var boxB = Bodies.rectangle(450, 50, 80, 80);
+    var boxA = Bodies.rectangle(400, 200, 150, 10);
+    var boxB = Bodies.rectangle(400, 200, 80, 80);
     var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+
+    // Test TODO
+    let dx = Math.cos(boxB.angle) * (10);
+    let dy = Math.sin(boxB.angle) * (10);
+    Body.setCentre(boxA, { x: dx, y: dy }, true);
 
     var compoundBody = Body.create({
         parts: [boxA, boxB]
@@ -73,11 +78,11 @@ addEventListener("load", function () {
 
         if (window.globals.keysDown && window.globals.keysDown.KeyD == true) {
             //compoundBody.parts[0].torque = 0.1;
-            Body.rotate(boxA, 0.0174533);
+            Body.rotate(boxA, 0.00872665);
         }
         if (window.globals.keysDown && window.globals.keysDown.KeyA == true) {
             //boxA.torque = -0.1;
-            Body.rotate(boxA, -0.0174533);
+            Body.rotate(boxA, -0.00872665);
         }
 
         Engine.update(engine, 1000 / 60);
