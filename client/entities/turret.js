@@ -3,7 +3,7 @@ import { Entity } from './entity.js';
 class Turret extends Entity {
     constructor(ss, ssData, fps, initPos, Bodies) {
         super(
-            Bodies.rectangle(initPos.x, initPos.y, 200, 12, {
+            Bodies.rectangle(initPos.x, initPos.y, 150, 10, {
                 isStatic: false,
                 frictionAir: 0.1,
                 restitution: 0,

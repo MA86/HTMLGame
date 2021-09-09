@@ -1,9 +1,9 @@
 import { Entity } from './entity.js';
-import { Turret } from './turret.js';
 
 class Tank extends Entity {
     constructor(ss, ssData, fps, Bodies, initPos, turret, Body) {
         super(
+            // Create a compound body representing tank/turret
             Body.create({
                 parts: [
                     Bodies.rectangle(initPos.x, initPos.y, 225, 100, {
@@ -25,6 +25,11 @@ class Tank extends Entity {
             }),
             false
         );
+        // Change turret body's center-of-rotation from middle to left
+        Body.setCentre(turret.body, { x: -50, y: 0 }, true);
+        // Reposition turret body based on this new center-of-rotation
+        Body.setPosition(turret.body, this.body.position);
+
         this.children.push(turret);
         this.speed = 6;
         this.rotationSpeed = 380;
@@ -33,8 +38,8 @@ class Tank extends Entity {
         this.index = 0;
         this.framesPerSecond = fps;
         this.timeTracker = 0;
-        this.spriteSheetData = ssData.tankData;
-        this.spriteSheet = ss.tank;
+        this.spriteSheetData = ssData;
+        this.spriteSheet = ss;
     }
 
     renderThis(ctx) {

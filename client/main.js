@@ -92,7 +92,7 @@ addEventListener("load", function (e) {
         });
         Render.run(render);
 
-        // Create tank
+        // Setup M6 Tank
         var mSixTurret = new Turret(
             window.globals.images["./images_and_data/mSixTankTurret.png"],
             spriteSheetsData.mSixTankTurretData,
@@ -101,14 +101,9 @@ addEventListener("load", function (e) {
             Bodies
         );
         var mSixTank = new Tank(
-            {
-                tank: window.globals.images["./images_and_data/mSixTankBodyu.png"],
-                turret: window.globals.images["./images_and_data/mSixTankTurret.png"]
-            },
-            {
-                tankData: spriteSheetsData.mSixTankBodyData,
-                turretData: spriteSheetsData.mSixTankTurretData
-            },
+            window.globals.images["./images_and_data/mSixTankBodyu.png"],
+
+            spriteSheetsData.mSixTankBodyData,
             0,
             Bodies,
             { x: 400, y: 400 },
@@ -117,6 +112,8 @@ addEventListener("load", function (e) {
         );
         window.globals.entities.push(mSixTank);
         Composite.add(engine.world, [mSixTank.body]);
+
+        // TODO: fix turret body glitch.
 
         // Create sphere for testing
         var box = Bodies.circle(200, 200, 50, {
