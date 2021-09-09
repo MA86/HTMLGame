@@ -2,6 +2,7 @@
 
 import * as spriteSheetsData from './spritesheetsData.js';
 import { Tank } from './entities/tank.js';
+import { Turret } from './entities/turret.js';
 
 /*** On Window Load ***/
 addEventListener("load", function (e) {
@@ -92,6 +93,13 @@ addEventListener("load", function (e) {
         Render.run(render);
 
         // Create tank
+        var mSixTurret = new Turret(
+            window.globals.images["./images_and_data/mSixTankTurret.png"],
+            spriteSheetsData.mSixTankTurretData,
+            0,
+            { x: 400, y: 400 },
+            Bodies
+        );
         var mSixTank = new Tank(
             {
                 tank: window.globals.images["./images_and_data/mSixTankBodyu.png"],
@@ -102,12 +110,15 @@ addEventListener("load", function (e) {
                 turretData: spriteSheetsData.mSixTankTurretData
             },
             0,
-            Bodies
+            Bodies,
+            { x: 400, y: 400 },
+            mSixTurret,
+            Body
         );
         window.globals.entities.push(mSixTank);
-        Composite.add(engine.world, [mSixTank.body, mSixTank.children[0].body]);
+        Composite.add(engine.world, [mSixTank.body]);
 
-        // Create box for testing
+        // Create sphere for testing
         var box = Bodies.circle(200, 200, 50, {
             isStatic: false,
             restitution: 0.5,

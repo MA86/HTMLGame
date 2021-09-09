@@ -2,9 +2,17 @@ import { Entity } from './entity.js';
 import { Turret } from './turret.js';
 
 class Tank extends Entity {
-    constructor(ss, ssData, fps, Bodies) {
+    constructor(ss, ssData, fps, Bodies, initPos, turret, Body) {
         super(
-            Bodies.rectangle(100, 100, 225, 100, {
+            Body.create({
+                parts: [
+                    Bodies.rectangle(initPos.x, initPos.y, 225, 100, {
+                        isStatic: false,
+                        frictionAir: 0.9,
+                        restitution: 0.1,
+                    }),
+                    turret.body
+                ],
                 isStatic: false,
                 frictionAir: 0.9,
                 restitution: 0.1,
@@ -17,15 +25,7 @@ class Tank extends Entity {
             }),
             false
         );
-        this.children.push(
-            new Turret(
-                ss.turret,
-                ssData.turretData,
-                0,
-                this,
-                Bodies
-            )
-        );
+        this.children.push(turret);
         this.speed = 6;
         this.rotationSpeed = 380;
 

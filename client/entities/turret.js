@@ -1,13 +1,13 @@
 import { Entity } from './entity.js';
 
 class Turret extends Entity {
-    constructor(ss, ssData, fps, parent, Bodies) {
+    constructor(ss, ssData, fps, initPos, Bodies) {
         super(
-            Bodies.rectangle(parent.body.position.x, parent.body.position.y, 200, 12, {
+            Bodies.rectangle(initPos.x, initPos.y, 200, 12, {
                 isStatic: false,
                 frictionAir: 0.1,
                 restitution: 0,
-                isSensor: true,     // Inactivate body
+                isSensor: false,     // Inactivate body
                 //density: 0.005,
                 //friction: 0,
                 //inverseInertia: 1,
@@ -17,8 +17,6 @@ class Turret extends Entity {
             }),
             true
         );
-        this.parent = parent;
-        this.angle = 0;
         this.speed = 45;
 
         // Variables used for rendering this object
@@ -53,15 +51,15 @@ class Turret extends Entity {
         // New plan use compound body.
         // Rotate
         if (keysDown && keysDown.KeyD == true) {
-            //Body.rotate(this.body, this.parent.body.angle);
-            this.body.torque = 0.1;
-            this.angle = this.body.angle;
+            Body.rotate(this.body, 0.00872665);
+            //this.body.torque = 0.1;
+            //this.angle = this.body.angle;
             //this.rotation += 0.0174533;
         }
         if (keysDown && keysDown.KeyA == true) {
-            //Body.rotate(this.body, this.parent.body.angle);
-            this.body.torque = -0.1;
-            this.angle = this.body.angle;
+            Body.rotate(this.body, -0.00872665);
+            //this.body.torque = -0.1;
+            //this.angle = this.body.angle;
             //this.rotation -= 0.0174533;
         }
 
