@@ -35,7 +35,7 @@ addEventListener("load", function () {
 
     // create an engine
     var engine = Engine.create({
-        gravity: { x: 0, y: 0 }
+        gravity: { x: 0, y: 0.05 }
     });
 
     // create a renderer
@@ -48,14 +48,18 @@ addEventListener("load", function () {
     });
 
     // create two boxes and a ground
-    var boxA = Bodies.rectangle(400, 200, 150, 10);
+    var boxA = Bodies.rectangle(400, 200, 50, 10);
     var boxB = Bodies.rectangle(400, 200, 80, 80);
     var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
     // Test TODO
+    // Learned: move center position
+    // then move the body. Movement 
+    // is from place of position.
     let dx = Math.cos(boxB.angle) * (10);
     let dy = Math.sin(boxB.angle) * (10);
-    Body.setCentre(boxA, { x: dx, y: dy }, true);
+    Body.setCentre(boxA, { x: -50, y: 0 }, true);
+    Body.setPosition(boxA, boxB.position);
 
     var compoundBody = Body.create({
         parts: [boxA, boxB]

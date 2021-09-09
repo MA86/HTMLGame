@@ -1,7 +1,7 @@
 import { Entity } from './entity.js';
 
 class Turret extends Entity {
-    constructor(ss, ssData, fps, parent, Bodies, isChild) {
+    constructor(ss, ssData, fps, parent, Bodies) {
         super(
             Bodies.rectangle(parent.body.position.x, parent.body.position.y, 200, 12, {
                 isStatic: false,
@@ -49,10 +49,8 @@ class Turret extends Entity {
 
     updateThis(keysDown, dt, Body, ctx) {
         //TODO
-        Body.setPosition(this.body, this.parent.body.position);
-        Body.setAngle(this.body, this.parent.body.angle + this.angle);
-        //Body.rotate(this.body, this.parent.body.angle);
-
+        // Remove Body , ctx when done.
+        // New plan use compound body.
         // Rotate
         if (keysDown && keysDown.KeyD == true) {
             //Body.rotate(this.body, this.parent.body.angle);
