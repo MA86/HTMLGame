@@ -18,7 +18,7 @@ addEventListener("load", function (e) {
         "./images_and_data/mSixTankTurret.png",
     ];
 
-    // Global MatterJS Variables (aliases)
+    // Global MatterJS Variables (to access its useful functions)
     var Engine = Matter.Engine;         // For updating physics.
     var Render = Matter.Render;         // For rendering results of Engine.
     var Bodies = Matter.Bodies;         // To use a pre-made Body.
@@ -97,18 +97,14 @@ addEventListener("load", function (e) {
             window.globals.images["./images_and_data/mSixTankTurret.png"],
             spriteSheetsData.mSixTankTurretData,
             0,
-            { x: 400, y: 400 },
-            Bodies
+            { x: 400, y: 400 }
         );
         var mSixTank = new Tank(
             window.globals.images["./images_and_data/mSixTankBodyu.png"],
-
             spriteSheetsData.mSixTankBodyData,
             0,
-            Bodies,
             { x: 400, y: 400 },
-            mSixTurret,
-            Body
+            mSixTurret
         );
         window.globals.entities.push(mSixTank);
         Composite.add(engine.world, [mSixTank.body]);

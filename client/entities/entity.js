@@ -38,18 +38,18 @@ class Entity {
         // Derived class defines this method
     }
 
-    update(keysDown, dt, Body, ctx) {
+    update(keysDown, dt) {
         // Apply physics
-        this.updateThis(keysDown, dt, Body, ctx);
+        this.updateThis(keysDown, dt);
 
         // Apply children's physics
         for (let i = 0; i < this.children.length; i++) {
             const child = this.children[i];
-            child.update(keysDown, dt, Body, ctx);
+            child.update(keysDown, dt);
         }
     }
 
-    updateThis(keysdown, dt, Body, ctx) {
+    updateThis(keysdown, dt) {
         // Derived class defines this method
     }
 }

@@ -1,7 +1,11 @@
 import { Entity } from './entity.js';
 
+// Global MatterJS Variables (to access its useful functions)
+var Body = Matter.Body;
+var Bodies = Matter.Bodies;
+
 class Turret extends Entity {
-    constructor(ss, ssData, fps, initPos, Bodies) {
+    constructor(ss, ssData, fps, initPos) {
         super(
             Bodies.rectangle(initPos.x, initPos.y, 150, 10, {
                 isStatic: false,
@@ -45,22 +49,15 @@ class Turret extends Entity {
         );
     }
 
-    updateThis(keysDown, dt, Body, ctx) {
-        //TODO
-        // Remove Body , ctx when done.
-        // New plan use compound body.
+    updateThis(keysDown, dt) {
         // Rotate
         if (keysDown && keysDown.KeyD == true) {
             Body.rotate(this.body, 0.00872665);
-            //this.body.torque = 0.1;
-            //this.angle = this.body.angle;
-            //this.rotation += 0.0174533;
+            //this.body.torque = 10;
         }
         if (keysDown && keysDown.KeyA == true) {
             Body.rotate(this.body, -0.00872665);
-            //this.body.torque = -0.1;
-            //this.angle = this.body.angle;
-            //this.rotation -= 0.0174533;
+            //this.body.torque = -10;
         }
 
         // Update index

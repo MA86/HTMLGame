@@ -1,7 +1,11 @@
 import { Entity } from './entity.js';
 
+// Global MatterJS Variables (to access its useful functions)
+var Body = Matter.Body;
+var Bodies = Matter.Bodies;
+
 class Tank extends Entity {
-    constructor(ss, ssData, fps, Bodies, initPos, turret, Body) {
+    constructor(ss, ssData, fps, initPos, turret) {
         super(
             // Create a compound body representing tank/turret
             Body.create({
@@ -26,7 +30,7 @@ class Tank extends Entity {
             false
         );
         // Change turret body's center-of-rotation from middle to left
-        Body.setCentre(turret.body, { x: -50, y: 0 }, true);
+        Body.setCentre(turret.body, { x: -50, y: -5 }, true);
         // Reposition turret body based on this new center-of-rotation
         Body.setPosition(turret.body, this.body.position);
 
@@ -60,7 +64,7 @@ class Tank extends Entity {
         );
     }
 
-    updateThis(keysDown, dt, Body) {
+    updateThis(keysDown, dt) {
         // Prepare a force vector
         let dx = Math.cos(this.body.angle) * (this.speed * dt);
         let dy = Math.sin(this.body.angle) * (this.speed * dt);
