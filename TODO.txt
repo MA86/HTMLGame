@@ -17,5 +17,3 @@ Some tradeoffs to consider:
     // Learn 'signals'
     
     // Bring back networking.
-
-    // turn turret body into signal, place it on tank position, see what happens
