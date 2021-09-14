@@ -87,7 +87,9 @@ addEventListener("load", function (e) {
             engine: engine,
             options: {
                 wireframes: true,
-                background: "transparent"
+                background: "transparent",
+                showCollisions: true,
+                showConvexHulls: true
             }
         });
         Render.run(render);
@@ -113,7 +115,7 @@ addEventListener("load", function (e) {
 
         // Create sphere for testing
         var box = Bodies.circle(200, 200, 50, {
-            isStatic: false,
+            isStatic: true,
             restitution: 0.5,
             render: {
                 sprite: {

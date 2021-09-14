@@ -9,15 +9,7 @@ class Turret extends Entity {
         super(
             Bodies.rectangle(initPos.x, initPos.y, 150, 10, {
                 isStatic: false,
-                frictionAir: 0.1,
-                restitution: 0,
                 isSensor: false,     // Inactivate body
-                //density: 0.005,
-                //friction: 0,
-                //inverseInertia: 1,
-                //inertia: Infinity,
-                //frictionStatic: 2,
-                //render: { fillStyle: "white" }
             }),
             true
         );

@@ -12,18 +12,18 @@ class Tank extends Entity {
                 parts: [
                     Bodies.rectangle(initPos.x, initPos.y, 225, 100, {
                         isStatic: false,
-                        frictionAir: 0.9,
-                        restitution: 0.1,
+                        //frictionAir: 0.9,
+                        restitution: 0,
                     }),
                     turret.body
                 ],
                 isStatic: false,
                 frictionAir: 0.9,
-                restitution: 0.1,
+                restitution: 0,
                 //density: 0.002,
                 //friction: 1,
-                //inverseInertia: 1,
-                //inertia: Infinity,
+                //inverseInertia: 0,
+                //inertia: 0,
                 //frictionStatic: 2,
                 // render: { fillStyle: "white" }
             }),
