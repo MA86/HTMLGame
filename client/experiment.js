@@ -26,6 +26,7 @@ addEventListener("load", function () {
         Runner = Matter.Runner,
         Bodies = Matter.Bodies,
         Body = Matter.Body,
+        Constraint = Matter.Constraint,
         Composite = Matter.Composite;
 
     window.globals = {};
@@ -49,46 +50,48 @@ addEventListener("load", function () {
 
     // create two boxes and a ground
     var boxA = Bodies.rectangle(400, 200, 50, 10);
-    var boxB = Bodies.rectangle(400, 200, 80, 80);
+    var boxB = Bodies.rectangle(400, 200, 80, 80, { isStatic: true, collisionFilter: 1 });
     var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
-    // Test TODO
-    // Learned: move center position
-    // then move the body. Movement 
-    // is from place of position.
-    let dx = Math.cos(boxB.angle) * (10);
-    let dy = Math.sin(boxB.angle) * (10);
+    /*
+    // Test 1 Compound Method
     Body.setCentre(boxA, { x: -50, y: 0 }, true);
     Body.setPosition(boxA, boxB.position);
 
     var compoundBody = Body.create({
         parts: [boxA, boxB]
     });
+    */
+
+    // Test 2 Constraint Method
+    Constraint.create({
+        bodyA: boxA,
+        bodyB: boxB,
+        stiffness: 1,
+        length: 0
+    });
 
     // add all of the bodies to the world
-    Composite.add(engine.world, [compoundBody, ground]);
+    Composite.add(engine.world, [boxB, boxA, ground]);
 
     // run the renderer
     Render.run(render);
 
-    // create runner
+    // create game loop
     //var runner = Runner.create();
-
-    // run the engine
+    // run engine in game loop
     //Runner.run(runner, engine);
 
     (function run() {
         window.requestAnimationFrame(run);
 
         if (window.globals.keysDown && window.globals.keysDown.KeyD == true) {
-            //compoundBody.parts[0].torque = 0.1;
             Body.rotate(boxA, 0.00872665);
         }
         if (window.globals.keysDown && window.globals.keysDown.KeyA == true) {
-            //boxA.torque = -0.1;
             Body.rotate(boxA, -0.00872665);
         }
-
+        //Engine.update(engine, (1 / 3) / 60 * 1000);
         Engine.update(engine, 1000 / 60);
     })();
 });

@@ -7,7 +7,7 @@ var Bodies = Matter.Bodies;
 class Turret extends Entity {
     constructor(ss, ssData, fps, initPos) {
         super(
-            Bodies.rectangle(initPos.x, initPos.y, 150, 10, {
+            Bodies.rectangle(initPos.x, initPos.y, 150, 25, {
                 isStatic: false,
                 isSensor: false,     // Inactivate body
             }),
