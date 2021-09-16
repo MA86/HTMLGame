@@ -45,11 +45,9 @@ class Turret extends Entity {
         // Rotate
         if (keysDown && keysDown.KeyD == true) {
             Body.rotate(this.body, 0.00872665);
-            //this.body.torque = 10;
         }
         if (keysDown && keysDown.KeyA == true) {
             Body.rotate(this.body, -0.00872665);
-            //this.body.torque = -10;
         }
 
         // Update index
