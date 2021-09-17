@@ -91,7 +91,6 @@ addEventListener("load", function () {
 
         if (window.globals.keysDown && window.globals.keysDown.KeyD == true) {
             //boxB.torque = 0.01;
-            boxA.inertia = 'Infinity';
             Body.rotate(boxB, 0.00872665);
         }
         if (window.globals.keysDown && window.globals.keysDown.KeyA == true) {

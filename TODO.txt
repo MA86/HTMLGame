@@ -3,17 +3,15 @@ Some tradeoffs to consider:
 	SOLUTION: In DEVELOPMENT create many files to organize. In PRODUCTION, put everythin in
 		  ONE file and minify it, then deploy.
 
-    // TODO: implement "Animated Background" if possible, instead of static picture.
-    // Careful though, running it like sprites can eat lots of memory.
-    // Instead use efficient techniques to do this type of animation, like changing
-    // pixels in png to simulate starry night! or 'localized' animation.
-    // Read up scrolling background too. (aka parallax)
+    // FUTURE TODO: 
+    // implement "Animated Background" if possible, instead of static picture.
+    	// Careful though, running it like sprites can eat lots of memory.
+    	// Instead use efficient techniques to do this type of animation, like changing
+    	// pixels in png to simulate starry night! or 'localized' animation.
+    	// Read up scrolling background too. (aka parallax)
 
-    // TODO: READINGS before proceeding further
-    // Finish reading techniques for seperating game layers!
-        // Once research and reading is done, then code a simple workable
-        // example.
+    // TODO:
     // Research bullet systems.
     // Learn 'signals'
+    // Bring back networking after solving body-on-body.
     
-    // Bring back networking.
