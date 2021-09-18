@@ -50,10 +50,12 @@ addEventListener("load", function () {
 
     // create two boxes and a ground
     var boxA = Bodies.rectangle(400, 200, 50, 10, {
-        collisionFilter: { group: -1 }
+        collisionFilter: { group: -1 },
+        //isStatic: true
     });
     var boxB = Bodies.rectangle(400, 200, 80, 80, {
-        collisionFilter: { group: -1 }
+        collisionFilter: { group: -1 },
+        //isStatic: true
     });
     var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
@@ -68,15 +70,23 @@ addEventListener("load", function () {
     */
 
     // Test 2 Constraint Method
-    var c = Constraint.create({
+    var con = Constraint.create({
         bodyA: boxA,
         bodyB: boxB,
         stiffness: 1,
         length: 0
     });
 
+
+    // Test 3 Composite Method
+    var c = Composite.create({
+        constraints: [con]
+    });
+
     // add all of the bodies to the world
-    Composite.add(engine.world, [c, boxA, boxB, ground]);
+    //Composite.add(engine.world, [c, boxA, boxB, ground]);
+
+    Composite.add(engine.world, [c, boxA, boxB, ground])
 
     // run the renderer
     Render.run(render);
@@ -91,11 +101,13 @@ addEventListener("load", function () {
 
         if (window.globals.keysDown && window.globals.keysDown.KeyD == true) {
             //boxB.torque = 0.01;
-            Body.rotate(boxB, 0.00872665);
+            boxA.torque = 0.01;
+            //Body.rotate(boxB, 0.00872665);
+            //Body.rotate(boxA, 0.00872665);
         }
         if (window.globals.keysDown && window.globals.keysDown.KeyA == true) {
-            //boxA.torque = 0.01;
-            Body.rotate(boxA, 0.00872665);
+            //boxB.torque = 0.01;
+            Composite.rotate(c, 0.00872665, { x: 0, y: 0 });
         }
         //Engine.update(engine, (1 / 3) / 60 * 1000);
         Engine.update(engine, 1000 / 60);
