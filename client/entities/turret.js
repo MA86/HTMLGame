@@ -10,6 +10,7 @@ class Turret extends Entity {
             Bodies.rectangle(initPos.x, initPos.y, 150, 25, {
                 isStatic: false,
                 isSensor: false,     // Inactivate body
+                collisionFilter: { group: -1 }///
             }),
             true
         );
@@ -44,7 +45,8 @@ class Turret extends Entity {
     updateThis(keysDown, dt) {
         // Rotate
         if (keysDown && keysDown.KeyD == true) {
-            Body.rotate(this.body, 0.00872665);
+            //this.body.torque = 0.01;///
+            Body.rotate(this.body, 1);
         }
         if (keysDown && keysDown.KeyA == true) {
             Body.rotate(this.body, -0.00872665);

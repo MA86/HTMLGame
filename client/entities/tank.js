@@ -11,7 +11,8 @@ class Tank extends Entity {
             Body.create({
                 parts: [
                     Bodies.rectangle(initPos.x, initPos.y, 225, 100, {
-                        isStatic: false
+                        isStatic: false,
+                        collisionFilter: { group: -1 }///
                     }),
                     turret.body
                 ],
