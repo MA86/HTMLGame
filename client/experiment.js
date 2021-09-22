@@ -57,18 +57,21 @@ addEventListener("load", function () {
         collisionFilter: { group: -1 },
         //isStatic: true
     });
-    var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
+    // Test: turn into same mass
+    Body.setMass(boxA, 2);
+    Body.setMass(boxB, 2);
 
+    var ground = Bodies.rectangle(400, 610, 810, 60, { isStatic: true });
 
     // Test 1 Compound Method
     Body.setCentre(boxA, { x: -50, y: 0 }, true);
     Body.setPosition(boxA, boxB.position);
-
-    var compoundBody = Body.create({
-        parts: [boxA, boxB]
-    });
-
     /*
+        var compoundBody = Body.create({
+            parts: [boxA, boxB]
+        });
+    */
+
     // Test 2 Constraint Method
     var con = Constraint.create({
         bodyA: boxA,
@@ -76,7 +79,7 @@ addEventListener("load", function () {
         stiffness: 1,
         length: 0
     });
-    */
+
     /*
     // Test 3 Composite Method
     var c = Composite.create({
@@ -85,7 +88,7 @@ addEventListener("load", function () {
     */
 
     // add all of the bodies to the world
-    Composite.add(engine.world, [compoundBody, ground]);
+    Composite.add(engine.world, [con, boxA, boxB, ground]);
 
     // run the renderer
     Render.run(render);
@@ -99,14 +102,11 @@ addEventListener("load", function () {
         window.requestAnimationFrame(run);
 
         if (window.globals.keysDown && window.globals.keysDown.KeyD == true) {
-            //boxB.torque = 0.01;
-            compoundBody.parts[0].torque = 0.01;
-            //Body.rotate(boxB, 0.00872665);
-            //Body.rotate(boxA, 0.00872665);
+            boxA.torque = 0.01;
         }
         if (window.globals.keysDown && window.globals.keysDown.KeyA == true) {
+            //Body.rotate(boxA, 0.00872665);
             //boxB.torque = 0.01;
-            Body.rotate(con.bodyB, 0.00872665);
         }
         //Engine.update(engine, (1 / 3) / 60 * 1000);
         Engine.update(engine, 1000 / 60);
