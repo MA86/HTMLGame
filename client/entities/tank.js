@@ -87,11 +87,9 @@ class Tank extends Entity {
         // Right/left turn
         if (keysDown && keysDown.ArrowRight == true) {
             this.body.torque = this.rotationSpeed * dt;
-            //Body.rotate(this.body, 0.00872665);
         }
         if (keysDown && keysDown.ArrowLeft == true) {
             this.body.torque = -this.rotationSpeed * dt;
-            //Body.rotate(this.body, -0.00872665);
         }
 
         // Update index
