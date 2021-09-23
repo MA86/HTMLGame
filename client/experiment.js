@@ -66,9 +66,10 @@ addEventListener("load", function () {
     // Test 1 Compound Method
     Body.setCentre(boxA, { x: -50, y: 0 }, true);
     Body.setPosition(boxA, boxB.position);
-    var compoundBody = Bodies.rectangle(400, 200, 500, 300, {
-        parts: [boxA, boxB]
-    });
+    var compoundBody = Bodies.circle(400, 200, 100, {
+        parts: [boxA, boxB],
+        //vertices: [{ x: 0, y: 0 }, { x: 600, y: 600 }, { x: 600, y: 0 }, { x: 0, y: 600 }]
+    }); // TODO: get circle to collide with walls tomorrow.
 
     /*
     // Test 2 Constraint Method
@@ -105,7 +106,7 @@ addEventListener("load", function () {
             //boxA.torque = 0.01;
         }
         if (window.globals.keysDown && window.globals.keysDown.KeyA == true) {
-            //boxB.torque = 0.01;
+            boxA.torque = 0.01;
             //Body.applyForce(boxB, { x: boxB.position.x, y: boxB.position.y }, { X: 0, y: 1 });
         }
         //Engine.update(engine, (1 / 3) / 60 * 1000);
