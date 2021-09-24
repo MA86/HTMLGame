@@ -8,12 +8,12 @@ class Turret extends Entity {
     constructor(ss, ssData, fps, initPos) {
         super(
             Bodies.rectangle(initPos.x, initPos.y, 150, 25, {
-                isStatic: false,
-                isSensor: false,     // Inactivate body
-                collisionFilter: { group: -1 }///
+                isSensor: true     // Inactivate body
             }),
             true
         );
+
+        // Properties of turret
         this.speed = 45;
 
         // Variables used for rendering this object
@@ -43,9 +43,8 @@ class Turret extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        // Rotate
+        // Apply rotatation for left/right turn
         if (keysDown && keysDown.KeyD == true) {
-            //this.body.torque = 0.01;///
             Body.rotate(this.body, 0.00872665);
         }
         if (keysDown && keysDown.KeyA == true) {

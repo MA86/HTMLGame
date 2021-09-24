@@ -11,8 +11,7 @@ class Tank extends Entity {
             Body.create({
                 parts: [
                     Bodies.rectangle(initPos.x, initPos.y, 225, 100, {
-                        isStatic: false,
-                        collisionFilter: { group: -1 }///
+                        isStatic: false
                     }),
                     turret.body
                 ],
@@ -32,8 +31,9 @@ class Tank extends Entity {
         Body.setCentre(turret.body, { x: -50, y: -5 }, true);
         // Reposition turret body based on this new center-of-rotation
         Body.setPosition(turret.body, this.body.position);
-
         this.children.push(turret);
+
+        // Properties of tank
         this.speed = 6;
         this.rotationSpeed = 380;
 
@@ -84,7 +84,7 @@ class Tank extends Entity {
             );
         }
 
-        // Right/left turn
+        // Apply torque for right/left turn
         if (keysDown && keysDown.ArrowRight == true) {
             this.body.torque = this.rotationSpeed * dt;
         }
