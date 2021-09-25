@@ -29,7 +29,6 @@ const spawnPoint = function () {
     // Return the location
 }
 
-/*
 // When a new client connects
 serverSocket.on("connection", function (socket) {
     console.log("a client connected");
@@ -38,7 +37,7 @@ serverSocket.on("connection", function (socket) {
         "clientId": socket.id,
         "state": {
             "pos": { "x": 300, "y": 200 },
-            "rot": 45,
+            "rot": 0,
             "turRot": 0
         }
     });
@@ -92,9 +91,9 @@ serverSocket.on("connection", function (socket) {
             // Broadcast to everyone
             serverSocket.emit("turret rotation", data);
         });
-    }, 500);
+    }, 2000);
 });
-*/
+
 
 // Start HTTP server, listening on port 8000
 httpServer.listen(8000, function () {

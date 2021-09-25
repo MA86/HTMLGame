@@ -5,15 +5,16 @@ var Body = Matter.Body;
 var Bodies = Matter.Bodies;
 
 class Turret extends Entity {
-    constructor(ss, ssData, fps, initPos) {
+    constructor(ss, ssData, fps, clientData) {
         super(
-            Bodies.rectangle(initPos.x, initPos.y, 150, 25, {
+            Bodies.rectangle(clientData.state.pos.x, clientData.state.pos.y, 150, 25, {
                 isSensor: true     // Inactivate body
             }),
             true
         );
 
         // Properties of turret
+        this.clientId = clientData.clientId;
         this.speed = 45;
 
         // Variables used for rendering this object
@@ -22,6 +23,14 @@ class Turret extends Entity {
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
+
+        // This turret's representation in another browser is set by the server
+        let thisTurret = this;
+        window.globals.clientSocket.on("turret rotation", function (data) {
+            if (thisTurret.clientId == data.clientId) {
+                thisTurret.body.angle = data.rot;
+            }
+        });
     }
 
     renderThis(ctx) {
@@ -46,9 +55,17 @@ class Turret extends Entity {
         // Apply rotatation for left/right turn
         if (keysDown && keysDown.KeyD == true) {
             Body.rotate(this.body, 0.00872665);
+            // Report state change to server
+            window.globals.clientSocket.emit(
+                "turret rotation", { "clientId": this.clientId, "rot": this.body.angle }
+            );
         }
         if (keysDown && keysDown.KeyA == true) {
             Body.rotate(this.body, -0.00872665);
+            // Report state change to server
+            window.globals.clientSocket.emit(
+                "turret rotation", { "clientId": this.clientId, "rot": this.body.angle }
+            );
         }
 
         // Update index

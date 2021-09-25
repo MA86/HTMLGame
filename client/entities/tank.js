@@ -5,12 +5,12 @@ var Body = Matter.Body;
 var Bodies = Matter.Bodies;
 
 class Tank extends Entity {
-    constructor(ss, ssData, fps, initPos, turret) {
+    constructor(ss, ssData, fps, clientData, turret) {
         super(
             // Create a compound body representing tank/turret
             Body.create({
                 parts: [
-                    Bodies.rectangle(initPos.x, initPos.y, 225, 100, {
+                    Bodies.rectangle(clientData.state.pos.x, clientData.state.pos.y, 225, 100, {
                         isStatic: false
                     }),
                     turret.body
@@ -27,13 +27,9 @@ class Tank extends Entity {
             }),
             false
         );
-        // Change turret body's center-of-rotation from middle to left
-        Body.setCentre(turret.body, { x: -50, y: -5 }, true);
-        // Reposition turret body based on this new center-of-rotation
-        Body.setPosition(turret.body, this.body.position);
-        this.children.push(turret);
 
         // Properties of tank
+        this.clientId = clientData.clientId;
         this.speed = 6;
         this.rotationSpeed = 380;
 
@@ -43,6 +39,28 @@ class Tank extends Entity {
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
+
+        // Change turret body's center-of-rotation from middle to left
+        Body.setCentre(turret.body, { x: -50, y: -5 }, true);
+        // Reposition turret body based on this new center-of-rotation
+        Body.setPosition(turret.body, this.body.position);
+        this.children.push(turret);
+
+        let thisTank = this;
+        window.globals.clientSocket.on("tank position", function (data) {
+            if (thisTank.clientId == data.clientId) {
+                Body.applyForce(
+                    thisTank.body,
+                    { x: thisTank.body.position.x, y: thisTank.body.position.y },
+                    { x: data.pos.x, y: data.pos.y }
+                );
+            }
+        });
+        window.globals.clientSocket.on("tank rotation", function (data) {
+            if (data.clientId == thisTank.clientId) {
+                thisTank.body.torque = data.rot;
+            }
+        });
     }
 
     renderThis(ctx) {
@@ -75,6 +93,8 @@ class Tank extends Entity {
                 { x: this.body.position.x, y: this.body.position.y },
                 { x: dx, y: dy }
             );
+            // Emit to all the force vector applied
+            window.globals.clientSocket.emit("tank position", { "clientId": this.clientId, "pos": { x: dx, y: dy } });
         }
         if (keysDown && keysDown.ArrowDown == true) {
             Body.applyForce(
@@ -82,14 +102,20 @@ class Tank extends Entity {
                 { x: this.body.position.x, y: this.body.position.y },
                 { x: -dx, y: -dy }
             );
+            // Emit to all the force vector applied
+            window.globals.clientSocket.emit("tank position", { "clientId": this.clientId, "pos": { x: -dx, y: -dy } });
         }
 
         // Apply torque for right/left turn
         if (keysDown && keysDown.ArrowRight == true) {
             this.body.torque = this.rotationSpeed * dt;
+            // Emit to all the torque applied
+            window.globals.clientSocket.emit("tank rotation", { "clientId": this.clientId, "rot": this.rotationSpeed * dt });
         }
         if (keysDown && keysDown.ArrowLeft == true) {
             this.body.torque = -this.rotationSpeed * dt;
+            // Emit to all the torque applied
+            window.globals.clientSocket.emit("tank rotation", { "clientId": this.clientId, "rot": -this.rotationSpeed * dt });
         }
 
         // Update index

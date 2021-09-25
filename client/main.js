@@ -102,14 +102,14 @@ addEventListener("load", function (e) {
                 window.globals.images["./images_and_data/mSixTankTurret.png"],
                 spriteSheetsData.mSixTankTurretData,
                 0,
-                { x: 400, y: 400 }
+                data
             );
             // Create tank
             var mSixTank = new Tank(
                 window.globals.images["./images_and_data/mSixTankBodyu.png"],
                 spriteSheetsData.mSixTankBodyData,
                 0,
-                { x: 400, y: 400 },
+                data,
                 mSixTurret
             );
             // Add tank to physics world and entities list
@@ -145,7 +145,7 @@ addEventListener("load", function (e) {
 
             // Update entities
             for (let i = 0; i < window.globals.entities.length; i++) {
-                window.globals.entities[i].update(window.globals.keysDown, delta, Body, window.globals.context);
+                window.globals.entities[i].update(window.globals.keysDown, delta);
             }
 
             // Update physics
