@@ -17,6 +17,7 @@ addEventListener("load", function (e) {
         "./images_and_data/mSixTankBodyu.png",
         "./images_and_data/mSixTankTurret.png",
     ];
+    window.globals.clientSocket = io();     // Connect with server
 
     // Global MatterJS Variables (to access its useful functions)
     var Engine = Matter.Engine;         // For updating physics.
@@ -94,22 +95,28 @@ addEventListener("load", function (e) {
         });
         Render.run(render);
 
-        // Setup M6 Tank
-        var mSixTurret = new Turret(
-            window.globals.images["./images_and_data/mSixTankTurret.png"],
-            spriteSheetsData.mSixTankTurretData,
-            0,
-            { x: 400, y: 400 }
-        );
-        var mSixTank = new Tank(
-            window.globals.images["./images_and_data/mSixTankBodyu.png"],
-            spriteSheetsData.mSixTankBodyData,
-            0,
-            { x: 400, y: 400 },
-            mSixTurret
-        );
-        window.globals.entities.push(mSixTank);
-        Composite.add(engine.world, [mSixTank.body]);
+        // On server's command, setup M6 Tank
+        window.globals.clientSocket.on("create tank", function (data) {
+            // Create turret
+            var mSixTurret = new Turret(
+                window.globals.images["./images_and_data/mSixTankTurret.png"],
+                spriteSheetsData.mSixTankTurretData,
+                0,
+                { x: 400, y: 400 }
+            );
+            // Create tank
+            var mSixTank = new Tank(
+                window.globals.images["./images_and_data/mSixTankBodyu.png"],
+                spriteSheetsData.mSixTankBodyData,
+                0,
+                { x: 400, y: 400 },
+                mSixTurret
+            );
+            // Add tank to physics world and entities list
+            window.globals.entities.push(mSixTank);
+            Composite.add(engine.world, [mSixTank.body]);
+        });
+
 
         // TODO: fix turret body glitch.
 
