@@ -52,20 +52,22 @@ class Turret extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        // Apply rotatation for left/right turn
-        if (keysDown && keysDown.KeyD == true) {
-            Body.rotate(this.body, 0.00872665);
-            // Report state change to server
-            window.globals.clientSocket.emit(
-                "turret rotation", { "clientId": this.clientId, "rot": this.body.angle }
-            );
-        }
-        if (keysDown && keysDown.KeyA == true) {
-            Body.rotate(this.body, -0.00872665);
-            // Report state change to server
-            window.globals.clientSocket.emit(
-                "turret rotation", { "clientId": this.clientId, "rot": this.body.angle }
-            );
+        if (this.clientId == window.globals.clientSocket.id) {
+            // Apply rotatation for left/right turn
+            if (keysDown && keysDown.KeyD == true) {
+                Body.rotate(this.body, 0.00872665);
+                // Report state change to server
+                window.globals.clientSocket.emit(
+                    "turret rotation", { "clientId": this.clientId, "rot": this.body.angle }
+                );
+            }
+            if (keysDown && keysDown.KeyA == true) {
+                Body.rotate(this.body, -0.00872665);
+                // Report state change to server
+                window.globals.clientSocket.emit(
+                    "turret rotation", { "clientId": this.clientId, "rot": this.body.angle }
+                );
+            }
         }
 
         // Update index

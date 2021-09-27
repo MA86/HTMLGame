@@ -49,24 +49,7 @@ addEventListener("load", function (e) {
         }, false);
     }
 
-        // *** Starting Point and Image Loading *** //
-        ; (function () {
-            let numImagesLoaded = 0;
-            let numImagesRequested = window.globals.imagePaths.length;
-            for (let i = 0; i < numImagesRequested; i++) {
-                let image = new Image();
-                image.src = window.globals.imagePaths[i];
 
-                image.onload = function () {
-                    window.globals.images[window.globals.imagePaths[i]] = image;
-                    numImagesLoaded++;
-                    if (numImagesLoaded == numImagesRequested) {
-                        // Start only when all images are loaded
-                        Start();
-                    }
-                }
-            }
-        })();
 
     const Start = function () {
         setupKeyboardHandler(window.globals.keysDown);
@@ -95,30 +78,52 @@ addEventListener("load", function (e) {
         });
         Render.run(render);
 
-        // On server's command, setup M6 Tank
-        window.globals.clientSocket.on("create tank", function (data) {
+        // If this is new client, create self and all other existing clients
+        window.globals.clientSocket.on("create tanks", function (clientList) {
+            for (let i = 0; i < clientList.length; i++) {
+                const client = clientList[i];
+                // Create turret
+                var mSixTurret = new Turret(
+                    window.globals.images["./images_and_data/mSixTankTurret.png"],
+                    spriteSheetsData.mSixTankTurretData,
+                    0,
+                    client
+                );
+                // Create tank
+                var mSixTank = new Tank(
+                    window.globals.images["./images_and_data/mSixTankBodyu.png"],
+                    spriteSheetsData.mSixTankBodyData,
+                    0,
+                    client,
+                    mSixTurret
+                );
+                // Add tank to physics world and entities list
+                window.globals.entities.push(mSixTank);
+                Composite.add(engine.world, [mSixTank.body]);
+            }
+        });
+
+        // If this is existing client, create the new client
+        window.globals.clientSocket.on("create tank", function (clientData) {
             // Create turret
             var mSixTurret = new Turret(
                 window.globals.images["./images_and_data/mSixTankTurret.png"],
                 spriteSheetsData.mSixTankTurretData,
                 0,
-                data
+                clientData
             );
             // Create tank
             var mSixTank = new Tank(
                 window.globals.images["./images_and_data/mSixTankBodyu.png"],
                 spriteSheetsData.mSixTankBodyData,
                 0,
-                data,
+                clientData,
                 mSixTurret
             );
             // Add tank to physics world and entities list
             window.globals.entities.push(mSixTank);
             Composite.add(engine.world, [mSixTank.body]);
         });
-
-
-        // TODO: fix turret body glitch.
 
         // Create sphere for testing
         var box = Bodies.circle(200, 200, 50, {
@@ -169,4 +174,23 @@ addEventListener("load", function (e) {
             timeThen = timeNow;
         })();
     }
+
+        // *** Starting Point and Image Loading *** //
+        ; (function () {
+            let numImagesLoaded = 0;
+            let numImagesRequested = window.globals.imagePaths.length;
+            for (let i = 0; i < numImagesRequested; i++) {
+                let image = new Image();
+                image.src = window.globals.imagePaths[i];
+
+                image.onload = function () {
+                    window.globals.images[window.globals.imagePaths[i]] = image;
+                    numImagesLoaded++;
+                    if (numImagesLoaded == numImagesRequested) {
+                        // Start only when all images are loaded
+                        Start();
+                    }
+                }
+            }
+        })();
 });
