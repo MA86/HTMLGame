@@ -7,7 +7,7 @@ var Bodies = Matter.Bodies;
 class Turret extends Entity {
     constructor(ss, ssData, fps, clientData) {
         super(
-            Bodies.rectangle(clientData.state.pos.x, clientData.state.pos.y, 150, 25, {
+            Bodies.rectangle(clientData.state.force.x, clientData.state.force.y, 150, 25, {
                 isSensor: true     // Inactivate body
             }),
             true
@@ -24,11 +24,11 @@ class Turret extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
 
-        // This turret's representation in another browser is set by the server
+        // This turret representation's state in another browser is handled by the server
         let thisTurret = this;
-        window.globals.clientSocket.on("turret rotation", function (data) {
-            if (thisTurret.clientId == data.clientId) {
-                thisTurret.body.angle = data.rot;
+        window.globals.clientSocket.on("turret angle", function (data) {
+            if (thisTurret.clientId == data.clientId && thisTank.clientId != window.globals.clientSocket.id) {
+                Body.setAngle(thisTurret.body, data.turAngle);
             }
         });
     }
@@ -52,20 +52,21 @@ class Turret extends Entity {
     }
 
     updateThis(keysDown, dt) {
+        // If tank belongs to this browser...
         if (this.clientId == window.globals.clientSocket.id) {
             // Apply rotatation for left/right turn
             if (keysDown && keysDown.KeyD == true) {
                 Body.rotate(this.body, 0.00872665);
                 // Report state change to server
                 window.globals.clientSocket.emit(
-                    "turret rotation", { "clientId": this.clientId, "rot": this.body.angle }
+                    "turret angle", { "clientId": this.clientId, "turAngle": this.body.angle }
                 );
             }
             if (keysDown && keysDown.KeyA == true) {
                 Body.rotate(this.body, -0.00872665);
                 // Report state change to server
                 window.globals.clientSocket.emit(
-                    "turret rotation", { "clientId": this.clientId, "rot": this.body.angle }
+                    "turret angle", { "clientId": this.clientId, "turAngle": this.body.angle }
                 );
             }
         }

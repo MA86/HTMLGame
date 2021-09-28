@@ -10,13 +10,11 @@ class Tank extends Entity {
             // Create a compound body representing tank/turret
             Body.create({
                 parts: [
-                    Bodies.rectangle(clientData.state.pos.x, clientData.state.pos.y, 225, 100, {
-                        isStatic: false
-                    }),
+                    Bodies.rectangle(clientData.state.force.x, clientData.state.force.y, 225, 100),
                     turret.body
                 ],
                 isStatic: false,
-                frictionAir: 0.9,
+                frictionAir: 0.5,
                 restitution: 0,
                 //density: 0.002,
                 //friction: 1,
@@ -46,19 +44,20 @@ class Tank extends Entity {
         Body.setPosition(turret.body, this.body.position);
         this.children.push(turret);
 
+        // This tank's representation in another browser is set by the server
         let thisTank = this;
-        window.globals.clientSocket.on("tank position", function (data) {
-            if (thisTank.clientId == data.clientId) {
+        window.globals.clientSocket.on("tank movement", function (data) {
+            if (thisTank.clientId == data.clientId && thisTank.clientId != window.globals.clientSocket.id) {
                 Body.applyForce(
                     thisTank.body,
                     { x: thisTank.body.position.x, y: thisTank.body.position.y },
-                    { x: data.pos.x, y: data.pos.y }
+                    { x: data.force.x, y: data.force.y }
                 );
             }
         });
         window.globals.clientSocket.on("tank rotation", function (data) {
-            if (data.clientId == thisTank.clientId) {
-                thisTank.body.torque = data.rot;
+            if (data.clientId == thisTank.clientId && thisTank.clientId != window.globals.clientSocket.id) {
+                thisTank.body.torque = data.torque;
             }
         });
     }
@@ -95,7 +94,7 @@ class Tank extends Entity {
                     { x: dx, y: dy }
                 );
                 // Emit to all the force vector applied
-                window.globals.clientSocket.emit("tank position", { "clientId": this.clientId, "pos": { x: dx, y: dy } });
+                window.globals.clientSocket.emit("tank movement", { "clientId": this.clientId, "force": { x: dx, y: dy } });
             }
             if (keysDown && keysDown.ArrowDown == true) {
                 Body.applyForce(
@@ -104,19 +103,19 @@ class Tank extends Entity {
                     { x: -dx, y: -dy }
                 );
                 // Emit to all the force vector applied
-                window.globals.clientSocket.emit("tank position", { "clientId": this.clientId, "pos": { x: -dx, y: -dy } });
+                window.globals.clientSocket.emit("tank movement", { "clientId": this.clientId, "force": { x: -dx, y: -dy } });
             }
 
             // Apply torque for right/left turn
             if (keysDown && keysDown.ArrowRight == true) {
                 this.body.torque = this.rotationSpeed * dt;
                 // Emit to all the torque applied
-                window.globals.clientSocket.emit("tank rotation", { "clientId": this.clientId, "rot": this.rotationSpeed * dt });
+                window.globals.clientSocket.emit("tank rotation", { "clientId": this.clientId, "torque": this.rotationSpeed * dt });
             }
             if (keysDown && keysDown.ArrowLeft == true) {
                 this.body.torque = -this.rotationSpeed * dt;
                 // Emit to all the torque applied
-                window.globals.clientSocket.emit("tank rotation", { "clientId": this.clientId, "rot": -this.rotationSpeed * dt });
+                window.globals.clientSocket.emit("tank rotation", { "clientId": this.clientId, "torque": -this.rotationSpeed * dt });
             }
         }
 

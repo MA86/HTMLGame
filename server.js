@@ -27,13 +27,13 @@ httpHandler.get("/", function (req, res) {
 // When a new client connects
 serverSocket.on("connection", function (socket) {
     console.log("a client connected");
-    // Initialize this client and add to list
+    // Add client to the server list and set initial states
     clientDataList.push({
         "clientId": socket.id,
         "state": {
-            "pos": { "x": 300 + temp, "y": 200 + temp },
-            "rot": 0,
-            "turRot": 0
+            "force": { "x": 300 + temp, "y": 200 + temp },
+            "torque": 0,
+            "turAngle": 0
         }
     });
     temp += 130;
@@ -41,12 +41,13 @@ serverSocket.on("connection", function (socket) {
     // When this client disconnects
     socket.on("disconnect", () => {
         console.log("a client disconnected");
-        // Remove client from server list
+        // Remove this client from server list
         let indexOfDisconnectedClient = clientDataList.map(function (obj) {
             return obj.clientId;
         }).indexOf(socket.id);
         clientDataList.splice(indexOfDisconnectedClient, 1);
-        // Direct all clients to remove client from thier entities list
+
+        // Direct all clients to remove this client from thier entities list
         serverSocket.emit("remove tank", socket.id);
     });
 
@@ -57,37 +58,39 @@ serverSocket.on("connection", function (socket) {
         // Direct this client to create self and all existing clients
         socket.emit("create tanks", clientDataList);
 
-        // *** This client will update server on: *** //
-        socket.on("tank position", function (data) {
-            // Store state
+        // *** This client will send its state updates to the server: *** //
+        socket.on("tank movement", function (data) {
+            // Update the state changes in the server list
             for (let i = 0; i < clientDataList.length; i++) {
                 const client = clientDataList[i];
                 if (client.clientId == data.clientId) {
-                    clientDataList[i].state.pos = data.pos;
+                    clientDataList[i].state.force = data.force;
                 }
             }
-            // Broadcast to everyone
-            serverSocket.emit("tank position", data);
+            // Broadcast state changes to everyone
+            serverSocket.emit("tank movement", data);
         });
         socket.on("tank rotation", function (data) {
+            // Update the state changes in the server list
             for (let i = 0; i < clientDataList.length; i++) {
                 const client = clientDataList[i];
                 if (client.clientId == data.clientId) {
-                    clientDataList[i].state.rot = data.rot;
+                    clientDataList[i].state.torque = data.torque;
                 }
             }
-            // Broadcast to everyone
+            // Broadcast state changes to everyone
             serverSocket.emit("tank rotation", data);
         });
-        socket.on("turret rotation", function (data) {
+        socket.on("turret angle", function (data) {
+            // Update the state changes in the server list
             for (let i = 0; i < clientDataList.length; i++) {
                 const client = clientDataList[i];
                 if (client.clientId == data.clientId) {
-                    clientDataList[i].state.turRot = data.rot;
+                    clientDataList[i].state.turAngle = data.turAngle;
                 }
             }
-            // Broadcast to everyone
-            serverSocket.emit("turret rotation", data);
+            // Broadcast state changes to everyone
+            serverSocket.emit("turret angle", data);
         });
     }, 500);
 });
