@@ -14,13 +14,11 @@ class Tank extends Entity {
                     turret.body
                 ],
                 isStatic: false,
-                frictionAir: 0.5,
-                restitution: 0,
-                //density: 0.002,
-                //friction: 1,
-                //inverseInertia: 0,
-                //inertia: 0,
-                //frictionStatic: 2,
+                frictionAir: 0.4,
+                restitution: 0.1,
+                density: 0.9,
+                friction: 1,
+                frictionStatic: 0,
                 // render: { fillStyle: "white" }
             }),
             false
@@ -28,8 +26,8 @@ class Tank extends Entity {
 
         // Properties of tank
         this.clientId = clientData.clientId;
-        this.speed = 6;
-        this.rotationSpeed = 380;
+        this.speed = 3;
+        this.rotationSpeed = 200;
 
         // Variables used for rendering this object
         this.index = 0;

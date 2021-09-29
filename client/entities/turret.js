@@ -27,7 +27,7 @@ class Turret extends Entity {
         // This turret representation's state in another browser is handled by the server
         let thisTurret = this;
         window.globals.clientSocket.on("turret angle", function (data) {
-            if (thisTurret.clientId == data.clientId && thisTank.clientId != window.globals.clientSocket.id) {
+            if (thisTurret.clientId == data.clientId && thisTurret.clientId != window.globals.clientSocket.id) {
                 Body.setAngle(thisTurret.body, data.turAngle);
             }
         });
@@ -56,14 +56,14 @@ class Turret extends Entity {
         if (this.clientId == window.globals.clientSocket.id) {
             // Apply rotatation for left/right turn
             if (keysDown && keysDown.KeyD == true) {
-                Body.rotate(this.body, 0.00872665);
+                Body.rotate(this.body, 0.00872665 * (this.speed * dt));
                 // Report state change to server
                 window.globals.clientSocket.emit(
                     "turret angle", { "clientId": this.clientId, "turAngle": this.body.angle }
                 );
             }
             if (keysDown && keysDown.KeyA == true) {
-                Body.rotate(this.body, -0.00872665);
+                Body.rotate(this.body, -0.00872665 * (this.speed * dt));
                 // Report state change to server
                 window.globals.clientSocket.emit(
                     "turret angle", { "clientId": this.clientId, "turAngle": this.body.angle }
