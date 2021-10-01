@@ -8,7 +8,8 @@ class Turret extends Entity {
     constructor(ss, ssData, fps, clientData) {
         super(
             Bodies.rectangle(clientData.state.force.x, clientData.state.force.y, 150, 25, {
-                isSensor: true     // Inactivate body
+                isSensor: true,     // Inactivate body
+                render: { fillStyle: "white" }
             }),
             true
         );

@@ -10,7 +10,9 @@ class Tank extends Entity {
             // Create a compound body representing tank/turret
             Body.create({
                 parts: [
-                    Bodies.rectangle(clientData.state.force.x, clientData.state.force.y, 225, 100),
+                    Bodies.rectangle(clientData.state.force.x, clientData.state.force.y, 225, 100,
+                        { render: { fillStyle: "white" } }
+                    ),
                     turret.body
                 ],
                 isStatic: false,
@@ -19,7 +21,7 @@ class Tank extends Entity {
                 density: 0.9,
                 friction: 1,
                 frictionStatic: 0,
-                // render: { fillStyle: "white" }
+                //render: { fillStyle: "white" }
             }),
             false
         );
