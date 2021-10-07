@@ -3,21 +3,21 @@ import { Entity } from "./entity";
 // Global MatterJS Variables (to access its useful functions)
 var Body = Matter.Body;
 
-// Tank cannon sketch
-class Cannon extends Entity {
-    constructor(ss, ssData, fps, initPos) {
+class Shell extends Entity {
+    constructor(ss, ssData, fps, cannon, options) {
         super(
-            Bodies.rectangle(initPos.x, initPos.y, 50, 20, {
-                isStatic: false
+            Bodies.rectangle(cannon.body.x, cannon.body.y, 50, 20, {
+                isStatic: false,
+                isSensor: false
             }),
             false
         );
 
         // Properties of cannon
-        this.speed = 25;
-        this.type = "HE";
-        this.blastRadius = 100;
-        this.penetration = 2;
+        this.speed = options.speed;
+        this.type = options.type;
+        this.blastRadius = options.blastRadius;
+        this.penetration = options.penetration;
 
         // Variables used for rendering this object
         this.index = 0;
@@ -25,6 +25,8 @@ class Cannon extends Entity {
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
+
+
     }
 
     renderThis(ctx) {
@@ -46,13 +48,13 @@ class Cannon extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        if (keysDown && keysDown.KeyD == true) {
-
+        if (true) {
+            Body.applyForce(
+                this.body,
+                { x: this.body.position.x, y: this.body.position.y },
+                { x: 0.1, y: 0.1 }
+            );
         }
-        if (keysDown && keysDown.KeyA == true) {
-
-        }
-
         // Update index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;

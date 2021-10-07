@@ -14,7 +14,7 @@ addEventListener("load", function (e) {
     window.globals.images = {};
     window.globals.entities = [];
     window.globals.imagePaths = [
-        "./images_and_data/mSixTankBodyu.png",
+        "./images_and_data/mSixTankBody.png",
         "./images_and_data/mSixTankTurret.png",
     ];
     window.globals.clientSocket = io();     // Connect with server
@@ -91,7 +91,7 @@ addEventListener("load", function (e) {
                 );
                 // Create tank
                 var mSixTank = new Tank(
-                    window.globals.images["./images_and_data/mSixTankBodyu.png"],
+                    window.globals.images["./images_and_data/mSixTankBody.png"],
                     spriteSheetsData.mSixTankBodyData,
                     0,
                     client,
@@ -114,7 +114,7 @@ addEventListener("load", function (e) {
             );
             // Create tank
             var mSixTank = new Tank(
-                window.globals.images["./images_and_data/mSixTankBodyu.png"],
+                window.globals.images["./images_and_data/mSixTankBody.png"],
                 spriteSheetsData.mSixTankBodyData,
                 0,
                 clientData,

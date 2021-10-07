@@ -63,15 +63,16 @@ addEventListener("load", function () {
 
     var ground = Bodies.rectangle(400, 400, 810, 60, { isStatic: true });
 
+    /*
     // Test 1 Compound Method
     Body.setCentre(boxA, { x: -50, y: 0 }, true);
     Body.setPosition(boxA, boxB.position);
     var compoundBody = Bodies.circle(400, 200, 100, {
-        parts: [boxA, boxB],
-        //vertices: [{ x: 0, y: 0 }, { x: 600, y: 600 }, { x: 600, y: 0 }, { x: 0, y: 600 }]
-    }); // TODO: get circle to collide with walls tomorrow.
+        parts: [boxA, boxB]
+    });
+    
 
-    /*
+    
     // Test 2 Constraint Method
     var con = Constraint.create({
         bodyA: boxA,
@@ -79,12 +80,13 @@ addEventListener("load", function () {
         stiffness: 1,
         length: 0
     });
+    */
 
     // Test 3 Composite Method
     var c = Composite.create({
         constraints: [con]
     });
-    */
+
 
     // add all of the bodies to the world
     Composite.add(engine.world, [compoundBody, ground]);
