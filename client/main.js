@@ -3,6 +3,7 @@
 import * as spriteSheetsData from './spritesheetsData.js';
 import { Tank } from './entities/tank.js';
 import { Turret } from './entities/turret.js';
+import { Shell } from './entities/shell.js'; ///
 
 /*** On Window Load ***/
 addEventListener("load", function (e) {
@@ -16,6 +17,7 @@ addEventListener("load", function (e) {
     window.globals.imagePaths = [
         "./images_and_data/mSixTankBody.png",
         "./images_and_data/mSixTankTurret.png",
+        "./images_and_data/shell.png"
     ];
     window.globals.clientSocket = io();     // Connect with server
 
@@ -127,7 +129,7 @@ addEventListener("load", function (e) {
 
         // Create sphere for testing
         var box = Bodies.circle(200, 200, 50, {
-            isStatic: false,
+            isStatic: true,
             restitution: 0.5,
             render: {
                 sprite: {
@@ -137,7 +139,22 @@ addEventListener("load", function (e) {
                 }
             }
         });
-        Composite.add(engine.world, [box]);
+
+        // TEST SHELL
+        var shell = new Shell(
+            window.globals.images["./images_and_data/shell.png"],
+            spriteSheetsData.shellData,
+            1,
+            box,
+            {
+                speed: 10,
+                type: "HE",
+                blastRadius: 10,
+                penetration: 2
+            }
+        );
+        window.globals.entities.push(shell);
+        Composite.add(engine.world, [box, shell.body]);
 
         /*** Game Loop ***/
         var delta = 0;

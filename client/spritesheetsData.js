@@ -6,9 +6,11 @@
 // Import JSONs
 import { mSixTankBodyData } from "./images_and_data/mSixTankBodyData.js";
 import { mSixTankTurretData } from "./images_and_data/mSixTankTurretData.js";
+import { shellData } from "./images_and_data/shellData.js";
 
 // Export JSONs
 export {
     mSixTankBodyData,
-    mSixTankTurretData
+    mSixTankTurretData,
+    shellData
 };

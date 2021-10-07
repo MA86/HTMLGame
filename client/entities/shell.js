@@ -1,19 +1,21 @@
-import { Entity } from "./entity";
+import { Entity } from "./entity.js";
 
 // Global MatterJS Variables (to access its useful functions)
 var Body = Matter.Body;
+var Bodies = Matter.Bodies;
 
 class Shell extends Entity {
     constructor(ss, ssData, fps, cannon, options) {
         super(
-            Bodies.rectangle(cannon.body.x, cannon.body.y, 50, 20, {
+            Bodies.rectangle(cannon.position.x, cannon.position.y + 100, 50, 20, {
                 isStatic: false,
-                isSensor: false
+                isSensor: true
             }),
             false
         );
 
         // Properties of cannon
+        this.cannon = cannon;
         this.speed = options.speed;
         this.type = options.type;
         this.blastRadius = options.blastRadius;
@@ -26,7 +28,8 @@ class Shell extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
 
-
+        // TEST
+        this.flag = true;
     }
 
     renderThis(ctx) {
@@ -48,13 +51,19 @@ class Shell extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        if (true) {
+        if (this.flag) {
+            // Prepare a vector in the direction of cannon
+            let dx = Math.cos(this.cannon.angle) * (this.speed * dt);
+            let dy = Math.sin(this.cannon.angle) * (this.speed * dt);
+
             Body.applyForce(
                 this.body,
                 { x: this.body.position.x, y: this.body.position.y },
-                { x: 0.1, y: 0.1 }
+                { x: 0.2, y: 0.2 }
             );
+            this.flag = false;
         }
+
         // Update index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;
@@ -72,12 +81,6 @@ class Shell extends Entity {
     onImpact() {
         // Event?
     }
-
-    renderThis() {
-        // Render animation as usual
-    }
-
-    updateThis() {
-        // Physics
-    }
 }
+
+export { Shell };
