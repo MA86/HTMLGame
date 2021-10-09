@@ -147,7 +147,7 @@ addEventListener("load", function (e) {
             1,
             box,
             {
-                speed: 10,
+                speed: 20,
                 type: "HE",
                 blastRadius: 10,
                 penetration: 2

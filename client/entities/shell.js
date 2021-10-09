@@ -7,19 +7,22 @@ var Bodies = Matter.Bodies;
 class Shell extends Entity {
     constructor(ss, ssData, fps, cannon, options) {
         super(
-            Bodies.rectangle(cannon.position.x, cannon.position.y + 100, 50, 20, {
+            Bodies.rectangle(cannon.position.x, cannon.position.y + 100, 220, 4, {
                 isStatic: false,
-                isSensor: true
+                isSensor: false
             }),
             false
         );
 
         // Properties of cannon
-        this.cannon = cannon;
         this.speed = options.speed;
         this.type = options.type;
         this.blastRadius = options.blastRadius;
         this.penetration = options.penetration;
+
+        this.position;
+        this.angle = 3;
+        this.ready = true;
 
         // Variables used for rendering this object
         this.index = 0;
@@ -27,9 +30,15 @@ class Shell extends Entity {
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
-
-        // TEST
-        this.flag = true;
+        // TODO: remove wait time from shell, it's turret property!
+        // TODO: delete shell from world after certain distance or impact.
+        // TODO: should turret also apply force or 'fire' the shell? or perhaps tank should manage this?
+        // Wait 3s before ready to fire again
+        let thisShell = this;
+        setInterval(function () {
+            console.log("OK")
+            thisShell.ready = true;
+        }, 3000);
     }
 
     renderThis(ctx) {
@@ -51,17 +60,18 @@ class Shell extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        if (this.flag) {
-            // Prepare a vector in the direction of cannon
-            let dx = Math.cos(this.cannon.angle) * (this.speed * dt);
-            let dy = Math.sin(this.cannon.angle) * (this.speed * dt);
+        // Prepare a vector in the direction of fire
+        let dx = Math.cos(this.angle) * (this.speed * dt);
+        let dy = Math.sin(this.angle) * (this.speed * dt);
 
+        if (this.ready && keysDown && keysDown.Space == true) {
+            console.log("FORCE")
             Body.applyForce(
                 this.body,
                 { x: this.body.position.x, y: this.body.position.y },
-                { x: 0.2, y: 0.2 }
+                { x: dx, y: dy }
             );
-            this.flag = false;
+            this.ready = false;
         }
 
         // Update index
@@ -72,6 +82,10 @@ class Shell extends Entity {
             this.index = this.index % this.spriteSheetData.frames.length;
             this.timeTracker = 0;
         }
+    }
+
+    detonate() {
+
     }
 
     animation() {

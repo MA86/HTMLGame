@@ -42,6 +42,7 @@ class Tank extends Entity {
         Body.setCentre(turret.body, { x: -50, y: -5 }, true);
         // Reposition turret body based on this new center-of-rotation
         Body.setPosition(turret.body, this.body.position);
+        // Add child turret
         this.children.push(turret);
 
         // This tank's representation in another browser is set by the server

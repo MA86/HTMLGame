@@ -70,6 +70,10 @@ class Turret extends Entity {
                     "turret angle", { "clientId": this.clientId, "turAngle": this.body.angle }
                 );
             }
+            // TODO: turret fire gun...
+            if (keysDown && keysDown.Space == true) {
+                // shell.detonate
+            }
         }
 
         // Update index
