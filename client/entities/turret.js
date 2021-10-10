@@ -73,6 +73,7 @@ class Turret extends Entity {
             // TODO: turret fire gun...
             if (keysDown && keysDown.Space == true) {
                 // shell.detonate
+                // add to world
             }
         }
 

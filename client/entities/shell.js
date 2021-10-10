@@ -22,7 +22,6 @@ class Shell extends Entity {
 
         this.position;
         this.angle = 3;
-        this.ready = true;
 
         // Variables used for rendering this object
         this.index = 0;
@@ -30,15 +29,11 @@ class Shell extends Entity {
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
-        // TODO: remove wait time from shell, it's turret property!
-        // TODO: delete shell from world after certain distance or impact.
-        // TODO: should turret also apply force or 'fire' the shell? or perhaps tank should manage this?
-        // Wait 3s before ready to fire again
-        let thisShell = this;
-        setInterval(function () {
-            console.log("OK")
-            thisShell.ready = true;
-        }, 3000);
+        // TODO: remove wait time from shell!
+
+        // Prepare a vector in the direction of fire
+        let dx = Math.cos(this.angle) * (this.speed * dt);
+        let dy = Math.sin(this.angle) * (this.speed * dt);
     }
 
     renderThis(ctx) {
@@ -60,20 +55,6 @@ class Shell extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        // Prepare a vector in the direction of fire
-        let dx = Math.cos(this.angle) * (this.speed * dt);
-        let dy = Math.sin(this.angle) * (this.speed * dt);
-
-        if (this.ready && keysDown && keysDown.Space == true) {
-            console.log("FORCE")
-            Body.applyForce(
-                this.body,
-                { x: this.body.position.x, y: this.body.position.y },
-                { x: dx, y: dy }
-            );
-            this.ready = false;
-        }
-
         // Update index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;
@@ -85,10 +66,15 @@ class Shell extends Entity {
     }
 
     detonate() {
-
+        //TODO
+        Body.applyForce(
+            this.body,
+            { x: this.body.position.x, y: this.body.position.y },
+            { x: dx, y: dy }
+        );
     }
 
-    animation() {
+    animate() {
 
     }
 
