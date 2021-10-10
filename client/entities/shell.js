@@ -7,7 +7,7 @@ var Bodies = Matter.Bodies;
 class Shell extends Entity {
     constructor(ss, ssData, fps, cannon, options) {
         super(
-            Bodies.rectangle(cannon.position.x, cannon.position.y + 100, 220, 4, {
+            Bodies.rectangle(cannon.position.x, cannon.position.y, 220, 4, {
                 isStatic: false,
                 isSensor: false
             }),
@@ -22,6 +22,7 @@ class Shell extends Entity {
 
         this.position;
         this.angle = 3;
+        this.readyToFire = false;
 
         // Variables used for rendering this object
         this.index = 0;
@@ -31,9 +32,14 @@ class Shell extends Entity {
         this.spriteSheet = ss;
         // TODO: remove wait time from shell!
 
-        // Prepare a vector in the direction of fire
-        let dx = Math.cos(this.angle) * (this.speed * dt);
-        let dy = Math.sin(this.angle) * (this.speed * dt);
+        // Prepare a force vector in the direction of fire
+        this.fdx = Math.cos(this.angle) * (this.speed * dt);
+        this.fdy = Math.sin(this.angle) * (this.speed * dt);
+
+        // TODO: Prepare a position vector in front of the turret
+        this.pdx = Math.cos(cannon.angle) * 100;
+        this.pdy = Math.sin(cannon.angle) * 100;
+        Body.setPosition(this.body, { x: this.pdx, y: this.pdy });
     }
 
     renderThis(ctx) {
@@ -55,6 +61,8 @@ class Shell extends Entity {
     }
 
     updateThis(keysDown, dt) {
+        this.detonate();
+
         // Update index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;
@@ -67,15 +75,21 @@ class Shell extends Entity {
 
     detonate() {
         //TODO
-        Body.applyForce(
-            this.body,
-            { x: this.body.position.x, y: this.body.position.y },
-            { x: dx, y: dy }
-        );
+        let thisShell = this;
+        if (thisShell.readyToFire = true) {
+            Body.applyForce(
+                thisShell.body,
+                { x: thisShell.body.position.x, y: thisShell.body.position.y },
+                { x: thisShell.fdx, y: thisShell.fdy }
+            );
+        }
     }
 
-    animate() {
-
+    setLoadTime(time) {
+        let thisShell = this;
+        setInterval(function () {
+            thisShell.readyToFire = true;
+        });
     }
 
     onImpact() {
