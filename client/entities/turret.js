@@ -17,6 +17,7 @@ class Turret extends Entity {
         // Properties of turret
         this.clientId = clientData.clientId;
         this.speed = 45;
+        this.readyToFire = false;
 
         // Variables used for rendering this object
         this.index = 0;
@@ -72,8 +73,11 @@ class Turret extends Entity {
             }
             // TODO: turret fire gun...
             if (keysDown && keysDown.Space == true) {
-                // shell.detonate
-                // add to world
+                if (this.readyToFire = true) {
+                    // create a shell
+                    // add shell to the world
+                    // shell will detonate
+                }
             }
         }
 
@@ -85,6 +89,13 @@ class Turret extends Entity {
             this.index = this.index % this.spriteSheetData.frames.length;
             this.timeTracker = 0;
         }
+    }
+    // TODO
+    setLoadTime(time) {
+        let thisTurret = this;
+        setInterval(function () {
+            thisTurret.readyToFire = true;
+        }, time);
     }
 }
 

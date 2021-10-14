@@ -140,7 +140,7 @@ addEventListener("load", function (e) {
             }
         });
 
-        // TEST SHELL
+        // TODO: TEST SHELL
         var shell = new Shell(
             window.globals.images["./images_and_data/shell.png"],
             spriteSheetsData.shellData,

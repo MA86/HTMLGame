@@ -14,14 +14,14 @@ class Shell extends Entity {
             false
         );
 
-        // Properties of cannon
+        // Shell options
+        // TODO: this.clientId = parent?
         this.speed = options.speed;
         this.type = options.type;
         this.blastRadius = options.blastRadius;
         this.penetration = options.penetration;
+        this.loadTime = options.loadTime;
 
-        this.position;
-        this.angle = 3;
         this.readyToFire = false;
 
         // Variables used for rendering this object
@@ -30,11 +30,12 @@ class Shell extends Entity {
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
+
         // TODO: remove wait time from shell!
 
         // Prepare a force vector in the direction of fire
-        this.fdx = Math.cos(this.angle) * (this.speed * dt);
-        this.fdy = Math.sin(this.angle) * (this.speed * dt);
+        this.fdx = Math.cos(cannon.angle) * (this.speed * dt);
+        this.fdy = Math.sin(cannon.angle) * (this.speed * dt);
 
         // TODO: Prepare a position vector in front of the turret
         this.pdx = Math.cos(cannon.angle) * 100;
@@ -83,13 +84,6 @@ class Shell extends Entity {
                 { x: thisShell.fdx, y: thisShell.fdy }
             );
         }
-    }
-
-    setLoadTime(time) {
-        let thisShell = this;
-        setInterval(function () {
-            thisShell.readyToFire = true;
-        });
     }
 
     onImpact() {
