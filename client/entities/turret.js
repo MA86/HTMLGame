@@ -43,19 +43,19 @@ class Turret extends Entity {
 
     renderThis(ctx) {
         let ctxCenter = {
-            "x": this.spriteSheetData.mSixTurretData.frames[this.index].frame.w / 2,
-            "y": this.spriteSheetData.mSixTurretData.frames[this.index].frame.h / 2
+            "x": this.spriteSheetData.mSixTankTurretData.frames[this.index].frame.w / 2,
+            "y": this.spriteSheetData.mSixTankTurretData.frames[this.index].frame.h / 2
         };
         ctx.drawImage(
             this.spriteSheet["./images_and_data/mSixTankTurret.png"],
-            this.spriteSheetData.mSixTurretData.frames[this.index].frame.x,
-            this.spriteSheetData.mSixTurretData.frames[this.index].frame.y,
-            this.spriteSheetData.mSixTurretData.frames[this.index].frame.w,
-            this.spriteSheetData.mSixTurretData.frames[this.index].frame.h,
+            this.spriteSheetData.mSixTankTurretData.frames[this.index].frame.x,
+            this.spriteSheetData.mSixTankTurretData.frames[this.index].frame.y,
+            this.spriteSheetData.mSixTankTurretData.frames[this.index].frame.w,
+            this.spriteSheetData.mSixTankTurretData.frames[this.index].frame.h,
             -ctxCenter.x,
             -ctxCenter.y,
-            this.spriteSheetData.mSixTurretData.frames[this.index].frame.w,
-            this.spriteSheetData.mSixTurretData.frames[this.index].frame.h
+            this.spriteSheetData.mSixTankTurretData.frames[this.index].frame.w,
+            this.spriteSheetData.mSixTankTurretData.frames[this.index].frame.h
         );
     }
 
@@ -81,7 +81,7 @@ class Turret extends Entity {
             if (keysDown && keysDown.Space == true) {
                 if (this.readyToFire = true) {
                     // Create a new round
-                    shell = new Shell(
+                    let shell = new Shell(
                         this.spriteSheet["./images_and_data/shell.png"],
                         this.spriteSheetData.shellData,
                         0,

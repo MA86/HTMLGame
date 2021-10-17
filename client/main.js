@@ -89,7 +89,8 @@ addEventListener("load", function (e) {
                     window.globals.images,
                     spriteSheetsData,
                     0,
-                    client
+                    client,
+                    engine.world
                 );
                 // Create tank
                 var mSixTank = new Tank(
@@ -112,7 +113,8 @@ addEventListener("load", function (e) {
                 window.globals.images,
                 spriteSheetsData,
                 0,
-                clientData
+                clientData,
+                engine.world
             );
             // Create tank
             var mSixTank = new Tank(
@@ -139,23 +141,23 @@ addEventListener("load", function (e) {
                 }
             }
         });
-
-        // TODO: TEST SHELL
-        var shell = new Shell(
-            window.globals.images["./images_and_data/shell.png"],
-            spriteSheetsData.shellData,
-            1,
-            box,
-            {
-                speed: 20,
-                type: "HE",
-                blastRadius: 10,
-                penetration: 2
-            }
-        );
-        window.globals.entities.push(shell);
-        Composite.add(engine.world, [box, shell.body]);
-
+        /*
+                // TODO: TEST SHELL
+                var shell = new Shell(
+                    window.globals.images["./images_and_data/shell.png"],
+                    spriteSheetsData.shellData,
+                    1,
+                    box,
+                    {
+                        speed: 20,
+                        type: "HE",
+                        blastRadius: 10,
+                        penetration: 2
+                    }
+                );
+                window.globals.entities.push(shell);
+                Composite.add(engine.world, [box, shell.body]);
+        */
         /*** Game Loop ***/
         var delta = 0;
         var timeNow = 0;

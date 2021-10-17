@@ -11,7 +11,7 @@ class Shell extends Entity {
                 isStatic: false,
                 isSensor: false
             }),
-            false // Remove
+            true
         );
 
         // Shell options
@@ -32,9 +32,9 @@ class Shell extends Entity {
 
         // TODO: remove wait time from shell!
 
-        // Prepare a force vector in the direction of fire
-        this.fdx = Math.cos(cannon.angle) * (this.speed * dt);
-        this.fdy = Math.sin(cannon.angle) * (this.speed * dt);
+        // TODO: add dt. Prepare a force vector in the direction of fire
+        this.fdx = Math.cos(cannon.angle) * (this.speed);
+        this.fdy = Math.sin(cannon.angle) * (this.speed);
 
         // TODO: Prepare a position vector in front of the turret
         this.pdx = Math.cos(cannon.angle) * 100;
