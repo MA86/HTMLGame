@@ -10,6 +10,7 @@ class Entity {
 
     render(ctx) {
         if (this.isChild) {
+            // TODO: remove this completely!
             // If child, move context to local position
             ctx.save();
             ctx.translate(this.position.x, this.position.y);

@@ -86,8 +86,8 @@ addEventListener("load", function (e) {
                 const client = clientList[i];
                 // Create turret
                 var mSixTurret = new Turret(
-                    window.globals.images["./images_and_data/mSixTankTurret.png"],
-                    spriteSheetsData.mSixTankTurretData,
+                    window.globals.images,
+                    spriteSheetsData,
                     0,
                     client
                 );
@@ -109,8 +109,8 @@ addEventListener("load", function (e) {
         window.globals.clientSocket.on("create tank", function (clientData) {
             // Create turret
             var mSixTurret = new Turret(
-                window.globals.images["./images_and_data/mSixTankTurret.png"],
-                spriteSheetsData.mSixTankTurretData,
+                window.globals.images,
+                spriteSheetsData,
                 0,
                 clientData
             );

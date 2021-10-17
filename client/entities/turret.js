@@ -1,11 +1,13 @@
 import { Entity } from './entity.js';
+import { Shell } from './shell.js';
 
 // Global MatterJS Variables (to access its useful functions)
 var Body = Matter.Body;
 var Bodies = Matter.Bodies;
+var Composite = Matter.Composite;
 
 class Turret extends Entity {
-    constructor(ss, ssData, fps, clientData) {
+    constructor(ss, ssData, fps, clientData, wrld) {
         super(
             Bodies.rectangle(clientData.state.force.x, clientData.state.force.y, 150, 25, {
                 isSensor: true,     // Inactivate body
@@ -15,6 +17,7 @@ class Turret extends Entity {
         );
 
         // Properties of turret
+        this.engineWorld = wrld;
         this.clientId = clientData.clientId;
         this.speed = 45;
         this.readyToFire = false;
@@ -24,7 +27,7 @@ class Turret extends Entity {
         this.framesPerSecond = fps;
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
-        this.spriteSheet = ss;
+        this.spriteSheet = ss;      // Note: keyname is a path made at main.js
 
         // This turret representation's state in another browser is handled by the server
         let thisTurret = this;
@@ -33,23 +36,26 @@ class Turret extends Entity {
                 Body.setAngle(thisTurret.body, data.turAngle);
             }
         });
+
+        // Wait 3 seconds between fire
+        this.setLoadTime(3000);
     }
 
     renderThis(ctx) {
         let ctxCenter = {
-            "x": this.spriteSheetData.frames[this.index].frame.w / 2,
-            "y": this.spriteSheetData.frames[this.index].frame.h / 2
+            "x": this.spriteSheetData.mSixTurretData.frames[this.index].frame.w / 2,
+            "y": this.spriteSheetData.mSixTurretData.frames[this.index].frame.h / 2
         };
         ctx.drawImage(
-            this.spriteSheet,
-            this.spriteSheetData.frames[this.index].frame.x,
-            this.spriteSheetData.frames[this.index].frame.y,
-            this.spriteSheetData.frames[this.index].frame.w,
-            this.spriteSheetData.frames[this.index].frame.h,
+            this.spriteSheet["./images_and_data/mSixTankTurret.png"],
+            this.spriteSheetData.mSixTurretData.frames[this.index].frame.x,
+            this.spriteSheetData.mSixTurretData.frames[this.index].frame.y,
+            this.spriteSheetData.mSixTurretData.frames[this.index].frame.w,
+            this.spriteSheetData.mSixTurretData.frames[this.index].frame.h,
             -ctxCenter.x,
             -ctxCenter.y,
-            this.spriteSheetData.frames[this.index].frame.w,
-            this.spriteSheetData.frames[this.index].frame.h
+            this.spriteSheetData.mSixTurretData.frames[this.index].frame.w,
+            this.spriteSheetData.mSixTurretData.frames[this.index].frame.h
         );
     }
 
@@ -74,9 +80,23 @@ class Turret extends Entity {
             // TODO: turret fire gun...
             if (keysDown && keysDown.Space == true) {
                 if (this.readyToFire = true) {
-                    // create a shell
-                    // add shell to the world
-                    // shell will detonate
+                    // Create a new round
+                    shell = new Shell(
+                        this.spriteSheet["./images_and_data/shell.png"],
+                        this.spriteSheetData.shellData,
+                        0,
+                        this,
+                        {
+                            speed: 45,
+                            type: "HE",
+                            blastRadius: 2,
+                            penetration: 2
+                        }
+                    );
+                    // Add shell as child
+                    this.children.push(shell);
+                    // Add shell to the world
+                    Composite.add(this.engineWorld, [shell.body]);
                 }
             }
         }
@@ -86,10 +106,11 @@ class Turret extends Entity {
         let delay = 1 / this.framesPerSecond;
         if (this.timeTracker >= delay) {
             this.index += 1;
-            this.index = this.index % this.spriteSheetData.frames.length;
+            this.index = this.index % this.spriteSheetData.mSixTurretData.frames.length;
             this.timeTracker = 0;
         }
     }
+
     // TODO
     setLoadTime(time) {
         let thisTurret = this;

@@ -11,7 +11,7 @@ class Shell extends Entity {
                 isStatic: false,
                 isSensor: false
             }),
-            false
+            false // Remove
         );
 
         // Shell options
@@ -20,9 +20,8 @@ class Shell extends Entity {
         this.type = options.type;
         this.blastRadius = options.blastRadius;
         this.penetration = options.penetration;
-        this.loadTime = options.loadTime;
 
-        this.readyToFire = false;
+        this.detonated = false;
 
         // Variables used for rendering this object
         this.index = 0;
@@ -77,17 +76,21 @@ class Shell extends Entity {
     detonate() {
         //TODO
         let thisShell = this;
-        if (thisShell.readyToFire = true) {
+        if (thisShell.detonated = false) {
             Body.applyForce(
                 thisShell.body,
                 { x: thisShell.body.position.x, y: thisShell.body.position.y },
                 { x: thisShell.fdx, y: thisShell.fdy }
             );
+            // It's now detonated
+            thisShell.detonated = true;
         }
     }
 
     onImpact() {
-        // Event?
+        // Destroy this shell.
+        // Remove this shell from world
+        // Remove this shell from cannon parent
     }
 }
 
