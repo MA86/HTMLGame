@@ -7,11 +7,11 @@ var Bodies = Matter.Bodies;
 class Shell extends Entity {
     constructor(ss, ssData, fps, cannon, options) {
         super(
-            Bodies.rectangle(cannon.position.x, cannon.position.y, 220, 4, {
+            Bodies.rectangle(cannon.body.position.x, cannon.body.position.y, 20, 20, {
                 isStatic: false,
                 isSensor: false
             }),
-            true
+            false
         );
 
         // Shell options
@@ -33,12 +33,12 @@ class Shell extends Entity {
         // TODO: remove wait time from shell!
 
         // TODO: add dt. Prepare a force vector in the direction of fire
-        this.fdx = Math.cos(cannon.angle) * (this.speed);
-        this.fdy = Math.sin(cannon.angle) * (this.speed);
+        this.fdx = Math.cos(cannon.body.angle) * (this.speed);
+        this.fdy = Math.sin(cannon.body.angle) * (this.speed);
 
         // TODO: Prepare a position vector in front of the turret
-        this.pdx = Math.cos(cannon.angle) * 100;
-        this.pdy = Math.sin(cannon.angle) * 100;
+        this.pdx = Math.cos(cannon.body.angle) * 100;
+        this.pdy = Math.sin(cannon.body.angle) * 100;
         Body.setPosition(this.body, { x: this.pdx, y: this.pdy });
     }
 
