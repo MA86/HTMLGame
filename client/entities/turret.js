@@ -77,17 +77,18 @@ class Turret extends Entity {
                     "turret angle", { "clientId": this.clientId, "turAngle": this.body.angle }
                 );
             }
-            // TODO: turret fire gun...
+            // TODO: turret fire gun... keysDown && keysDown.Space == true
             if (keysDown && keysDown.Space == true) {
-                if (this.readyToFire = true) {
+                if (this.readyToFire) {
                     // Create a new round
+                    let thisTurret = this;
                     let shell = new Shell(
                         this.spriteSheet["./images_and_data/shell.png"],
                         this.spriteSheetData.shellData,
                         0,
-                        this,
+                        thisTurret,
                         {
-                            speed: 45,
+                            speed: 0.004,
                             type: "HE",
                             blastRadius: 2,
                             penetration: 2
@@ -97,6 +98,7 @@ class Turret extends Entity {
                     this.children.push(shell);
                     // Add shell to the world
                     Composite.add(this.engineWorld, [shell.body]);
+                    this.readyToFire = false;
                 }
             }
         }

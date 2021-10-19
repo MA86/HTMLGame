@@ -7,7 +7,7 @@ var Bodies = Matter.Bodies;
 class Shell extends Entity {
     constructor(ss, ssData, fps, cannon, options) {
         super(
-            Bodies.rectangle(cannon.body.position.x, cannon.body.position.y, 20, 20, {
+            Bodies.rectangle(cannon.body.position.x, cannon.body.position.y, 10, 10, {
                 isStatic: false,
                 isSensor: false
             }),
@@ -37,9 +37,10 @@ class Shell extends Entity {
         this.fdy = Math.sin(cannon.body.angle) * (this.speed);
 
         // TODO: Prepare a position vector in front of the turret
+        // PROBLEM: does not fire straight when tank rotates.
         this.pdx = Math.cos(cannon.body.angle) * 100;
         this.pdy = Math.sin(cannon.body.angle) * 100;
-        Body.setPosition(this.body, { x: this.pdx, y: this.pdy });
+        Body.setPosition(this.body, { x: this.pdx + cannon.body.position.x, y: this.pdy + cannon.body.position.y });
     }
 
     renderThis(ctx) {
@@ -76,7 +77,7 @@ class Shell extends Entity {
     detonate() {
         //TODO
         let thisShell = this;
-        if (thisShell.detonated = false) {
+        if (!thisShell.detonated) {
             Body.applyForce(
                 thisShell.body,
                 { x: thisShell.body.position.x, y: thisShell.body.position.y },
