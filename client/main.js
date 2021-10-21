@@ -3,7 +3,7 @@
 import * as spriteSheetsData from './spritesheetsData.js';
 import { Tank } from './entities/tank.js';
 import { Turret } from './entities/turret.js';
-import { Shell } from './entities/shell.js'; ///
+import { Shell } from './entities/shell.js';
 
 /*** On Window Load ***/
 addEventListener("load", function (e) {

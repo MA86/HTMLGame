@@ -9,22 +9,22 @@ class Entity {
     }
 
     render(ctx) {
+        // This logic is for rendering locally vs globally
         if (this.isChild) {
-            // TODO: remove this completely!
-            // If child, move context to local position
+            // Move context to parent position
             ctx.save();
             ctx.translate(this.position.x, this.position.y);
             ctx.rotate(this.body.angle);
         } else {
-            // If parent, move context to global position
+            // Move context to global position
             ctx.save();
             ctx.translate(this.body.position.x, this.body.position.y);
             ctx.rotate(this.body.angle);
         }
 
-        // Render image
+        // Render self
         this.renderThis(ctx);
-        // Render children's images
+        // Render children
         for (let i = 0; i < this.children.length; i++) {
             const child = this.children[i];
             child.render(ctx);
@@ -39,10 +39,10 @@ class Entity {
     }
 
     update(keysDown, dt) {
-        // Apply physics
+        // Update self
         this.updateThis(keysDown, dt);
 
-        // Apply children's physics
+        // Update children
         for (let i = 0; i < this.children.length; i++) {
             const child = this.children[i];
             child.update(keysDown, dt);

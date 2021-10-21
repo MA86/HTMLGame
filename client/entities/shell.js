@@ -30,20 +30,15 @@ class Shell extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
 
-        // TODO: 
-        // write vector additions more clear for understanding.
-        // NEW: create an independent shell which is an entity, adds itself to entities array on fire!
+        // Prepare a directional force vector
+        this.fdx = Math.cos(turret.body.angle + turret.parent.body.angle) * this.speed;
+        this.fdy = Math.sin(turret.body.angle + turret.parent.body.angle) * this.speed;
 
-        // TODO: add dt. Prepare a force vector in the direction of fire
-        this.fdx = Math.cos(turret.body.angle + turret.parent.body.angle) * (this.speed);
-        this.fdy = Math.sin(turret.body.angle + turret.parent.body.angle) * (this.speed);
-
-        // TODO: Prepare a position vector in front of the turret
-        // PROBLEM: does not fire straight when tank rotates.
+        // Prepare a directional position vector
         this.pdx = Math.cos(turret.body.angle + turret.parent.body.angle) * 140;
         this.pdy = Math.sin(turret.body.angle + turret.parent.body.angle) * 140;
 
-        // Add the Shell's spawn vec to Turret's position vec, set Shell at that pos.
+        // Add two vectors to create a new position vector for Shell
         Body.setPosition(
             this.body,
             { x: this.pdx + turret.body.position.x, y: this.pdy + turret.body.position.y }
@@ -71,7 +66,7 @@ class Shell extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        this.detonate();
+        this.detonate(dt);
 
         // Update index
         this.timeTracker += dt;
@@ -83,16 +78,15 @@ class Shell extends Entity {
         }
     }
 
-    detonate() {
-        //TODO
+    detonate(dt) {
+        // Apply force to shell one time
         let thisShell = this;
         if (!thisShell.detonated) {
             Body.applyForce(
                 thisShell.body,
                 { x: thisShell.body.position.x, y: thisShell.body.position.y },
-                { x: thisShell.fdx, y: thisShell.fdy }
+                { x: thisShell.fdx * dt, y: thisShell.fdy * dt }
             );
-            // It's now detonated
             thisShell.detonated = true;
         }
     }

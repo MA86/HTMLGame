@@ -40,7 +40,7 @@ class Tank extends Entity {
 
         // TODO: move to Turret class?
         // Change turret body's center-of-rotation from middle to left
-        Body.setCentre(turret.body, { x: -50, y: -5 }, true);
+        Body.setCentre(turret.body, { x: -48, y: -4 }, true);
         // Reposition turret body based on this new center-of-rotation
         Body.setPosition(turret.body, this.body.position);
         // Add child turret

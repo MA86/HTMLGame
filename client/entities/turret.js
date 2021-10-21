@@ -9,7 +9,7 @@ var Composite = Matter.Composite;
 class Turret extends Entity {
     constructor(ss, ssData, fps, clientData, wrld) {
         super(
-            Bodies.rectangle(clientData.state.force.x, clientData.state.force.y, 150, 25, {
+            Bodies.rectangle(clientData.state.force.x, clientData.state.force.y, 148, 10, {
                 isSensor: true,     // Inactivate body
                 render: { fillStyle: "white" }
             }),
@@ -22,7 +22,7 @@ class Turret extends Entity {
         this.readyToFire = false;
 
         // Other properties
-        this.parent;  ///
+        this.parent;                // Assigned after Turret is instantiated
         this.engineWorld = wrld;
 
         // Variables used for rendering this object
@@ -41,7 +41,7 @@ class Turret extends Entity {
         });
 
         // Wait 3 seconds between fire
-        this.setLoadTime(3000);
+        this.setLoadTime(500);
     }
 
     renderThis(ctx) {
@@ -80,7 +80,8 @@ class Turret extends Entity {
                     "turret angle", { "clientId": this.clientId, "turAngle": this.body.angle }
                 );
             }
-            // TODO: turret fire gun... keysDown && keysDown.Space == true
+
+            // Fire a shell
             if (keysDown && keysDown.Space == true) {
                 if (this.readyToFire) {
                     // Create a new round
@@ -91,15 +92,15 @@ class Turret extends Entity {
                         0,
                         thisTurret,
                         {
-                            speed: 0,
+                            speed: 0.1,
                             type: "HE",
                             blastRadius: 2,
                             penetration: 2
                         }
                     );
-                    // Add shell to entities list
+                    // Add shell to entities 
                     window.globals.entities.push(shell);
-                    // Add shell to the physics world
+                    // Add shell to the world
                     Composite.add(this.engineWorld, [shell.body]);
                     // Reset after fire
                     this.readyToFire = false;
@@ -117,7 +118,7 @@ class Turret extends Entity {
         }
     }
 
-    // TODO
+    // Shell load time
     setLoadTime(time) {
         let thisTurret = this;
         setInterval(function () {
