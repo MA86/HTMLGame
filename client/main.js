@@ -100,6 +100,9 @@ addEventListener("load", function (e) {
                     client,
                     mSixTurret
                 );
+                // Assign Tank as parent of Turret
+                mSixTurret.parent = mSixTank;
+
                 // Add tank to physics world and entities list
                 window.globals.entities.push(mSixTank);
                 Composite.add(engine.world, [mSixTank.body]);
@@ -124,6 +127,9 @@ addEventListener("load", function (e) {
                 clientData,
                 mSixTurret
             );
+            // Tank is parent of turret
+            mSixTurret.parent = mSixTank;
+
             // Add tank to physics world and entities list
             window.globals.entities.push(mSixTank);
             Composite.add(engine.world, [mSixTank.body]);

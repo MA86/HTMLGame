@@ -17,10 +17,13 @@ class Turret extends Entity {
         );
 
         // Properties of turret
-        this.engineWorld = wrld;
         this.clientId = clientData.clientId;
         this.speed = 45;
         this.readyToFire = false;
+
+        // Other properties
+        this.parent;  ///
+        this.engineWorld = wrld;
 
         // Variables used for rendering this object
         this.index = 0;
@@ -88,16 +91,17 @@ class Turret extends Entity {
                         0,
                         thisTurret,
                         {
-                            speed: 0.004,
+                            speed: 0,
                             type: "HE",
                             blastRadius: 2,
                             penetration: 2
                         }
                     );
-                    // Add shell as child
-                    this.children.push(shell);
-                    // Add shell to the world
+                    // Add shell to entities list
+                    window.globals.entities.push(shell);
+                    // Add shell to the physics world
                     Composite.add(this.engineWorld, [shell.body]);
+                    // Reset after fire
                     this.readyToFire = false;
                 }
             }

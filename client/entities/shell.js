@@ -5,9 +5,9 @@ var Body = Matter.Body;
 var Bodies = Matter.Bodies;
 
 class Shell extends Entity {
-    constructor(ss, ssData, fps, cannon, options) {
+    constructor(ss, ssData, fps, turret, options) {
         super(
-            Bodies.rectangle(cannon.body.position.x, cannon.body.position.y, 10, 10, {
+            Bodies.rectangle(turret.body.position.x, turret.body.position.y, 20, 4, {
                 isStatic: false,
                 isSensor: false
             }),
@@ -30,17 +30,26 @@ class Shell extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
 
-        // TODO: remove wait time from shell!
+        // TODO: 
+        // write vector additions more clear for understanding.
+        // NEW: create an independent shell which is an entity, adds itself to entities array on fire!
 
         // TODO: add dt. Prepare a force vector in the direction of fire
-        this.fdx = Math.cos(cannon.body.angle) * (this.speed);
-        this.fdy = Math.sin(cannon.body.angle) * (this.speed);
+        this.fdx = Math.cos(turret.body.angle + turret.parent.body.angle) * (this.speed);
+        this.fdy = Math.sin(turret.body.angle + turret.parent.body.angle) * (this.speed);
 
         // TODO: Prepare a position vector in front of the turret
         // PROBLEM: does not fire straight when tank rotates.
-        this.pdx = Math.cos(cannon.body.angle) * 100;
-        this.pdy = Math.sin(cannon.body.angle) * 100;
-        Body.setPosition(this.body, { x: this.pdx + cannon.body.position.x, y: this.pdy + cannon.body.position.y });
+        this.pdx = Math.cos(turret.body.angle + turret.parent.body.angle) * 140;
+        this.pdy = Math.sin(turret.body.angle + turret.parent.body.angle) * 140;
+
+        // Add the Shell's spawn vec to Turret's position vec, set Shell at that pos.
+        Body.setPosition(
+            this.body,
+            { x: this.pdx + turret.body.position.x, y: this.pdy + turret.body.position.y }
+        );
+        // Set Shell's angle to Turret's angle.
+        Body.setAngle(this.body, turret.body.angle + turret.parent.body.angle);
     }
 
     renderThis(ctx) {

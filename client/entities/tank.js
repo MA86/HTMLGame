@@ -38,6 +38,7 @@ class Tank extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
 
+        // TODO: move to Turret class?
         // Change turret body's center-of-rotation from middle to left
         Body.setCentre(turret.body, { x: -50, y: -5 }, true);
         // Reposition turret body based on this new center-of-rotation

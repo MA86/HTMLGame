@@ -14,7 +14,7 @@ const serverSocket = new socket.Server(httpServer);
 
 // Variables
 var clientDataList = [];
-var temp = 0;
+var temp = 0; // TODO: create a separate INITIAL variable.
 
 // Search requested files inside client folder, first
 httpHandler.use(express.static(__dirname + "/client"));
@@ -27,6 +27,7 @@ httpHandler.get("/", function (req, res) {
 // When a new client connects
 serverSocket.on("connection", function (socket) {
     console.log("a client connected");
+    // TODO: see temp above.
     // Add client to the server list and set initial states
     clientDataList.push({
         "clientId": socket.id,
