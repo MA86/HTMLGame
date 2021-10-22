@@ -32,9 +32,11 @@ serverSocket.on("connection", function (socket) {
     clientDataList.push({
         "clientId": socket.id,
         "state": {
-            "force": { "x": 300 + temp, "y": 200 + temp },
-            "torque": 0,
-            "turAngle": 0
+            "tankInitPos": { "x": 300 + temp, "y": 200 + temp },
+            "tankForce": { "x": 0, "y": 0 },
+            "tankTorque": 0,
+            "turAngle": 0,
+            "shellForce": { x: 0, y: 0 }
         }
     });
     temp += 130;
@@ -65,7 +67,7 @@ serverSocket.on("connection", function (socket) {
             for (let i = 0; i < clientDataList.length; i++) {
                 const client = clientDataList[i];
                 if (client.clientId == data.clientId) {
-                    clientDataList[i].state.force = data.force;
+                    clientDataList[i].state.tankForce = data.tankForce;
                 }
             }
             // Broadcast state changes to everyone
@@ -76,7 +78,7 @@ serverSocket.on("connection", function (socket) {
             for (let i = 0; i < clientDataList.length; i++) {
                 const client = clientDataList[i];
                 if (client.clientId == data.clientId) {
-                    clientDataList[i].state.torque = data.torque;
+                    clientDataList[i].state.tankTorque = data.tankTorque;
                 }
             }
             // Broadcast state changes to everyone
@@ -92,6 +94,17 @@ serverSocket.on("connection", function (socket) {
             }
             // Broadcast state changes to everyone
             serverSocket.emit("turret angle", data);
+        });
+        socket.on("shell movement", function (data) {
+            // Update the state changes in the server list
+            for (let i = 0; i < clientDataList.length; i++) {
+                const client = clientDataList[i];
+                if (client.clientId == data.clientId) {
+                    clientDataList[i].state.shellForce = data.shellForce;
+                }
+            }
+            // Broadcast state changes to everyone
+            serverSocket.emit("shell movement", data);
         });
     }, 500);
 });

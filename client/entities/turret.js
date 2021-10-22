@@ -9,7 +9,7 @@ var Composite = Matter.Composite;
 class Turret extends Entity {
     constructor(ss, ssData, fps, clientData, wrld) {
         super(
-            Bodies.rectangle(clientData.state.force.x, clientData.state.force.y, 148, 10, {
+            Bodies.rectangle(clientData.state.tankInitPos.x, clientData.state.tankInitPos.y, 148, 10, {
                 isSensor: true,     // Inactivate body
                 render: { fillStyle: "white" }
             }),
@@ -19,7 +19,7 @@ class Turret extends Entity {
         // Properties of turret
         this.clientId = clientData.clientId;
         this.speed = 45;
-        this.readyToFire = false;
+        this.readyToFire = true;
 
         // Other properties
         this.parent;                // Assigned after Turret is instantiated
@@ -39,9 +39,6 @@ class Turret extends Entity {
                 Body.setAngle(thisTurret.body, data.turAngle);
             }
         });
-
-        // Wait 3 seconds between fire
-        this.setLoadTime(500);
     }
 
     renderThis(ctx) {
@@ -104,6 +101,8 @@ class Turret extends Entity {
                     Composite.add(this.engineWorld, [shell.body]);
                     // Reset after fire
                     this.readyToFire = false;
+
+                    this.setLoadTime(500);
                 }
             }
         }
@@ -121,7 +120,7 @@ class Turret extends Entity {
     // Shell load time
     setLoadTime(time) {
         let thisTurret = this;
-        setInterval(function () {
+        setTimeout(function () {
             thisTurret.readyToFire = true;
         }, time);
     }
