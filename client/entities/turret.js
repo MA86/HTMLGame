@@ -7,7 +7,7 @@ var Bodies = Matter.Bodies;
 var Composite = Matter.Composite;
 
 class Turret extends Entity {
-    constructor(ss, ssData, fps, clientData, wrld) {
+    constructor(ss, ssData, fps, dt, clientData, wrld) {
         super(
             Bodies.rectangle(clientData.state.tankInitPos.x, clientData.state.tankInitPos.y, 148, 10, {
                 isSensor: true,     // Inactivate body
@@ -18,7 +18,7 @@ class Turret extends Entity {
 
         // Properties of turret
         this.clientId = clientData.clientId;
-        this.speed = 45;
+        this.speed = 5;
         this.readyToFire = true;
 
         // Other properties
@@ -37,6 +37,30 @@ class Turret extends Entity {
         window.globals.clientSocket.on("turret angle", function (data) {
             if (thisTurret.clientId == data.clientId && thisTurret.clientId != window.globals.clientSocket.id) {
                 Body.setAngle(thisTurret.body, data.turAngle);
+            }
+        });
+        window.globals.clientSocket.on("fire shell", function (data) {
+            if (thisTurret.clientId == data.clientId && thisTurret.clientId != window.globals.clientSocket.id) {
+                // Create a new round
+                let shell = new Shell(
+                    thisTurret.spriteSheet["./images_and_data/shell.png"],
+                    thisTurret.spriteSheetData.shellData,
+                    0,
+                    thisTurret,
+                    {
+                        speed: 0,
+                        type: "HE",
+                        blastRadius: 2,
+                        penetration: 2
+                    }
+                );
+                // Add shell to entities 
+                window.globals.entities.push(shell);
+                // Add shell to the world
+                Composite.add(thisTurret.engineWorld, [shell.body]);
+                // Reset after fire
+                thisTurret.readyToFire = false;
+                thisTurret.setLoadTime(500);
             }
         });
     }
@@ -64,17 +88,19 @@ class Turret extends Entity {
         if (this.clientId == window.globals.clientSocket.id) {
             // Apply rotatation for left/right turn
             if (keysDown && keysDown.KeyD == true) {
-                Body.rotate(this.body, 0.00872665 * (this.speed * dt));
+                let rotation = 0.00872665 * this.speed;
+                Body.rotate(this.body, rotation);
                 // Report state change to server
                 window.globals.clientSocket.emit(
-                    "turret angle", { "clientId": this.clientId, "turAngle": this.body.angle }
+                    "turret angle", { "clientId": this.clientId, "turAngle": rotation }
                 );
             }
             if (keysDown && keysDown.KeyA == true) {
-                Body.rotate(this.body, -0.00872665 * (this.speed * dt));
+                let rotation = -0.00872665 * this.speed;
+                Body.rotate(this.body, rotation);
                 // Report state change to server
                 window.globals.clientSocket.emit(
-                    "turret angle", { "clientId": this.clientId, "turAngle": this.body.angle }
+                    "turret angle", { "clientId": this.clientId, "turAngle": rotation }
                 );
             }
 
@@ -89,7 +115,7 @@ class Turret extends Entity {
                         0,
                         thisTurret,
                         {
-                            speed: 0.1,
+                            speed: 0,
                             type: "HE",
                             blastRadius: 2,
                             penetration: 2
@@ -101,8 +127,12 @@ class Turret extends Entity {
                     Composite.add(this.engineWorld, [shell.body]);
                     // Reset after fire
                     this.readyToFire = false;
-
                     this.setLoadTime(500);
+
+                    // Report shell fire to server
+                    window.globals.clientSocket.emit(
+                        "fire shell", { "clientId": this.clientId, "shellFired": true }
+                    );
                 }
             }
         }

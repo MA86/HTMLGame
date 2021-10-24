@@ -5,7 +5,7 @@ var Body = Matter.Body;
 var Bodies = Matter.Bodies;
 
 class Tank extends Entity {
-    constructor(ss, ssData, fps, clientData, turret) {
+    constructor(ss, ssData, fps, dt, clientData, turret) {
         super(
             // TODO: three tanks in 3 browsers must have same orientation!
             // Create a compound body representing tank/turret
@@ -29,8 +29,8 @@ class Tank extends Entity {
 
         // Properties of tank
         this.clientId = clientData.clientId;
-        this.speed = 3;
-        this.rotationSpeed = 200;
+        this.speed = 0.04;
+        this.rotationSpeed = 5;
 
         // Variables used for rendering this object
         this.index = 0;
@@ -86,8 +86,8 @@ class Tank extends Entity {
     updateThis(keysDown, dt) {
         if (this.clientId == window.globals.clientSocket.id) {
             // Prepare a force vector
-            let dx = Math.cos(this.body.angle) * (this.speed * dt);
-            let dy = Math.sin(this.body.angle) * (this.speed * dt);
+            let dx = Math.cos(this.body.angle) * this.speed;
+            let dy = Math.sin(this.body.angle) * this.speed;
 
             // Apply the force vector for forward/backward movement
             if (keysDown && keysDown.ArrowUp == true) {
@@ -117,19 +117,19 @@ class Tank extends Entity {
 
             // Apply torque for right/left turn
             if (keysDown && keysDown.ArrowRight == true) {
-                this.body.torque = this.rotationSpeed * dt;
+                this.body.torque = this.rotationSpeed;
                 // Report to server the torque applied
                 window.globals.clientSocket.emit(
                     "tank rotation",
-                    { "clientId": this.clientId, "tankTorque": this.rotationSpeed * dt }
+                    { "clientId": this.clientId, "tankTorque": this.rotationSpeed }
                 );
             }
             if (keysDown && keysDown.ArrowLeft == true) {
-                this.body.torque = -this.rotationSpeed * dt;
+                this.body.torque = -this.rotationSpeed;
                 // Report to server the torque applied
                 window.globals.clientSocket.emit(
                     "tank rotation",
-                    { "clientId": this.clientId, "tankTorque": -this.rotationSpeed * dt }
+                    { "clientId": this.clientId, "tankTorque": -this.rotationSpeed }
                 );
             }
         }

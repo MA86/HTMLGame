@@ -36,7 +36,8 @@ serverSocket.on("connection", function (socket) {
             "tankForce": { "x": 0, "y": 0 },
             "tankTorque": 0,
             "turAngle": 0,
-            "shellForce": { x: 0, y: 0 }
+            "shellForce": { x: 0, y: 0 },
+            "shellFired": false
         }
     });
     temp += 130;
@@ -95,6 +96,7 @@ serverSocket.on("connection", function (socket) {
             // Broadcast state changes to everyone
             serverSocket.emit("turret angle", data);
         });
+        /*
         socket.on("shell movement", function (data) {
             // Update the state changes in the server list
             for (let i = 0; i < clientDataList.length; i++) {
@@ -105,6 +107,18 @@ serverSocket.on("connection", function (socket) {
             }
             // Broadcast state changes to everyone
             serverSocket.emit("shell movement", data);
+        });
+        */
+        socket.on("fire shell", function (data) {
+            // Update the state changes in the server list
+            for (let i = 0; i < clientDataList.length; i++) {
+                const client = clientDataList[i];
+                if (client.clientId == data.clientId) {
+                    clientDataList[i].state.shellFired = data.shellFired;
+                }
+            }
+            // Broadcast state changes to everyone
+            serverSocket.emit("fire shell", data);
         });
     }, 500);
 });

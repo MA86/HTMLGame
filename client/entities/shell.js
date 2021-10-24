@@ -46,6 +46,7 @@ class Shell extends Entity {
         // Set Shell's angle to Turret's angle.
         Body.setAngle(this.body, turret.body.angle + turret.parent.body.angle);
 
+        /*
         // This Shell's representation in another browser is set by the server
         let thisShell = this;
         window.globals.clientSocket.on("shell movement", function (data) {
@@ -57,6 +58,7 @@ class Shell extends Entity {
                 );
             }
         });
+        */
     }
 
     renderThis(ctx) {
@@ -78,15 +80,15 @@ class Shell extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        if (this.clientId == window.globals.clientSocket.id) {
-            this.detonate(dt);
+        //if (this.clientId == window.globals.clientSocket.id) {
+        this.detonate(dt);
 
-            // Report to server the force applied
-            window.globals.clientSocket.emit(
-                "shell movement",
-                { "clientId": this.clientId, "shellForce": { x: this.fdx * dt, y: this.fdy * dt } }
-            );
-        }
+        // Report to server the force applied
+        //window.globals.clientSocket.emit(
+        //"shell movement",
+        //{ "clientId": this.clientId, "shellForce": { x: this.fdx * dt, y: this.fdy * dt } }
+        //);
+        //}
 
         // Update index
         this.timeTracker += dt;
@@ -105,7 +107,7 @@ class Shell extends Entity {
             Body.applyForce(
                 thisShell.body,
                 { x: thisShell.body.position.x, y: thisShell.body.position.y },
-                { x: thisShell.fdx * dt, y: thisShell.fdy * dt }
+                { x: thisShell.fdx, y: thisShell.fdy }
             );
             thisShell.detonated = true;
         }

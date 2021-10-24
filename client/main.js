@@ -89,6 +89,7 @@ addEventListener("load", function (e) {
                     window.globals.images,
                     spriteSheetsData,
                     0,
+                    delta,
                     client,
                     engine.world
                 );
@@ -97,6 +98,7 @@ addEventListener("load", function (e) {
                     window.globals.images["./images_and_data/mSixTankBody.png"],
                     spriteSheetsData.mSixTankBodyData,
                     0,
+                    delta,
                     client,
                     mSixTurret
                 );
@@ -116,6 +118,7 @@ addEventListener("load", function (e) {
                 window.globals.images,
                 spriteSheetsData,
                 0,
+                delta,
                 clientData,
                 engine.world
             );
@@ -124,6 +127,7 @@ addEventListener("load", function (e) {
                 window.globals.images["./images_and_data/mSixTankBody.png"],
                 spriteSheetsData.mSixTankBodyData,
                 0,
+                delta,
                 clientData,
                 mSixTurret
             );
