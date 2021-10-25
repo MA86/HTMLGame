@@ -51,11 +51,14 @@ class Tank extends Entity {
         let thisTank = this;
         window.globals.clientSocket.on("tank movement", function (data) {
             if (thisTank.clientId == data.clientId && thisTank.clientId != window.globals.clientSocket.id) {
+                /*
                 Body.applyForce(
                     thisTank.body,
                     { x: thisTank.body.position.x, y: thisTank.body.position.y },
                     { x: data.tankForce.x, y: data.tankForce.y }
                 );
+                */
+                Body.setPosition(thisTank.body, { x: data.tankForce.x + turret.body.position.x, y: data.tankForce.y + turret.body.position.y })
             }
         });
         window.globals.clientSocket.on("tank rotation", function (data) {
