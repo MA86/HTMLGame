@@ -51,14 +51,11 @@ class Tank extends Entity {
         let thisTank = this;
         window.globals.clientSocket.on("tank movement", function (data) {
             if (thisTank.clientId == data.clientId && thisTank.clientId != window.globals.clientSocket.id) {
-                /*
                 Body.applyForce(
                     thisTank.body,
                     { x: thisTank.body.position.x, y: thisTank.body.position.y },
                     { x: data.tankForce.x, y: data.tankForce.y }
                 );
-                *///
-                Body.setPosition(thisTank.body, { x: data.tankForce.x, y: data.tankForce.y })
             }
         });
         window.globals.clientSocket.on("tank rotation", function (data) {
@@ -101,8 +98,8 @@ class Tank extends Entity {
                 );
                 // Report to server the force applied
                 window.globals.clientSocket.emit(
-                    "tank movement",///
-                    { "clientId": this.clientId, "tankForce": { x: this.body.position.x, y: this.body.position.y } }
+                    "tank movement",
+                    { "clientId": this.clientId, "tankForce": { x: dx, y: dy } }
                 );
             }
             if (keysDown && keysDown.ArrowDown == true) {
@@ -113,8 +110,8 @@ class Tank extends Entity {
                 );
                 // Report to server the force applied
                 window.globals.clientSocket.emit(
-                    "tank movement",///
-                    { "clientId": this.clientId, "tankForce": { x: this.body.position.x, y: this.body.position.y } }
+                    "tank movement",
+                    { "clientId": this.clientId, "tankForce": { x: -dx, y: -dy } }
                 );
             }
 
