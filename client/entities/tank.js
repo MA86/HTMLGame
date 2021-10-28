@@ -17,11 +17,11 @@ class Tank extends Entity {
                     turret.body
                 ],
                 isStatic: false,
-                frictionAir: 0.4,
-                restitution: 0.1,
-                density: 0.9,
+                frictionAir: 0.5,
+                restitution: 0,
+                density: 0.2,
                 friction: 1,
-                frictionStatic: 0,
+                frictionStatic: 10,
                 //render: { fillStyle: "white" }
             }),
             false

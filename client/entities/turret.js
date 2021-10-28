@@ -36,7 +36,7 @@ class Turret extends Entity {
         let thisTurret = this;
         window.globals.clientSocket.on("turret angle", function (data) {
             if (thisTurret.clientId == data.clientId && thisTurret.clientId != window.globals.clientSocket.id) {
-                Body.setAngle(thisTurret.body, data.turAngle);
+                Body.rotate(thisTurret.body, data.turAngle);
             }
         });
         window.globals.clientSocket.on("fire shell", function (data) {
@@ -48,7 +48,7 @@ class Turret extends Entity {
                     0,
                     thisTurret,
                     {
-                        speed: 0,
+                        speed: 0.004,
                         type: "HE",
                         blastRadius: 2,
                         penetration: 2
@@ -115,7 +115,7 @@ class Turret extends Entity {
                         0,
                         thisTurret,
                         {
-                            speed: 0,
+                            speed: 0.004,
                             type: "HE",
                             blastRadius: 2,
                             penetration: 2
