@@ -11,7 +11,5 @@ Some tradeoffs to consider:
     	// Read up scrolling background too. (aka parallax)
 
     // TODO:
-    // Research bullet systems.
     // Learn 'signals'
-    // Bring back networking after solving body-on-body.
     
