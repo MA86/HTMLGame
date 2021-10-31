@@ -19,7 +19,7 @@ class Tank extends Entity {
                 isStatic: false,
                 frictionAir: 0.5,
                 restitution: 0,
-                density: 0.2,
+                density: 100,
                 friction: 1,
                 frictionStatic: 10,
                 //render: { fillStyle: "white" }
