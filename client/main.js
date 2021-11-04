@@ -72,8 +72,8 @@ addEventListener("load", function (e) {
             canvas: window.globals.canvas,
             engine: engine,
             options: {
-                wireframes: true,
-                //background: "transparent",
+                wireframes: false,
+                background: "transparent",
                 //showCollisions: true,
                 //showConvexHulls: true
             }

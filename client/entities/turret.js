@@ -18,7 +18,7 @@ class Turret extends Entity {
 
         // Properties of turret
         this.clientId = clientData.clientId;
-        this.speed = 5;
+        this.speed = 1;
         this.readyToFire = true;
 
         // Other properties
@@ -48,7 +48,7 @@ class Turret extends Entity {
                     0,
                     thisTurret,
                     {
-                        speed: 0.004,
+                        speed: 0.01,
                         type: "HE",
                         blastRadius: 2,
                         penetration: 2
@@ -115,7 +115,7 @@ class Turret extends Entity {
                         0,
                         thisTurret,
                         {
-                            speed: 0.004,
+                            speed: 0.01,
                             type: "HE",
                             blastRadius: 2,
                             penetration: 2

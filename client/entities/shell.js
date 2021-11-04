@@ -9,7 +9,9 @@ class Shell extends Entity {
         super(
             Bodies.rectangle(turret.body.position.x, turret.body.position.y, 20, 4, {
                 isStatic: false,
-                isSensor: false
+                isSensor: false,
+                //density: 1,
+                render: { fillStyle: "white" }
             }),
             false
         );
