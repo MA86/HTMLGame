@@ -50,7 +50,7 @@ class Tank extends Entity {
         // This tank's representation in another browser is set by the server
         let thisTank = this;
         window.globals.clientSocket.on("tank movement", function (data) {
-            if (thisTank.clientId == data.clientId && thisTank.clientId != window.globals.clientSocket.id) {
+            if (thisTank.clientId == data.clientId) {
                 Body.applyForce(
                     thisTank.body,
                     { x: thisTank.body.position.x, y: thisTank.body.position.y },
@@ -59,7 +59,7 @@ class Tank extends Entity {
             }
         });
         window.globals.clientSocket.on("tank rotation", function (data) {
-            if (data.clientId == thisTank.clientId && thisTank.clientId != window.globals.clientSocket.id) {
+            if (data.clientId == thisTank.clientId) {
                 thisTank.body.torque = data.tankTorque;
             }
         });
@@ -91,11 +91,13 @@ class Tank extends Entity {
 
             // Apply the force vector for forward/backward movement
             if (keysDown && keysDown.ArrowUp == true) {
+                /*
                 Body.applyForce(
                     this.body,
                     { x: this.body.position.x, y: this.body.position.y },
                     { x: dx, y: dy }
                 );
+                */
                 // Report to server the force applied
                 window.globals.clientSocket.emit(
                     "tank movement",
@@ -103,11 +105,13 @@ class Tank extends Entity {
                 );
             }
             if (keysDown && keysDown.ArrowDown == true) {
+                /*
                 Body.applyForce(
                     this.body,
                     { x: this.body.position.x, y: this.body.position.y },
                     { x: -dx, y: -dy }
                 );
+                */
                 // Report to server the force applied
                 window.globals.clientSocket.emit(
                     "tank movement",
@@ -117,7 +121,7 @@ class Tank extends Entity {
 
             // Apply torque for right/left turn
             if (keysDown && keysDown.ArrowRight == true) {
-                this.body.torque = this.rotationSpeed;
+                //this.body.torque = this.rotationSpeed;
                 // Report to server the torque applied
                 window.globals.clientSocket.emit(
                     "tank rotation",
@@ -125,7 +129,7 @@ class Tank extends Entity {
                 );
             }
             if (keysDown && keysDown.ArrowLeft == true) {
-                this.body.torque = -this.rotationSpeed;
+                //this.body.torque = -this.rotationSpeed;
                 // Report to server the torque applied
                 window.globals.clientSocket.emit(
                     "tank rotation",

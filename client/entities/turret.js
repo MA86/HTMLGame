@@ -35,12 +35,12 @@ class Turret extends Entity {
         // This turret representation's state in another browser is handled by the server
         let thisTurret = this;
         window.globals.clientSocket.on("turret angle", function (data) {
-            if (thisTurret.clientId == data.clientId && thisTurret.clientId != window.globals.clientSocket.id) {
+            if (thisTurret.clientId == data.clientId) {
                 Body.rotate(thisTurret.body, data.turAngle);
             }
         });
         window.globals.clientSocket.on("fire shell", function (data) {
-            if (thisTurret.clientId == data.clientId && thisTurret.clientId != window.globals.clientSocket.id) {
+            if (thisTurret.clientId == data.clientId) {
                 // Create a new round
                 let shell = new Shell(
                     thisTurret.spriteSheet["./images_and_data/shell.png"],
@@ -89,7 +89,7 @@ class Turret extends Entity {
             // Apply rotatation for left/right turn
             if (keysDown && keysDown.KeyD == true) {
                 let rotation = 0.00872665 * this.speed;
-                Body.rotate(this.body, rotation);
+                //Body.rotate(this.body, rotation);
                 // Report state change to server
                 window.globals.clientSocket.emit(
                     "turret angle", { "clientId": this.clientId, "turAngle": rotation }
@@ -97,7 +97,7 @@ class Turret extends Entity {
             }
             if (keysDown && keysDown.KeyA == true) {
                 let rotation = -0.00872665 * this.speed;
-                Body.rotate(this.body, rotation);
+                //Body.rotate(this.body, rotation);
                 // Report state change to server
                 window.globals.clientSocket.emit(
                     "turret angle", { "clientId": this.clientId, "turAngle": rotation }
@@ -107,6 +107,7 @@ class Turret extends Entity {
             // Fire a shell
             if (keysDown && keysDown.Space == true) {
                 if (this.readyToFire) {
+                    /*
                     // Create a new round
                     let thisTurret = this;
                     let shell = new Shell(
@@ -125,6 +126,7 @@ class Turret extends Entity {
                     window.globals.entities.push(shell);
                     // Add shell to the world
                     Composite.add(this.engineWorld, [shell.body]);
+                    */
                     // Reset after fire
                     this.readyToFire = false;
                     this.setLoadTime(500);
