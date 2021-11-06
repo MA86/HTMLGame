@@ -172,18 +172,20 @@ addEventListener("load", function (e) {
         var delta = 0;
         var timeNow = 0;
         var timeThen = 0;
+
         (function gameLoop(timeStamp) {
             // Calculate Time between two frames
             timeNow = (timeStamp == undefined) ? 0 : timeStamp;
-            delta = (timeNow - timeThen) / 1000;
+            delta = (timeNow - timeThen);
+            //console.log(delta)///
 
             // Update entities
             for (let i = 0; i < window.globals.entities.length; i++) {
                 window.globals.entities[i].update(window.globals.keysDown, delta);
             }
 
-            // Update physics
-            Engine.update(engine, 1000 / 60);
+            // Update physics  ///
+            Engine.update(engine, delta);
 
             // Clear canvas when default renderer is not used
             //window.globals.context.clearRect(
