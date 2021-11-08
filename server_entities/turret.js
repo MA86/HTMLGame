@@ -1,7 +1,6 @@
-import { Shell } from "./shell.js";
-//const Shell = require("./shell.js");
-//import Matter from "matter-js";
+const Shell = require("./shell.js").Shell;
 const Matter = require("matter-js/build/matter");
+
 const Body = Matter.Body;
 const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
@@ -66,4 +65,4 @@ class Turret {
     }
 }
 
-//export { Turret };
+module.exports = { Turret };

@@ -1,9 +1,8 @@
 "use strict";
 
-import { Tank } from "./server_entities/tank.js";
-import { Turret } from "./server_entities/turret.js";
-
 // NOTE: require() function executes a module and returns exports
+const Tank = require("./server_entities/tank.js").Tank;
+const Turret = require("./server_entities/turret.js").Turret;
 
 // Returns a function object called 'express'
 const express = require("express");

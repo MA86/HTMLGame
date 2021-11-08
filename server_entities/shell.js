@@ -1,5 +1,5 @@
-//import Matter from "matter-js";
 const Matter = require("matter-js/build/matter");
+
 const Body = Matter.Body;
 const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
@@ -56,4 +56,4 @@ class Shell {
     }
 }
 
-export { Shell };
+module.exports = { Shell };
