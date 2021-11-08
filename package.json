@@ -1,7 +1,7 @@
 {
-    "name": "Tank Game",
+    "name": "Multiplayer Game",
     "version": "0.1.0",
-    "description": "A tank game in development.",
+    "description": "An online battle tank game.",
     "dependencies": {
         "express": "^4.17.1",
         "matter-js": "^0.17.1",

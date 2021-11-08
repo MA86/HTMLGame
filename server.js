@@ -1,130 +1,112 @@
 "use strict";
 
-const process = require("process");
-// Import Express
+import { Tank } from "./server_entities/tank.js";
+import { Turret } from "./server_entities/turret.js";
+
+// NOTE: require() function executes a module and returns exports
+
+// Returns a function object called 'express'
 const express = require("express");
-// Handler function
+
+// Call express object to return HTTP handler object
 const httpHandler = express();
-// Create HTTP server (httpHandler handles HTTP requests)
+// Create HTTP server, let HTTP handler handle requests
 const httpServer = require("http").createServer(httpHandler);
-// Import Socket
+
+// Create TCP/UDP socket server (httpServer passed because all "websockets" start with HTTP handshake)
 const socket = require("socket.io");
-// Create Socket server (httpServer passed because all websockets start with http message)
-const serverSocket = new socket.Server(httpServer);
+const socketServer = new socket.Server(httpServer);
 
-// Variables
-var clientDataList = [];
-var temp = 0; // TODO: create a separate INITIAL variable.
+const Matter = require("matter-js/build/matter");
 
-// Search requested files inside client folder, first
+// Create aliases for Matter exports
+const Engine = Matter.Engine;         // For updating physics.
+const Render = Matter.Render;         // For rendering results of Engine.
+const Bodies = Matter.Bodies;         // To use a pre-made Body.
+const Composite = Matter.Composite;   // Container for entity made of multiple parts.
+const Body = Matter.Body;             // To make a custom Body.
+const Runner = Matter.Runner;         // Optional game loop (Auto updates Engine).
+
+// Global variables
+const clients = [];
+
+// Treat the client folder as "public folder"
+// (Requested files will be searched here first)
 httpHandler.use(express.static(__dirname + "/client"));
 
-// For GET request at '/', send index.html file
+// For GET request @ path "/", send index.html file
 httpHandler.get("/", function (req, res) {
-    res.sendFile(__dirname + "/client/index.html");
+    res.sendFile(__dirname + "./client/index.html");
 });
 
-// When a new client connects
-serverSocket.on("connection", function (socket) {
-    console.log("a client connected");
-    // TODO: see temp above.
-    // Add client to the server list and set initial states
-    clientDataList.push({
+// TODO:
+// D When first client connects, run simulation:
+// D 1. Send HTML and script to browser.
+// Prepare canvas tag.
+// Prepare img tag.
+// Prepare ...
+
+// Run a update loop.
+// "Key pressed!" - Client
+// "Ok, render at this position!" - Server
+// When last client leaves, stop game.
+// Stop simulation.
+const Start = function (socket) {
+    // Create engine
+    let engine = Engine.create({
+        gravity: { x: 0, y: 0 },
+        // enableSleeping: true,
+        // timing: {timeScale: 0.1},
+    });
+
+    // Setup client
+    let turret = new Turret(engine.world, { "x": 100, "y": 100 });
+    let tank = new Tank(engine.world, turret.turret);
+    turret.parent = tank;
+    turret.setupEventListeners(socket);
+    tank.setupEventListeners(socket);
+
+    // Update physics and client every 16ms
+    setInterval(function () {
+        Engine.update(engine, 1000 / 60);
+        //TODO
+        socket.emit("render coordinates", { "position": tank.tank.position, "angle": tank.tank.angle });
+        //socket.emit("render coordinates s", { "position": tank.tank.position, "angle": tank.tank.angle });
+    }, 1000 / 60);
+}
+
+// Event when a client connects to TCP/UDP server
+socketServer.on("connection", function (socket) {
+    // Print this client ID
+    console.log("Client ", socket.id, " is connected");
+
+    // Add this client to the list
+    clients.push({
         "clientId": socket.id,
         "state": {
-            "tankInitPos": { "x": 300 + temp, "y": 200 + temp },
-            "tankForce": { "x": 0, "y": 0 },
-            "tankTorque": 0,
-            "turAngle": 0,
-            "shellForce": { x: 0, y: 0 },
-            "shellFired": false
+            "position": { "x": 0, "y": 0 },
+            "rotation": 0
         }
     });
-    temp += 130;
 
-    // When this client disconnects
+    Start(socket);
+
+    // Event when this client disconnects from TCP/UDP server
     socket.on("disconnect", () => {
-        console.log("a client disconnected");
-        // Remove this client from server list
-        let indexOfDisconnectedClient = clientDataList.map(function (obj) {
+        // Print this client ID
+        console.log("Client ", socket.id, " is disconnected");
+        /*
+        // Remove this client from the list
+        let indexOfDisconnectedClient = clients.map(function (obj) {
             return obj.clientId;
         }).indexOf(socket.id);
-        clientDataList.splice(indexOfDisconnectedClient, 1);
-
-        // Direct all clients to remove this client from thier entities list
-        serverSocket.emit("remove tank", socket.id);
-    });
-
-    // TODO: Wait a bit so clients are ready
-    setTimeout(function () {
-        // Direct existing clients (except this client) to create this client
-        socket.broadcast.emit("create tank", clientDataList[clientDataList.length - 1]);
-        // Direct this client to create self and all existing clients
-        socket.emit("create tanks", clientDataList);
-
-        // *** This client will send its state updates to the server: *** //
-        socket.on("tank movement", function (data) {
-            // Update the state changes in the server list
-            for (let i = 0; i < clientDataList.length; i++) {
-                const client = clientDataList[i];
-                if (client.clientId == data.clientId) {
-                    clientDataList[i].state.tankForce = data.tankForce;
-                }
-            }
-            // Broadcast state changes to everyone
-            serverSocket.emit("tank movement", data);
-        });
-        socket.on("tank rotation", function (data) {
-            // Update the state changes in the server list
-            for (let i = 0; i < clientDataList.length; i++) {
-                const client = clientDataList[i];
-                if (client.clientId == data.clientId) {
-                    clientDataList[i].state.tankTorque = data.tankTorque;
-                }
-            }
-            // Broadcast state changes to everyone
-            serverSocket.emit("tank rotation", data);
-        });
-        socket.on("turret angle", function (data) {
-            // Update the state changes in the server list
-            for (let i = 0; i < clientDataList.length; i++) {
-                const client = clientDataList[i];
-                if (client.clientId == data.clientId) {
-                    clientDataList[i].state.turAngle = data.turAngle;
-                }
-            }
-            // Broadcast state changes to everyone
-            serverSocket.emit("turret angle", data);
-        });
-        /*
-        socket.on("shell movement", function (data) {
-            // Update the state changes in the server list
-            for (let i = 0; i < clientDataList.length; i++) {
-                const client = clientDataList[i];
-                if (client.clientId == data.clientId) {
-                    clientDataList[i].state.shellForce = data.shellForce;
-                }
-            }
-            // Broadcast state changes to everyone
-            serverSocket.emit("shell movement", data);
-        });
+        clients.splice(indexOfDisconnectedClient, 1);
         */
-        socket.on("fire shell", function (data) {
-            // Update the state changes in the server list
-            for (let i = 0; i < clientDataList.length; i++) {
-                const client = clientDataList[i];
-                if (client.clientId == data.clientId) {
-                    clientDataList[i].state.shellFired = data.shellFired;
-                }
-            }
-            // Broadcast state changes to everyone
-            serverSocket.emit("fire shell", data);
-        });
-    }, 500);
+    });
 });
 
 
-// Start HTTP server, listening on port 8000
+// Start the HTTP server (listening on port 8000)
 httpServer.listen(8000, function () {
     console.log("HTTP SERVER IS LISTENING ON PORT 8000");
 });

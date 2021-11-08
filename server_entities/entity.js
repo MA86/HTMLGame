@@ -1,11 +1,10 @@
 class Entity {
-    constructor(pos, angle, isChild = false) {
+    constructor(body, isChild = false) {
         this.isChild = isChild;
         if (this.isChild) {
             this.position = { x: 0, y: 0 };
         }
-        this.position = pos;
-        this.angle = angle;
+        this.body = body;
         this.children = [];
     }
 
@@ -19,15 +18,15 @@ class Entity {
         } else {
             // Move context to global position
             ctx.save();
-            ctx.translate(this.position.x, this.position.y);
-            ctx.rotate(this.angle);
+            ctx.translate(this.body.position.x, this.body.position.y);
+            ctx.rotate(this.body.angle);
         }
 
         // Render self
         this.renderThis(ctx);
         // Render children
         for (let i = 0; i < this.children.length; i++) {
-            let child = this.children[i];
+            const child = this.children[i];
             child.render(ctx);
         }
 
@@ -45,7 +44,7 @@ class Entity {
 
         // Update children
         for (let i = 0; i < this.children.length; i++) {
-            let child = this.children[i];
+            const child = this.children[i];
             child.update(keysDown, dt);
         }
     }

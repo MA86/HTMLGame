@@ -1,11 +1,11 @@
 "use strict";
 
-import * as spriteSheetsData from './spritesheetsData.js';
-import { Tank } from './entities/tank.js';
-import { Turret } from './entities/turret.js';
-import { Shell } from './entities/shell.js';
+import * as spriteSheetsData from "./spritesheetsData.js";
+import { Tank } from "./entities/tank.js";
+import { Turret } from "./entities/turret.js";
 
-/*** On Window Load ***/
+
+/*** On Window Load Event ***/
 addEventListener("load", function (e) {
     // Global Variables 
     window.globals = {};
@@ -19,155 +19,56 @@ addEventListener("load", function (e) {
         "./images_and_data/mSixTankTurret.png",
         "./images_and_data/shell.png"
     ];
-    window.globals.clientSocket = io();     // Connect with server
-
-    // Global MatterJS Variables (to access its useful functions)
-    var Engine = Matter.Engine;         // For updating physics.
-    var Render = Matter.Render;         // For rendering results of Engine.
-    var Bodies = Matter.Bodies;         // To use a pre-made Body.
-    var Composite = Matter.Composite;   // Container for entity made of multiple parts.
-    var Body = Matter.Body;             // To make a custom Body.
-    var Runner = Matter.Runner;         // Optional game loop (Auto updates Engine).
-    var Composite = Matter.World;
+    // client TCP/UDP socket, connected to server
+    window.globals.clientSocket = io();
 
     const setupKeyboardHandler = function (dic) {
-        addEventListener("keydown", function (e) {
-            dic[e.code] = true;
-            switch (e.code) {
+        // Listen for key pressed
+        addEventListener("keydown", function (key) {
+            dic[key.code] = true;
+            switch (key.code) {
                 case "ArrowUp":
                 case "ArrowDown":
                 case "ArrowLeft":
                 case "ArrowRight":
                 case "Space":
-                    e.preventDefault();
+                    key.preventDefault();
                     break;
                 default:
                     break;
             }
         }, false);
 
+        // Listen for key released
         addEventListener("keyup", function (e) {
             delete dic[e.code];
         }, false);
     }
 
-
-
     const Start = function () {
         setupKeyboardHandler(window.globals.keysDown);
-        // Set canvas size
+
+        // Canvas screen match browser screen
         window.globals.canvas.width = window.innerWidth;
         window.globals.canvas.height = window.innerHeight;
 
-        // Create a physics engine
-        var engine = Engine.create({
-            gravity: { x: 0, y: 0 },
-            //enableSleeping: true,
-            //gravity: {x: 3, y:4},
-            //timing: {timeScale: 0.1},
-        });
+        // Create turret
+        var mSixTurret = new Turret(
+            window.globals.images,
+            spriteSheetsData,
+            0
+        );
+        // Create tank
+        var mSixTank = new Tank(
+            window.globals.images["./images_and_data/mSixTankBody.png"],
+            spriteSheetsData.mSixTankBodyData,
+            0,
+            mSixTurret
+        );
 
-        // *** Use For Debugging to Visualize Bodies *** //
-        var render = Render.create({
-            canvas: window.globals.canvas,
-            engine: engine,
-            options: {
-                wireframes: false,
-                background: "transparent",
-                //showCollisions: true,
-                //showConvexHulls: true
-            }
-        });
-        Render.run(render);
+        // Add tank to physics world and entities list
+        window.globals.entities.push(mSixTank);
 
-        // If this is new client, create self and all other existing clients
-        window.globals.clientSocket.on("create tanks", function (clientList) {
-            for (let i = 0; i < clientList.length; i++) {
-                const client = clientList[i];
-                // Create turret
-                var mSixTurret = new Turret(
-                    window.globals.images,
-                    spriteSheetsData,
-                    0,
-                    delta,
-                    client,
-                    engine.world
-                );
-                // Create tank
-                var mSixTank = new Tank(
-                    window.globals.images["./images_and_data/mSixTankBody.png"],
-                    spriteSheetsData.mSixTankBodyData,
-                    0,
-                    delta,
-                    client,
-                    mSixTurret
-                );
-                // Assign Tank as parent of Turret
-                mSixTurret.parent = mSixTank;
-
-                // Add tank to physics world and entities list
-                window.globals.entities.push(mSixTank);
-                Composite.add(engine.world, [mSixTank.body]);
-            }
-        });
-
-        // If this is existing client, create the new client
-        window.globals.clientSocket.on("create tank", function (clientData) {
-            // Create turret
-            var mSixTurret = new Turret(
-                window.globals.images,
-                spriteSheetsData,
-                0,
-                delta,
-                clientData,
-                engine.world
-            );
-            // Create tank
-            var mSixTank = new Tank(
-                window.globals.images["./images_and_data/mSixTankBody.png"],
-                spriteSheetsData.mSixTankBodyData,
-                0,
-                delta,
-                clientData,
-                mSixTurret
-            );
-            // Tank is parent of turret
-            mSixTurret.parent = mSixTank;
-
-            // Add tank to physics world and entities list
-            window.globals.entities.push(mSixTank);
-            Composite.add(engine.world, [mSixTank.body]);
-        });
-
-        // Create sphere for testing
-        var box = Bodies.circle(200, 200, 50, {
-            isStatic: true,
-            restitution: 0.5,
-            render: {
-                sprite: {
-                    texture: "./images_and_data/ball.png",
-                    xScale: 1 / 6.5,
-                    yScale: 1 / 6.5
-                }
-            }
-        });
-        /*
-                // TODO: TEST SHELL
-                var shell = new Shell(
-                    window.globals.images["./images_and_data/shell.png"],
-                    spriteSheetsData.shellData,
-                    1,
-                    box,
-                    {
-                        speed: 20,
-                        type: "HE",
-                        blastRadius: 10,
-                        penetration: 2
-                    }
-                );
-                window.globals.entities.push(shell);
-                Composite.add(engine.world, [box, shell.body]);
-        */
         /*** Game Loop ***/
         var delta = 0;
         var timeNow = 0;
@@ -177,23 +78,19 @@ addEventListener("load", function (e) {
             // Calculate Time between two frames
             timeNow = (timeStamp == undefined) ? 0 : timeStamp;
             delta = (timeNow - timeThen);
-            //console.log(delta)///
 
             // Update entities
             for (let i = 0; i < window.globals.entities.length; i++) {
                 window.globals.entities[i].update(window.globals.keysDown, delta);
             }
 
-            // Update physics  ///
-            Engine.update(engine, delta);
-
             // Clear canvas when default renderer is not used
-            //window.globals.context.clearRect(
-            //    0,
-            //    0,
-            //    window.globals.canvas.width,
-            //    window.globals.canvas.height
-            //);
+            window.globals.context.clearRect(
+                0,
+                0,
+                window.globals.canvas.width,
+                window.globals.canvas.height
+            );
 
             // Draw entities
             for (let i = 0; i < window.globals.entities.length; i++) {
