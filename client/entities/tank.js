@@ -2,7 +2,7 @@ import { Entity } from './entity.js';
 
 class Tank extends Entity {
     constructor(ss, ssData, fps, turret) {
-        super({ "x": 100, "y": 100 }, false);
+        super({ "x": 0, "y": 0 }, 0, false);
 
         // Add child turret
         this.children.push(turret);
@@ -43,23 +43,25 @@ class Tank extends Entity {
         // Client tells server to move forward/backward
         if (keysDown && keysDown.ArrowUp == true) {
             window.globals.clientSocket.emit(
-                "move forward",
-                {}
+                "move forward", {}
             );
         }
         if (keysDown && keysDown.ArrowDown == true) {
             window.globals.clientSocket.emit(
-                "move backward",
-                {}
+                "move backward", {}
             );
         }
 
         // Client tells server to turn right/left
         if (keysDown && keysDown.ArrowRight == true) {
-            window.globals.clientSocket.emit("turn right", {});
+            window.globals.clientSocket.emit(
+                "turn right", {}
+            );
         }
         if (keysDown && keysDown.ArrowLeft == true) {
-            window.globals.clientSocket.emit("turn left", {});
+            window.globals.clientSocket.emit(
+                "turn left", {}
+            );
         }
 
         // Update index

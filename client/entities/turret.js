@@ -2,7 +2,7 @@ import { Entity } from './entity.js';
 
 class Turret extends Entity {
     constructor(ss, ssData, fps) {
-        super({ "x": 100, "y": 100 }, true);
+        super({ "x": 0, "y": 0 }, 0, true);
 
         // Variables used for rendering this object
         this.index = 0;
@@ -11,10 +11,10 @@ class Turret extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;      // Note: keyname is a path made at main.js
 
+        // Get data from server
         let thiss = this;
-        window.globals.clientSocket.on("render coordinates", function (coordinates) {
-            thiss.position = coordinates.position;
-            thiss.angle = coordinates.angle;
+        window.globals.clientSocket.on("turret state", function (state) {
+            thiss.angle = state.angle;
         });
     }
 

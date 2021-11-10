@@ -3,7 +3,7 @@ import { Entity } from "./entity.js";
 
 class Shell extends Entity {
     constructor(ss, ssData, fps) {
-        super({ "x": 0, "y": 0 }, false);
+        super({ "x": 0, "y": 0 }, 0, false);
 
         // Variables used for rendering this object
         this.index = 0;

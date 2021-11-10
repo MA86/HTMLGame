@@ -1,9 +1,6 @@
 class Entity {
     constructor(pos, angle, isChild = false) {
         this.isChild = isChild;
-        if (this.isChild) {
-            this.position = { x: 0, y: 0 };
-        }
         this.position = pos;
         this.angle = angle;
         this.children = [];
@@ -12,12 +9,12 @@ class Entity {
     render(ctx) {
         // This logic is for rendering locally vs globally
         if (this.isChild) {
-            // Move context to parent position
+            // Translate context relative to parent position
             ctx.save();
-            ctx.translate(this.position.x, this.position.y);
-            ctx.rotate(this.body.angle);
+            ctx.translate(0, 0);
+            ctx.rotate(this.angle);
         } else {
-            // Move context to global position
+            // Otherwise, translate context normally
             ctx.save();
             ctx.translate(this.position.x, this.position.y);
             ctx.rotate(this.angle);

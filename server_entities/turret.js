@@ -6,9 +6,9 @@ const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
 
 class Turret {
-    constructor(world, pos) {
+    constructor(world, initPos) {
         // Create turret on tank's position
-        this.turret = Bodies.rectangle(pos.x, pos.y, 148, 10, {
+        this.turret = Bodies.rectangle(initPos.x, initPos.y, 148, 10, {
             isSensor: true,     // Inactivate body
         });
 

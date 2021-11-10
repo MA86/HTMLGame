@@ -7,9 +7,8 @@ const Turret = require("./server_entities/turret.js").Turret;
 // Returns a function object called 'express'
 const express = require("express");
 
-// Call express object to return HTTP handler object
+// Call express to create HTTP handler object for HTTP server
 const httpHandler = express();
-// Create HTTP server, let HTTP handler handle requests
 const httpServer = require("http").createServer(httpHandler);
 
 // Create TCP/UDP socket server (httpServer passed because all "websockets" start with HTTP handshake)
@@ -38,18 +37,6 @@ httpHandler.get("/", function (req, res) {
     res.sendFile(__dirname + "./client/index.html");
 });
 
-// TODO:
-// D When first client connects, run simulation:
-// D 1. Send HTML and script to browser.
-// Prepare canvas tag.
-// Prepare img tag.
-// Prepare ...
-
-// Run a update loop.
-// "Key pressed!" - Client
-// "Ok, render at this position!" - Server
-// When last client leaves, stop game.
-// Stop simulation.
 const Start = function (socket) {
     // Create engine
     let engine = Engine.create({
@@ -57,20 +44,33 @@ const Start = function (socket) {
         // enableSleeping: true,
         // timing: {timeScale: 0.1},
     });
-
+    /*
     // Setup client
-    let turret = new Turret(engine.world, { "x": 100, "y": 100 });
-    let tank = new Tank(engine.world, turret.turret);
+    let turret = new Turret(engine.world, { "x": 0, "y": 0 });
+    let tank = new Tank(engine.world, { "x": 0, "y": 0 }, turret.turret);
     turret.parent = tank;
     turret.setupEventListeners(socket);
     tank.setupEventListeners(socket);
+    */
+
+    let box = Bodies.rectangle(0, 0, 100, 100);
+    Composite.add(engine.world, [box]);
 
     // Update physics and client every 16ms
     setInterval(function () {
         Engine.update(engine, 1000 / 60);
+        Body.applyForce(
+            box,
+            { x: box.position.x, y: box.position.y },
+            { x: 0.04, y: 0.04 }
+        );
+        box.torque = 1;
+        console.log(box.angle, box.position);
+        /*
         //TODO
         socket.emit("render coordinates", { "position": tank.tank.position, "angle": tank.tank.angle });
-        //socket.emit("render coordinates s", { "position": tank.tank.position, "angle": tank.tank.angle });
+        socket.emit("turret state", { "angle": turret.turret.angle });
+        */
     }, 1000 / 60);
 }
 
@@ -79,31 +79,14 @@ socketServer.on("connection", function (socket) {
     // Print this client ID
     console.log("Client ", socket.id, " is connected");
 
-    // Add this client to the list
-    clients.push({
-        "clientId": socket.id,
-        "state": {
-            "position": { "x": 0, "y": 0 },
-            "rotation": 0
-        }
-    });
-
     Start(socket);
 
     // Event when this client disconnects from TCP/UDP server
     socket.on("disconnect", () => {
         // Print this client ID
         console.log("Client ", socket.id, " is disconnected");
-        /*
-        // Remove this client from the list
-        let indexOfDisconnectedClient = clients.map(function (obj) {
-            return obj.clientId;
-        }).indexOf(socket.id);
-        clients.splice(indexOfDisconnectedClient, 1);
-        */
     });
 });
-
 
 // Start the HTTP server (listening on port 8000)
 httpServer.listen(8000, function () {
