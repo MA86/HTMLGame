@@ -44,33 +44,37 @@ const Start = function (socket) {
         // enableSleeping: true,
         // timing: {timeScale: 0.1},
     });
-    /*
+
     // Setup client
     let turret = new Turret(engine.world, { "x": 0, "y": 0 });
     let tank = new Tank(engine.world, { "x": 0, "y": 0 }, turret.turret);
-    turret.parent = tank;
-    turret.setupEventListeners(socket);
-    tank.setupEventListeners(socket);
-    */
+    turret.parent = tank.tank;
+    turret.setupEventListeners(socket, engine);
+    tank.setupEventListeners(socket, engine);
 
+    /*
+    // TEST //
     let box = Bodies.rectangle(0, 0, 100, 100);
     Composite.add(engine.world, [box]);
+    */
 
     // Update physics and client every 16ms
     setInterval(function () {
-        Engine.update(engine, 1000 / 60);
+        //Engine.update(engine, 1000 / 60);
+        //console.log(engine.timing.lastElapsed); ///
+
+        /*
+        //TEST//
         Body.applyForce(
             box,
             { x: box.position.x, y: box.position.y },
-            { x: 0.04, y: 0.04 }
+            { x: 0.004, y: 0.004 }
         );
         box.torque = 1;
         console.log(box.angle, box.position);
-        /*
-        //TODO
-        socket.emit("render coordinates", { "position": tank.tank.position, "angle": tank.tank.angle });
-        socket.emit("turret state", { "angle": turret.turret.angle });
         */
+
+        //socket.emit("turret state", { "angle": turret.turret.angle }); ///
     }, 1000 / 60);
 }
 

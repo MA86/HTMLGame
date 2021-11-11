@@ -3,6 +3,7 @@ const Matter = require("matter-js/build/matter");
 const Body = Matter.Body;
 const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
+const Engine = Matter.Engine;
 
 class Tank {
     constructor(world, initPos, turret) {
@@ -21,8 +22,8 @@ class Tank {
         });
 
         // Properties of tank
-        this.speed = 2;
-        this.rotationSpeed = 200;
+        this.speed = 0.004;
+        this.rotationSpeed = 2;
 
         // Move turret center from middle to left
         Body.setCentre(turret, { x: -48, y: -4 }, true);
@@ -33,7 +34,7 @@ class Tank {
         Composite.add(world, [this.tank]);
     }
 
-    setupEventListeners(socket) {
+    setupEventListeners(socket, engine) {
         //let thisTank = this;
         let thiss = this;
 
@@ -48,6 +49,10 @@ class Tank {
                 { x: thiss.tank.position.x, y: thiss.tank.position.y },
                 { x: dx, y: dy }
             );
+            Body.update(thiss.tank, 1000 / 60, 1, 1); ///
+            Engine.update(engine, 1000 / 60);
+            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
+            socket.emit("render coordinates", { "position": thiss.tank.position, "angle": thiss.tank.angle });///
         });
         socket.on("move backward", function (data) {
             // Create a force vector
@@ -59,14 +64,24 @@ class Tank {
                 { x: thiss.tank.position.x, y: thiss.tank.position.y },
                 { x: -dx, y: -dy }
             );
+
+            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
+            socket.emit("render coordinates", { "position": thiss.tank.position, "angle": thiss.tank.angle });///
         });
 
         // Apply torque for right/left turn
         socket.on("turn right", function (data) {
             thiss.tank.torque = thiss.rotationSpeed;
+            Body.update(thiss.tank, 1000 / 60, 1, 1); ///
+            Engine.update(engine, 1000 / 60);
+            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
+            socket.emit("render coordinates", { "position": thiss.tank.position, "angle": thiss.tank.angle });///
         });
         socket.on("turn left", function (data) {
             thiss.tank.torque = -thiss.rotationSpeed;
+
+            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
+            socket.emit("render coordinates", { "position": thiss.tank.position, "angle": thiss.tank.angle });///
         });
     }
 }
