@@ -49,10 +49,6 @@ class Tank {
                 { x: thiss.tank.position.x, y: thiss.tank.position.y },
                 { x: dx, y: dy }
             );
-            Body.update(thiss.tank, 1000 / 60, 1, 1); ///
-            Engine.update(engine, 1000 / 60);
-            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
-            socket.emit("render coordinates", { "position": thiss.tank.position, "angle": thiss.tank.angle });///
         });
         socket.on("move backward", function (data) {
             // Create a force vector
@@ -64,23 +60,19 @@ class Tank {
                 { x: thiss.tank.position.x, y: thiss.tank.position.y },
                 { x: -dx, y: -dy }
             );
-
-            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
-            socket.emit("render coordinates", { "position": thiss.tank.position, "angle": thiss.tank.angle });///
         });
 
         // Apply torque for right/left turn
         socket.on("turn right", function (data) {
             thiss.tank.torque = thiss.rotationSpeed;
+
             Body.update(thiss.tank, 1000 / 60, 1, 1); ///
-            Engine.update(engine, 1000 / 60);
-            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
             socket.emit("render coordinates", { "position": thiss.tank.position, "angle": thiss.tank.angle });///
         });
         socket.on("turn left", function (data) {
             thiss.tank.torque = -thiss.rotationSpeed;
 
-            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
+            Body.update(thiss.tank, 1000 / 60, 1, 1); ///
             socket.emit("render coordinates", { "position": thiss.tank.position, "angle": thiss.tank.angle });///
         });
     }
