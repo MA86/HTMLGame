@@ -22,7 +22,7 @@ class Tank {
         });
 
         // Properties of tank
-        this.speed = 0.004;
+        this.speed = 0.00004;
         this.rotationSpeed = 2;
 
         // Move turret center from middle to left
@@ -60,6 +60,9 @@ class Tank {
                 { x: thiss.tank.position.x, y: thiss.tank.position.y },
                 { x: -dx, y: -dy }
             );
+
+            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
+            socket.emit("render position", { "position": thiss.tank.position });///            
         });
 
         // Apply torque for right/left turn
@@ -67,13 +70,12 @@ class Tank {
             thiss.tank.torque = thiss.rotationSpeed;
 
             Body.update(thiss.tank, 1000 / 60, 1, 1); ///
-            socket.emit("render coordinates", { "position": thiss.tank.position, "angle": thiss.tank.angle });///
         });
         socket.on("turn left", function (data) {
             thiss.tank.torque = -thiss.rotationSpeed;
 
             Body.update(thiss.tank, 1000 / 60, 1, 1); ///
-            socket.emit("render coordinates", { "position": thiss.tank.position, "angle": thiss.tank.angle });///
+            socket.emit("render angle", { "angle": thiss.tank.angle });///
         });
     }
 }

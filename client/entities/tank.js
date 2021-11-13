@@ -15,9 +15,13 @@ class Tank extends Entity {
         this.spriteSheet = ss;
 
         let thiss = this;
-        window.globals.clientSocket.on("render coordinates", function (coordinates) {
-            thiss.position = coordinates.position;
-            thiss.angle = coordinates.angle;
+        window.globals.clientSocket.on("render position", function (data) {
+            thiss.position = data.position;
+            console.log(thiss.position);///
+        });
+        window.globals.clientSocket.on("render angle", function (data) {
+            thiss.angle = data.angle;
+            console.log(thiss.angle);///
         });
     }
 

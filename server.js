@@ -60,7 +60,7 @@ const Start = function (socket) {
 
     // Update physics and client every 16ms
     setInterval(function () {
-        //Engine.update(engine, 1000 / 60);
+        Engine.update(engine, 1000 / 60);
         //console.log(engine.timing.lastElapsed); ///
 
         /*
