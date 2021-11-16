@@ -8,7 +8,7 @@ const Composite = Matter.Composite;
 class Turret {
     constructor(world, initPos) {
         // Create turret on tank's position
-        this.turret = Bodies.rectangle(initPos.x, initPos.y, 148, 10, {
+        this.body = Bodies.rectangle(initPos.x, initPos.y, 148, 10, {
             isSensor: true,     // Inactivate body
         });
 
@@ -17,9 +17,6 @@ class Turret {
         this.readyToFire = true;
         this.parent;    // Set @ server.js
         this.world = world;
-
-        // Add turret to world
-        //Composite.add(world, [this.turret]);
     }
 
     setupEventListeners(socket) {
@@ -29,10 +26,10 @@ class Turret {
 
         // Apply rotation for left/right turn
         socket.on("rotate right", function (data) {
-            Body.rotate(thiss.turret, rotation);
+            Body.rotate(thiss.body, rotation);
         });
         socket.on("rotate left", function (data) {
-            Body.rotate(thiss.turret, -rotation);
+            Body.rotate(thiss.body, -rotation);
         });
 
         socket.on("fire shell", function (data) {
@@ -40,7 +37,7 @@ class Turret {
                 // Fire a shell
                 let shell = new Shell(
                     thiss.world,
-                    thiss.turret,
+                    thiss.body,
                     {
                         speed: 0.01,
                         type: "HE",

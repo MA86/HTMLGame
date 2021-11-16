@@ -28,7 +28,6 @@ const Events = Matter.Events;
 
 // Global variables
 const clients = [];
-var matterUpdated = false;
 
 // Treat the client folder as "public folder"
 // (Requested files will be searched here first)
@@ -48,17 +47,11 @@ const Start = function (socket) {
     });
 
     // Setup client
-    ///let turret = new Turret(engine.world, { "x": 100, "y": 100 });
-    let tank = new Tank(engine.world, { "x": 200, "y": 200 }, 0);
-    ///turret.parent = tank.tank;
-    ///turret.setupEventListeners(socket, engine);
+    let turret = new Turret(engine.world, { "x": 0, "y": 0 });
+    let tank = new Tank(engine.world, { "x": 0, "y": 0 }, turret.body);
+    turret.parent = tank.body;
+    turret.setupEventListeners(socket, engine);
     tank.setupEventListeners(socket, engine);
-
-    /*
-    // TEST //
-    let box = Bodies.rectangle(0, 0, 100, 100);
-    Composite.add(engine.world, [box]);
-    */
 
     // Update physics and client every 16ms
     setInterval(function () {
@@ -66,19 +59,8 @@ const Start = function (socket) {
 
         //console.log(engine.timing.lastElapsed); ///
 
-        socket.emit("render angle", { "angle": tank.tank.angle });///
-        socket.emit("render position", { "position": tank.tank.position });///
-
-        /*
-        //TEST//
-        Body.applyForce(
-            box,
-            { x: box.position.x, y: box.position.y },
-            { x: 0.004, y: 0.004 }
-        );
-        box.torque = 1;
-        console.log(box.angle, box.position);
-        */
+        socket.emit("render angle", { "angle": tank.body.angle });///
+        socket.emit("render position", { "position": tank.body.position });///
 
         //socket.emit("turret state", { "angle": turret.turret.angle }); ///
     }, 1000 / 60);
