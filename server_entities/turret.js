@@ -19,7 +19,7 @@ class Turret {
         this.world = world;
 
         // Add turret to world
-        Composite.add(world, [this.turret]);
+        //Composite.add(world, [this.turret]);
     }
 
     setupEventListeners(socket) {
