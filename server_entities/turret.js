@@ -6,7 +6,7 @@ const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
 
 class Turret {
-    constructor(world, initPos) {
+    constructor(initPos, world, parent) {
         // Create turret on tank's position
         this.body = Bodies.rectangle(initPos.x, initPos.y, 148, 10, {
             isSensor: true,     // Inactivate body
@@ -15,7 +15,7 @@ class Turret {
         // Properties of turret
         this.speed = 1;
         this.readyToFire = true;
-        this.parent;    // Set @ server.js
+        this.parent = parent;
         this.world = world;
     }
 

@@ -15,6 +15,15 @@ const httpServer = require("http").createServer(httpHandler);
 const socket = require("socket.io");
 const socketServer = new socket.Server(httpServer);
 
+// Treat the client folder as "public folder"
+// (Requested files will be searched here first)
+httpHandler.use(express.static(__dirname + "/client"));
+
+// For GET request @ path "/", send index.html file
+httpHandler.get("/", function (req, res) {
+    res.sendFile(__dirname + "./client/index.html");
+});
+
 const Matter = require("matter-js/build/matter");
 
 // Create aliases for Matter exports
@@ -27,16 +36,7 @@ const Runner = Matter.Runner;         // Optional game loop (Auto updates Engine
 const Events = Matter.Events;
 
 // Global variables
-const clients = [];
-
-// Treat the client folder as "public folder"
-// (Requested files will be searched here first)
-httpHandler.use(express.static(__dirname + "/client"));
-
-// For GET request @ path "/", send index.html file
-httpHandler.get("/", function (req, res) {
-    res.sendFile(__dirname + "./client/index.html");
-});
+const entities = [];
 
 const Start = function (socket) {
     // Create engine
@@ -53,11 +53,9 @@ const Start = function (socket) {
     turret.setupEventListeners(socket, engine);
     tank.setupEventListeners(socket, engine);
 
-    // Update physics and client every 16ms
+    // Game Loop //
     setInterval(function () {
         Engine.update(engine, 1000 / 60);
-
-        //console.log(engine.timing.lastElapsed); ///
 
         socket.emit("render angle", { "angle": tank.body.angle });///
         socket.emit("render position", { "position": tank.body.position });///
@@ -66,14 +64,15 @@ const Start = function (socket) {
     }, 1000 / 60);
 }
 
-// Event when a client connects to TCP/UDP server
+// Trigger when a client is connected to TCP/UDP server
 socketServer.on("connection", function (socket) {
     // Print this client ID
     console.log("Client ", socket.id, " is connected");
 
+    // Start game
     Start(socket);
 
-    // Event when this client disconnects from TCP/UDP server
+    // Trigger when this client is disconnected from TCP/UDP server
     socket.on("disconnect", () => {
         // Print this client ID
         console.log("Client ", socket.id, " is disconnected");

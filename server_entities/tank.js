@@ -1,3 +1,4 @@
+const Turret = require("./turret.js").turret;
 const Matter = require("matter-js/build/matter");
 
 const Body = Matter.Body;
@@ -7,13 +8,15 @@ const Engine = Matter.Engine;
 const Events = Matter.Events;
 
 class Tank {
-    constructor(world, initPos, turret) {
+    constructor(initPos, world, socket, parent) {
+        // Create turret
+        this.turret = new Turret({ "x": initPos.x, "y": initPos.y }, world, this);
 
-        // Create compound body representing tank & turret
+        // Create compound body representing tank
         this.body = Body.create({
             parts: [
                 Bodies.rectangle(initPos.x, initPos.y, 225, 100, {}),
-                turret
+                this.turret.body
             ],
             isStatic: false,
             frictionAir: 0.5,
@@ -24,75 +27,68 @@ class Tank {
         });
 
         // Properties of tank
-        this.matterUpdated = false;
         this.speed = 0.04;
         this.rotationSpeed = 4;
+        this.world = world;
+        this.socket = socket;
+        this.parent = parent;
 
         // Move turret center from middle to left
-        Body.setCentre(turret, { x: -48, y: -4 }, true);
+        Body.setCentre(this.turret.body, { x: -48, y: -4 }, true);
         // Position turret on tank (based on new center)
-        Body.setPosition(turret, this.body.position);
-        // TODO:do above before adding turret to world??
+        Body.setPosition(this.turret.body, this.body.position);
 
-        // Add tank to the world
+        // Add tank compound body to the world
         Composite.add(world, [this.body]);
     }
 
-    setupEventListeners(socket, engine) {
+    setupEventListeners() {
         let thiss = this;
 
-        Events.on(engine, "afterUpdate", function (event) {
-            thiss.matterUpdated = true;
-        });
-
-        // Apply the force vector for forward/backward movement
-        socket.on("move forward", function (data) {
+        // Trigger forward movement
+        thiss.socket.on("move forward", function (data) {
             // Create a force vector
             let dx = Math.cos(thiss.body.angle) * thiss.speed;
             let dy = Math.sin(thiss.body.angle) * thiss.speed;
 
-            if (true) {
-                Body.applyForce(
-                    thiss.body,
-                    { x: thiss.body.position.x, y: thiss.body.position.y },
-                    { x: dx, y: dy }
-                );
-                thiss.matterUpdated = false;
-            }
-            //socket.emit("render position", { "position": thiss.tank.position });/// 
+            Body.applyForce(
+                thiss.body,
+                { "x": thiss.body.position.x, "y": thiss.body.position.y },
+                { "x": dx, "y": dy }
+            );
         });
-        socket.on("move backward", function (data) {
+
+        // Trigger backward movement
+        thiss.socket.on("move backward", function (data) {
             // Create a force vector
             let dx = Math.cos(thiss.body.angle) * thiss.speed;
             let dy = Math.sin(thiss.body.angle) * thiss.speed;
 
-            if (true) {
-                Body.applyForce(
-                    thiss.body,
-                    { x: thiss.body.position.x, y: thiss.body.position.y },
-                    { x: -dx, y: -dy }
-                );
-                thiss.matterUpdated = false;
-            }
-            //socket.emit("render position", { "position": thiss.tank.position });/// 
+            Body.applyForce(
+                thiss.body,
+                { "x": thiss.body.position.x, "y": thiss.body.position.y },
+                { "x": -dx, "y": -dy }
+            );
         });
 
-        // Apply torque for right/left turn
-        socket.on("turn right", function (data) {
-            if (true) {
-                thiss.body.torque = thiss.rotationSpeed;
-                thiss.matterUpdated = false;
-            }
-            //socket.emit("render angle", { "angle": thiss.tank.angle });///
-            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
+        // Trigger right turn
+        thiss.socket.on("turn right", function (data) {
+            thiss.body.torque = thiss.rotationSpeed;
         });
-        socket.on("turn left", function (data) {
-            if (true) {
-                thiss.body.torque = -thiss.rotationSpeed;
-                thiss.matterUpdated = false;
-            }
-            //socket.emit("render angle", { "angle": thiss.tank.angle });///
-            //Body.update(thiss.tank, 1000 / 60, 1, 1); ///
+
+        // Trigger left turn
+        thiss.socket.on("turn left", function (data) {
+            thiss.body.torque = -thiss.rotationSpeed;
+        });
+    }
+    // TODO
+    update() {
+        let thiss = this;
+
+        thiss.socket.emit("render data", {
+            "position": thiss.body.position,
+            "angle": thiss.body.angle,
+            "turretAngle": thiss.turret.body.angle
         });
     }
 }
