@@ -37,43 +37,52 @@ const Events = Matter.Events;
 
 // Global variables
 const entities = [];
+const engine = null;
+const world = null;
 
-const Start = function (socket) {
+const Start = function () {
     // Create engine
-    let engine = Engine.create({
+    engine = Engine.create({
         gravity: { x: 0, y: 0 },
         // enableSleeping: true,
         // timing: {timeScale: 0.1},
     });
 
-    // Setup client
-    let tank = new Tank({ "x": 0, "y": 0 }, engine.world, socket, null);
-    tank.setupEventListeners(socket, engine);
-    entities.push(tank);
+    world = engine.world;
 
     // Game Loop //
     setInterval(function () {
         Engine.update(engine, 1000 / 60);
 
-        for (let index = 0; index < entities.length; index++) {
-            const entity = entities[index];
-            socketServer.broadcast(
-                "update entity",
-                { "position": entity.body.position, "angle": entity.body.angle }
-            );
+        if (entities.length > 0) {
+            for (let index = 0; index < entities.length; index++) {
+                const entity = entities[index];
+                socketServer.emit(
+                    "update entity",
+                    { "position": entity.body.position, "angle": entity.body.angle }
+                );
+                // TODO: Update based on ID
+            }
         }
 
         //socket.emit("turret state", { "angle": turret.turret.angle }); ///
     }, 1000 / 60);
 }
 
-// Trigger when a client is connected to TCP/UDP server
+// Start game
+Start();
+
+// Trigger when a new player is connected to TCP/UDP server
 socketServer.on("connection", function (socket) {
-    // Print this client ID
+    // Print this player ID
     console.log("Client ", socket.id, " is connected");
 
-    // Start game
-    Start(socket);
+    // Setup new player and add to list
+    let player = new Tank({ "x": 0, "y": 0 }, world, socket, null);
+    player.setupEventListeners();
+    entities.push(player);
+
+    // TODO: existing players, make the new client repr in thier browser.
 
     // Trigger when this client is disconnected from TCP/UDP server
     socket.on("disconnect", () => {
