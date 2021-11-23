@@ -47,18 +47,21 @@ const Start = function (socket) {
     });
 
     // Setup client
-    let turret = new Turret(engine.world, { "x": 0, "y": 0 });
-    let tank = new Tank(engine.world, { "x": 0, "y": 0 }, turret.body);
-    turret.parent = tank.body;
-    turret.setupEventListeners(socket, engine);
+    let tank = new Tank({ "x": 0, "y": 0 }, engine.world, socket, null);
     tank.setupEventListeners(socket, engine);
+    entities.push(tank);
 
     // Game Loop //
     setInterval(function () {
         Engine.update(engine, 1000 / 60);
 
-        socket.emit("render angle", { "angle": tank.body.angle });///
-        socket.emit("render position", { "position": tank.body.position });///
+        for (let index = 0; index < entities.length; index++) {
+            const entity = entities[index];
+            socketServer.broadcast(
+                "update entity",
+                { "position": entity.body.position, "angle": entity.body.angle }
+            );
+        }
 
         //socket.emit("turret state", { "angle": turret.turret.angle }); ///
     }, 1000 / 60);

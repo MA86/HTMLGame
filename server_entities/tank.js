@@ -10,7 +10,7 @@ const Events = Matter.Events;
 class Tank {
     constructor(initPos, world, socket, parent) {
         // Create turret
-        this.turret = new Turret({ "x": initPos.x, "y": initPos.y }, world, this);
+        this.turret = new Turret({ "x": initPos.x, "y": initPos.y }, world, socket, this);
 
         // Create compound body representing tank
         this.body = Body.create({
@@ -44,6 +44,9 @@ class Tank {
 
     setupEventListeners() {
         let thiss = this;
+
+        // Setup child events
+        thiss.turret.setupEventListeners();
 
         // Trigger forward movement
         thiss.socket.on("move forward", function (data) {
