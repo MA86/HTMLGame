@@ -58,10 +58,14 @@ const Start = function () {
             for (let index = 0; index < entities.length; index++) {
                 const entity = entities[index];
                 socketServer.emit(
-                    "update entity",
-                    { "position": entity.body.position, "angle": entity.body.angle }
+                    "update", //TODO
+                    {
+                        "entityID": entity.clientID,
+                        "position": entity.body.position,
+                        "angle": entity.body.angle,
+                        "turretAngle": entity.body.parts[1].angle
+                    }
                 );
-                // TODO: Update based on ID
             }
         }
 
@@ -72,17 +76,21 @@ const Start = function () {
 // Start game
 Start();
 
-// Trigger when a new player is connected to TCP/UDP server
+// Trigger when a new client is connected to TCP/UDP server
 socketServer.on("connection", function (socket) {
-    // Print this player ID
+    // Print this client ID
     console.log("Client ", socket.id, " is connected");
 
-    // Setup new player and add to list
+    // Setup a tank for client
     let player = new Tank({ "x": 0, "y": 0 }, world, socket, null);
     player.setupEventListeners();
     entities.push(player);
 
-    // TODO: existing players, make the new client repr in thier browser.
+    // TODO: client render representation of tank and existing tanks
+    for (let index = 0; index < entities.length; index++) {
+        const entity = entities[index];
+
+    }
 
     // Trigger when this client is disconnected from TCP/UDP server
     socket.on("disconnect", () => {

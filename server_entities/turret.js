@@ -13,6 +13,7 @@ class Turret {
         });
 
         // Properties of turret
+        this.clientID = socket.id;
         this.speed = 1;
         this.readyToFire = true;
         this.isPlayer = false;
