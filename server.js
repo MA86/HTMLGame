@@ -36,9 +36,9 @@ const Runner = Matter.Runner;         // Optional game loop (Auto updates Engine
 const Events = Matter.Events;
 
 // Global variables
-const entities = [];
-const engine = null;
-const world = null;
+var entities = [];
+var engine = null;
+var world = null;
 
 const Start = function () {
     // Create engine
@@ -57,8 +57,9 @@ const Start = function () {
         if (entities.length > 0) {
             for (let index = 0; index < entities.length; index++) {
                 const entity = entities[index];
+                // Tell clients to update
                 socketServer.emit(
-                    "update", //TODO
+                    "update",
                     {
                         "entityID": entity.clientID,
                         "position": entity.body.position,
@@ -66,11 +67,12 @@ const Start = function () {
                         "turretAngle": entity.body.parts[1].angle
                     }
                 );
+                console.log(entity.body.parts[1].angle);///
             }
         }
 
         //socket.emit("turret state", { "angle": turret.turret.angle }); ///
-    }, 1000 / 60);
+    }, 1000 / 120);
 }
 
 // Start game
@@ -86,10 +88,10 @@ socketServer.on("connection", function (socket) {
     player.setupEventListeners();
     entities.push(player);
 
-    // TODO: client render representation of tank and existing tanks
+    // Tell client to create a tank for each entity in entities list
     for (let index = 0; index < entities.length; index++) {
         const entity = entities[index];
-
+        socketServer.emit("create tanks", { "clientID": entity.clientID });
     }
 
     // Trigger when this client is disconnected from TCP/UDP server

@@ -1,4 +1,4 @@
-const Turret = require("./turret.js").turret;
+const Turret = require("./turret.js").Turret;
 const Matter = require("matter-js/build/matter");
 
 const Body = Matter.Body;

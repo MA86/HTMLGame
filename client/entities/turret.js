@@ -11,10 +11,12 @@ class Turret extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;      // Note: keyname is a path made at main.js
 
-        // Get data from server
+        // Update turret properties
         let thiss = this;
-        window.globals.clientSocket.on("turret state", function (state) {
-            thiss.angle = state.angle;
+        window.globals.clientSocket.on("update", function (data) {
+            if (this.clientID == data.clientID) {
+                thiss.angle = data.turretAngle;
+            }
         });
     }
 

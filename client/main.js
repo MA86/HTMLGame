@@ -14,13 +14,13 @@ addEventListener("load", function (e) {
     window.globals.keysDown = {};
     window.globals.images = {};
     window.globals.entities = [];
+    window.globals.clientIDs = [];
     window.globals.imagePaths = [
         "./images_and_data/mSixTankBody.png",
         "./images_and_data/mSixTankTurret.png",
         "./images_and_data/shell.png"
     ];
-    // client TCP/UDP socket, connected to server
-    window.globals.clientSocket = io();
+    window.globals.clientSocket = null;
 
     const setupKeyboardHandler = function (dic) {
         // Listen for key pressed
@@ -52,22 +52,34 @@ addEventListener("load", function (e) {
         window.globals.canvas.width = window.innerWidth;
         window.globals.canvas.height = window.innerHeight;
 
-        // Create turret
-        var mSixTurret = new Turret(
-            window.globals.images,
-            spriteSheetsData,
-            0
-        );
-        // Create tank
-        var mSixTank = new Tank(
-            window.globals.images["./images_and_data/mSixTankBody.png"],
-            spriteSheetsData.mSixTankBodyData,
-            0,
-            mSixTurret
-        );
+        //TODO: Load the map
 
-        // Add tank to physics world and entities list
-        window.globals.entities.push(mSixTank);
+        // Open a TCP/UDP socket connection to server
+        window.globals.clientSocket = io();
+
+        // Create tanks when 'create tanks' event is triggered
+        window.globals.clientSocket.on("create tanks", function (data) {
+            // If client doesn't exist already...
+            if (!window.globals.clientIDs.includes(data.clientID)) {
+                // Create turret
+                var mSixTurret = new Turret(
+                    window.globals.images,
+                    spriteSheetsData,
+                    0
+                );
+                // Create tank
+                var mSixTank = new Tank(
+                    window.globals.images["./images_and_data/mSixTankBody.png"],
+                    spriteSheetsData.mSixTankBodyData,
+                    0,
+                    mSixTurret
+                );
+
+                // Add to list
+                window.globals.entities.push(mSixTank);
+                window.globals.clientIDs.push(data.clientID);
+            }
+        });
 
         /*** Game Loop ***/
         var delta = 0;

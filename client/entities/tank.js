@@ -14,12 +14,15 @@ class Tank extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
 
+        this.clientID = window.globals.clientSocket.id;
+
+        // Update tank properties
         let thiss = this;
-        window.globals.clientSocket.on("render position", function (data) {
-            thiss.position = data.position;
-        });
-        window.globals.clientSocket.on("render angle", function (data) {
-            thiss.angle = data.angle;
+        window.globals.clientSocket.on("update", function (data) {
+            if (this.clientID == data.clientID) {
+                thiss.position = data.position;
+                thiss.angle = data.angle;
+            }
         });
     }
 
