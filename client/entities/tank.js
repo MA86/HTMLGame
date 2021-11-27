@@ -19,7 +19,7 @@ class Tank extends Entity {
         // Update tank properties
         let thiss = this;
         window.globals.clientSocket.on("update", function (data) {
-            if (this.clientID == data.clientID) {
+            if (this.clientID == data.clientID) { ///
                 thiss.position = data.position;
                 thiss.angle = data.angle;
             }

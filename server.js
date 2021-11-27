@@ -56,45 +56,42 @@ const Start = function () {
 
         if (entities.length > 0) {
             for (let index = 0; index < entities.length; index++) {
-                const entity = entities[index];
+                const tank = entities[index];
                 // Tell clients to update
                 socketServer.emit(
                     "update",
                     {
-                        "entityID": entity.clientID,
-                        "position": entity.body.position,
-                        "angle": entity.body.angle,
-                        "turretAngle": entity.body.parts[1].angle
+                        "entityID": tank.clientID,
+                        "position": tank.body.position,
+                        "angle": tank.body.angle,
+                        "turretAngle": tank.turret.body.angle
                     }
                 );
-                console.log(entity.body.parts[1].angle);///
             }
         }
-
-        //socket.emit("turret state", { "angle": turret.turret.angle }); ///
     }, 1000 / 120);
 }
 
 // Start game
 Start();
 
-// Trigger when a new client is connected to TCP/UDP server
+// Trigger when a new client opens TCP/UDP socket
 socketServer.on("connection", function (socket) {
-    // Print this client ID
+    // Print client ID
     console.log("Client ", socket.id, " is connected");
 
-    // Setup a tank for client
-    let player = new Tank({ "x": 0, "y": 0 }, world, socket, null);
-    player.setupEventListeners();
-    entities.push(player);
+    // Setup client
+    let client = new Tank({ "x": 0, "y": 0 }, world, socket, null);
+    client.setupEventListeners();
+    entities.push(client);
 
-    // Tell client to create a tank for each entity in entities list
+    // Emit event to create a tank for each entity in entities list
     for (let index = 0; index < entities.length; index++) {
-        const entity = entities[index];
-        socketServer.emit("create tanks", { "clientID": entity.clientID });
+        let tank = entities[index];
+        socketServer.emit("create tanks", { "clientID": tank.clientID });
     }
 
-    // Trigger when this client is disconnected from TCP/UDP server
+    // Trigger when client leaves
     socket.on("disconnect", () => {
         // Print this client ID
         console.log("Client ", socket.id, " is disconnected");
