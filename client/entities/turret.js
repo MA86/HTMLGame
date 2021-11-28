@@ -1,7 +1,7 @@
 import { Entity } from './entity.js';
 
 class Turret extends Entity {
-    constructor(ss, ssData, fps) {
+    constructor(ss, ssData, fps, clientID) {
         super({ "x": 0, "y": 0 }, 0, true);
 
         // Variables used for rendering this object
@@ -11,14 +11,13 @@ class Turret extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;      // Note: keyname is a path made at main.js
 
-        this.clientID = window.globals.clientSocket.id;
+        this.clientID = clientID;
 
         // Update turret properties
         let thiss = this;
         window.globals.clientSocket.on("update", function (data) {
-            if (this.clientID == data.clientID) { ///
+            if (thiss.clientID == data.clientID) {
                 thiss.angle = data.turretAngle;
-                console.log(thiss.angle);
             }
         });
     }
@@ -42,24 +41,25 @@ class Turret extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        // Client tells server to rotate right/left
-        if (keysDown && keysDown.KeyD == true) {
-            window.globals.clientSocket.emit(
-                "rotate right", {}
-            );
-        }
-        if (keysDown && keysDown.KeyA == true) {
-            window.globals.clientSocket.emit(
-                "rotate left", {}
-            );
-        }
+        if (this.clientID == window.globals.clientSocket.id) {
+            // Client tells server to rotate right/left
+            if (keysDown && keysDown.KeyD == true) {
+                window.globals.clientSocket.emit(
+                    "rotate right", {}
+                );
+            }
+            if (keysDown && keysDown.KeyA == true) {
+                window.globals.clientSocket.emit(
+                    "rotate left", {}
+                );
+            }
 
-        // Fire a shell
-        if (keysDown && keysDown.Space == true) {
-            window.globals.clientSocket.emit(
-                "fire shell", {}
-            );
-
+            // Fire a shell
+            if (keysDown && keysDown.Space == true) {
+                window.globals.clientSocket.emit(
+                    "fire shell", {}
+                );
+            }
         }
 
         // Update index

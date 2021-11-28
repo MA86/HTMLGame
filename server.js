@@ -56,20 +56,20 @@ const Start = function () {
 
         if (entities.length > 0) {
             for (let index = 0; index < entities.length; index++) {
-                const tank = entities[index];
-                // Tell clients to update
+                const entity = entities[index];
+                // Update clients
                 socketServer.emit(
                     "update",
                     {
-                        "entityID": tank.clientID,
-                        "position": tank.body.position,
-                        "angle": tank.body.angle,
-                        "turretAngle": tank.turret.body.angle
+                        "clientID": entity.clientID,
+                        "position": entity.body.position,
+                        "angle": entity.body.angle,
+                        "turretAngle": entity.turret.body.angle
                     }
                 );
             }
         }
-    }, 1000 / 120);
+    }, 1000 / 180);
 }
 
 // Start game
@@ -80,15 +80,15 @@ socketServer.on("connection", function (socket) {
     // Print client ID
     console.log("Client ", socket.id, " is connected");
 
-    // Setup client
-    let client = new Tank({ "x": 0, "y": 0 }, world, socket, null);
-    client.setupEventListeners();
-    entities.push(client);
+    // Setup entity for client
+    let entity = new Tank({ "x": 0, "y": 0 }, world, socket, null);
+    entity.setupEventListeners();
+    entities.push(entity);
 
-    // Emit event to create a tank for each entity in entities list
+    // Emit event to create an entity for each entity in entities list
     for (let index = 0; index < entities.length; index++) {
-        let tank = entities[index];
-        socketServer.emit("create tanks", { "clientID": tank.clientID });
+        let entity = entities[index];
+        socketServer.emit("create entities", { "clientID": entity.clientID });
     }
 
     // Trigger when client leaves

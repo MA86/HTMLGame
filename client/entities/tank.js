@@ -1,7 +1,7 @@
 import { Entity } from './entity.js';
 
 class Tank extends Entity {
-    constructor(ss, ssData, fps, turret) {
+    constructor(ss, ssData, fps, clientID, turret) {
         super({ "x": 0, "y": 0 }, 0, false);
 
         // Add child turret
@@ -14,12 +14,12 @@ class Tank extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
 
-        this.clientID = window.globals.clientSocket.id;
+        this.clientID = clientID;
 
         // Update tank properties
         let thiss = this;
         window.globals.clientSocket.on("update", function (data) {
-            if (this.clientID == data.clientID) { ///
+            if (thiss.clientID == data.clientID) {
                 thiss.position = data.position;
                 thiss.angle = data.angle;
             }
@@ -45,28 +45,30 @@ class Tank extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        // Client tells server to move forward/backward
-        if (keysDown && keysDown.ArrowUp == true) {
-            window.globals.clientSocket.emit(
-                "move forward", {}
-            );
-        }
-        if (keysDown && keysDown.ArrowDown == true) {
-            window.globals.clientSocket.emit(
-                "move backward", {}
-            );
-        }
+        if (this.clientID == window.globals.clientSocket.id) {
+            // Client tells server to move forward/backward
+            if (keysDown && keysDown.ArrowUp == true) {
+                window.globals.clientSocket.emit(
+                    "move forward", {}
+                );
+            }
+            if (keysDown && keysDown.ArrowDown == true) {
+                window.globals.clientSocket.emit(
+                    "move backward", {}
+                );
+            }
 
-        // Client tells server to turn right/left
-        if (keysDown && keysDown.ArrowRight == true) {
-            window.globals.clientSocket.emit(
-                "turn right", {}
-            );
-        }
-        if (keysDown && keysDown.ArrowLeft == true) {
-            window.globals.clientSocket.emit(
-                "turn left", {}
-            );
+            // Client tells server to turn right/left
+            if (keysDown && keysDown.ArrowRight == true) {
+                window.globals.clientSocket.emit(
+                    "turn right", {}
+                );
+            }
+            if (keysDown && keysDown.ArrowLeft == true) {
+                window.globals.clientSocket.emit(
+                    "turn left", {}
+                );
+            }
         }
 
         // Update index

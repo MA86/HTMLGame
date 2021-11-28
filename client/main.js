@@ -57,21 +57,23 @@ addEventListener("load", function (e) {
         // Open a TCP/UDP socket connection to server
         window.globals.clientSocket = io();
 
-        // Create tanks when 'create tanks' event is triggered
-        window.globals.clientSocket.on("create tanks", function (data) {
-            // If client doesn't exist already...
+        // Create entities when 'create entities' event is triggered
+        window.globals.clientSocket.on("create entities", function (data) {
+            // If entity doesn't exist already...
             if (!window.globals.clientIDs.includes(data.clientID)) {
                 // Create turret
                 var mSixTurret = new Turret(
                     window.globals.images,
                     spriteSheetsData,
-                    0
+                    0,
+                    data.clientID
                 );
                 // Create tank
                 var mSixTank = new Tank(
                     window.globals.images["./images_and_data/mSixTankBody.png"],
                     spriteSheetsData.mSixTankBodyData,
                     0,
+                    data.clientID,
                     mSixTurret
                 );
 
