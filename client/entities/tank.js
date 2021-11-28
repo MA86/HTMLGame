@@ -1,11 +1,17 @@
 import { Entity } from './entity.js';
+import { Turret } from './turret.js';
 
 class Tank extends Entity {
-    constructor(ss, ssData, fps, clientID, turret) {
+    constructor(ss, ssData, fps, clientID, turretParams) {
         super({ "x": 0, "y": 0 }, 0, false);
 
-        // Add child turret
-        this.children.push(turret);
+        this.turret = new Turret(
+            turretParams.ss,
+            turretParams.ssData,
+            turretParams.fps,
+            turretParams.clientID
+        );
+        this.children.push(this.turret);
 
         // Variables used for rendering this object
         this.index = 0;

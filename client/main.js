@@ -61,20 +61,18 @@ addEventListener("load", function (e) {
         window.globals.clientSocket.on("create entities", function (data) {
             // If entity doesn't exist already...
             if (!window.globals.clientIDs.includes(data.clientID)) {
-                // Create turret
-                var mSixTurret = new Turret(
-                    window.globals.images,
-                    spriteSheetsData,
-                    0,
-                    data.clientID
-                );
                 // Create tank
                 var mSixTank = new Tank(
                     window.globals.images["./images_and_data/mSixTankBody.png"],
                     spriteSheetsData.mSixTankBodyData,
                     0,
                     data.clientID,
-                    mSixTurret
+                    {
+                        "ss": window.globals.images,
+                        "ssData": spriteSheetsData,
+                        "fps": 0,
+                        "clientID": data.clientID
+                    }
                 );
 
                 // Add to list

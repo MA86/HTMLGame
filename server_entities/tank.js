@@ -20,10 +20,10 @@ class Tank {
             ],
             isStatic: false,
             frictionAir: 0.5,
-            restitution: 0,
-            density: 4,
-            friction: 1,
-            frictionStatic: 10,
+            restitution: 0.01,
+            density: 1,
+            //friction: 1,
+            //frictionStatic: 10,
         });
 
         // Properties of tank

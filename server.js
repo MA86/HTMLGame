@@ -49,27 +49,36 @@ const Start = function () {
     });
 
     world = engine.world;
+    let lastUpdateTime = Date.now();
 
     // Game Loop //
-    setInterval(function () {
+    setImmediate(function x() {  ///
         Engine.update(engine, 1000 / 60);
 
-        if (entities.length > 0) {
-            for (let index = 0; index < entities.length; index++) {
-                const entity = entities[index];
-                // Update clients
-                socketServer.emit(
-                    "update",
-                    {
-                        "clientID": entity.clientID,
-                        "position": entity.body.position,
-                        "angle": entity.body.angle,
-                        "turretAngle": entity.turret.body.angle
-                    }
-                );
+        // update clients
+        let timeNow = Date.now();
+        let timeEpased = timeNow - lastUpdateTime
+        if (timeEpased > 1000 / 180) {
+            lastUpdateTime = timeNow
+            if (entities.length > 0) {
+                for (let index = 0; index < entities.length; index++) {
+                    const entity = entities[index];
+                    // Update clients
+                    socketServer.emit(
+                        "update",
+                        {
+                            "clientID": entity.clientID,
+                            "position": entity.body.position,
+                            "angle": entity.body.angle,
+                            "turretAngle": entity.turret.body.angle
+                        }
+                    );
+                }
             }
         }
-    }, 1000 / 180);
+
+        setImmediate(x);
+    });
 }
 
 // Start game
