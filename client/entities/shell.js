@@ -1,8 +1,7 @@
 import { Entity } from "./entity.js";
 
-
 class Shell extends Entity {
-    constructor(ss, ssData, fps) {
+    constructor(ss, ssData, fps, clientID) {
         super({ "x": 0, "y": 0 }, 0, false);
 
         // Variables used for rendering this object
@@ -11,11 +10,16 @@ class Shell extends Entity {
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
-        // TODO
+
+        this.clientID = clientID;
+
+        // Update shell properties
         let thiss = this;
-        window.globals.clientSocket.on("render coordinates", function (coordinates) {
-            thiss.position = coordinates.position;
-            thiss.angle = coordinates.angle;
+        window.globals.clientSocket.on("update", function (data) {
+            if (thiss.clientID == data.clientID) {
+                thiss.position = data.firedShellPos;
+                thiss.angle = data.firedShellAngle;
+            }
         });
     }
 
@@ -38,16 +42,6 @@ class Shell extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        //if (this.clientId == window.globals.clientSocket.id) {
-        this.detonate(dt);
-
-        // Report to server the force applied
-        //window.globals.clientSocket.emit(
-        //"shell movement",
-        //{ "clientId": this.clientId, "shellForce": { x: this.fdx * dt, y: this.fdy * dt } }
-        //);
-        //}
-
         // Update index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;
@@ -56,25 +50,6 @@ class Shell extends Entity {
             this.index = this.index % this.spriteSheetData.frames.length;
             this.timeTracker = 0;
         }
-    }
-
-    detonate(dt) {
-        // Apply force to shell one time
-        let thisShell = this;
-        if (!thisShell.detonated) {
-            Body.applyForce(
-                thisShell.body,
-                { x: thisShell.body.position.x, y: thisShell.body.position.y },
-                { x: thisShell.fdx, y: thisShell.fdy }
-            );
-            thisShell.detonated = true;
-        }
-    }
-
-    onImpact() {
-        // Destroy this shell.
-        // Remove this shell from world
-        // Remove this shell from cannon parent
     }
 }
 

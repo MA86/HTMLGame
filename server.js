@@ -70,7 +70,9 @@ const Start = function () {
                             "clientID": entity.clientID,
                             "position": entity.body.position,
                             "angle": entity.body.angle,
-                            "turretAngle": entity.turret.body.angle
+                            "turretAngle": entity.turret.body.angle,
+                            "firedShellPos": (entity.turret.firedShell == null) ? { x: 0, y: 0 } : entity.turret.firedShell.body.position,
+                            "firedShellAngle": (entity.turret.firedShell == null) ? 0 : entity.turret.firedShell.body.angle
                         }
                     );
                 }
@@ -89,7 +91,7 @@ socketServer.on("connection", function (socket) {
     // Print client ID
     console.log("Client ", socket.id, " is connected");
 
-    // Setup entity for client
+    // Add entity for client
     let entity = new Tank({ "x": 0, "y": 0 }, world, socket, null);
     entity.setupEventListeners();
     entities.push(entity);
@@ -102,8 +104,17 @@ socketServer.on("connection", function (socket) {
 
     // Trigger when client leaves
     socket.on("disconnect", () => {
-        // Print this client ID
+        // Print client ID
         console.log("Client ", socket.id, " is disconnected");
+
+        // Remove entity from server
+        let indexOfDisconnectedClient = entities.map(function (obj) {
+            return obj.clientID;
+        }).indexOf(socket.id);
+        entities.splice(indexOfDisconnectedClient, 1);
+
+        // Remove entity from client
+        socketServer.emit("remove entities", { "clientID": socket.id });
     });
 });
 

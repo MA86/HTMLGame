@@ -6,7 +6,7 @@ const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
 
 class Turret {
-    constructor(initPos, world, socket, parent) {
+    constructor(initPos, world, socket, tank) {
         // Create body representing turret
         this.body = Bodies.rectangle(initPos.x, initPos.y, 148, 10, {
             isSensor: true,     // Inactivate physics
@@ -16,9 +16,10 @@ class Turret {
         this.clientID = socket.id;
         this.speed = 0.65;
         this.readyToFire = true;
+        this.firedShell = null;
         this.world = world;
         this.socket = socket;
-        this.parent = parent;
+        this.tank = tank;
     }
 
     setupEventListeners() {
@@ -29,7 +30,6 @@ class Turret {
         // Trigger left/right turn
         thiss.socket.on("rotate right", function (data) {
             Body.rotate(thiss.body, rotation);
-            //console.log(thiss.body.angle);///
         });
         thiss.socket.on("rotate left", function (data) {
             Body.rotate(thiss.body, -rotation);
@@ -38,10 +38,27 @@ class Turret {
         // Trigger cannon fire
         thiss.socket.on("fire shell", function (data) {
             if (thiss.readyToFire) {
-                // Fire a shell
-                let shell = new Shell(
+                // Prepare position vector
+                let pdx = Math.cos(thiss.body.angle + thiss.tank.body.angle) * 140;
+                let pdy = Math.sin(thiss.body.angle + thiss.tank.body.angle) * 140;
+                pdx = pdx + thiss.body.position.x;
+                pdy = pdy + thiss.body.position.y;
+
+                // Prepare angle
+                let angle = thiss.body.angle + thiss.tank.body.angle;
+
+                // Prepare a force vector
+                let fdx = Math.cos(thiss.angle + thiss.tank.body.angle);
+                let fdy = Math.sin(thiss.angle + thiss.tank.body.angle);
+
+                // Fire shell
+                thiss.firedShell = new Shell(
+                    { "x": thiss.body.position.x, "y": thiss.body.position.y },
                     thiss.world,
-                    thiss.body,
+                    thiss.socket,
+                    { "pdx": pdx, "pdy": pdy },
+                    angle,
+                    { "fdx": fdx, "fdy": fdy },
                     {
                         speed: 0.01,
                         type: "HE",

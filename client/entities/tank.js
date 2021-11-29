@@ -2,14 +2,15 @@ import { Entity } from './entity.js';
 import { Turret } from './turret.js';
 
 class Tank extends Entity {
-    constructor(ss, ssData, fps, clientID, turretParams) {
+    constructor(ss, ssData, fps, clientID, turretParams, shellParams) {
         super({ "x": 0, "y": 0 }, 0, false);
 
         this.turret = new Turret(
             turretParams.ss,
             turretParams.ssData,
             turretParams.fps,
-            turretParams.clientID
+            turretParams.clientID,
+            shellParams
         );
         this.children.push(this.turret);
 

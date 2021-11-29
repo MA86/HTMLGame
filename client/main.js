@@ -62,7 +62,7 @@ addEventListener("load", function (e) {
             // If entity doesn't exist already...
             if (!window.globals.clientIDs.includes(data.clientID)) {
                 // Create tank
-                var mSixTank = new Tank(
+                let mSixTank = new Tank(
                     window.globals.images["./images_and_data/mSixTankBody.png"],
                     spriteSheetsData.mSixTankBodyData,
                     0,
@@ -72,12 +72,29 @@ addEventListener("load", function (e) {
                         "ssData": spriteSheetsData,
                         "fps": 0,
                         "clientID": data.clientID
+                    },
+                    {
+                        "ss": window.globals.images["./images_and_data/shell.png"],
+                        "ssData": spriteSheetsData.shellData,
+                        "fps": 0,
+                        "clientID": data.clientID
                     }
                 );
 
                 // Add to list
                 window.globals.entities.push(mSixTank);
                 window.globals.clientIDs.push(data.clientID);
+            }
+        });
+
+        // Remove entity when 'remove entities' event is triggered
+        window.globals.clientSocket.on("remove entities", function (data) {
+            if (window.globals.clientIDs.includes(data.clientID)) {
+                let indexOfEntity = window.globals.entities.map(function (obj) {
+                    return obj.clientID;
+                }).indexOf(data.clientID);
+                window.globals.entities.splice(indexOfEntity, 1);
+                window.globals.clientIDs.splice(indexOfEntity, 1);
             }
         });
 

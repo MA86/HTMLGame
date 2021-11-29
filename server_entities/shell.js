@@ -3,35 +3,31 @@ const Matter = require("matter-js/build/matter");
 const Body = Matter.Body;
 const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
-
+// TODO
 class Shell {
-    constructor(world, turret, options) {
-        this.shell = Bodies.rectangle(turret.position.x, turret.position.y, 20, 4, {
+    constructor(initPos, world, socket, posVec, angle, forceVec, options) {
+        this.shell = Bodies.rectangle(initPos.x, initPos.y, 20, 4, {
             isStatic: false,
             isSensor: false,
-        })
+        });
+
 
         // Properties of shell
+        this.clientID = socket.id;
+
+        // Options
         this.speed = options.speed;
         this.type = options.type;
         this.blastRadius = options.blastRadius;
         this.penetration = options.penetration;
 
-        // Prepare a position vector
-        this.pdx = Math.cos(turret.angle + turret.parent.angle) * 140;
-        this.pdy = Math.sin(turret.angle + turret.parent.angle) * 140;
-
-        // Add two vectors to create a new position vector where shell will be placed
+        // Position
         Body.setPosition(
             this.shell,
-            { x: this.pdx + turret.position.x, y: this.pdy + turret.position.y }
+            { "x": posVec.pdx, "y": posVec.pdy }
         );
-        // Set shell's angle to turret's angle.
-        Body.setAngle(this.shell, turret.angle + turret.parent.angle);
-
-        // Prepare a force vector
-        this.fdx = Math.cos(turret.angle + turret.parent.angle) * this.speed;
-        this.fdy = Math.sin(turret.angle + turret.parent.angle) * this.speed;
+        // Angle
+        Body.setAngle(this.shell, angle);
 
         // Add shell to the world
         Composite.add(world, [this.shell]);
@@ -39,13 +35,13 @@ class Shell {
         // Apply the force vector to send off the shell
         Body.applyForce(
             this.shell,
-            { x: this.shell.position.x, y: this.shell.position.y },
-            { x: this.fdx, y: this.fdy }
+            { "x": this.shell.position.x, "y": this.shell.position.y },
+            { "x": forceVec.fdx * this.speed, "y": forceVec.fdy * this.speed }
         );
     }
 
-    setupEventListeners(socket) {
-        // Does nothing
+    setupEventListeners() {
+        // TODO: "oimpact.on()..."
     }
 
     onImpact() {

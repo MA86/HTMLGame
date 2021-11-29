@@ -1,7 +1,8 @@
 import { Entity } from './entity.js';
+import { Shell } from './shell.js';
 
 class Turret extends Entity {
-    constructor(ss, ssData, fps, clientID) {
+    constructor(ss, ssData, fps, clientID, shellParams) {
         super({ "x": 0, "y": 0 }, 0, true);
 
         // Variables used for rendering this object
@@ -11,7 +12,10 @@ class Turret extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;      // Note: keyname is a path made at main.js
 
+        // Properties of Turret
         this.clientID = clientID;
+        this.shellParams = shellParams;
+        this.firedShell = null;
 
         // Update turret properties
         let thiss = this;
@@ -56,6 +60,15 @@ class Turret extends Entity {
 
             // Fire a shell
             if (keysDown && keysDown.Space == true) {
+                this.firedShell = new Shell(
+                    this.shellParams.ss,
+                    this.shellParams.ssData,
+                    this.shellParams.fps,
+                    this.shellParams.clientID
+                );
+                this.children.push(this.firedShell);
+                // TODO: remove when shell is deleted.
+
                 window.globals.clientSocket.emit(
                     "fire shell", {}
                 );
