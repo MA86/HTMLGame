@@ -66,7 +66,9 @@ class Turret extends Entity {
                     this.shellParams.fps,
                     this.shellParams.clientID
                 );
-                this.children.push(this.firedShell);
+                // Add shell to entities 
+                window.globals.entities.push(this.firedShell);
+
                 // TODO: remove when shell is deleted.
 
                 window.globals.clientSocket.emit(

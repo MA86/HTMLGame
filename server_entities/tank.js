@@ -28,8 +28,8 @@ class Tank {
 
         // Properties of tank
         this.clientID = socket.id;
-        this.speed = 0.035;
-        this.rotationSpeed = 4.5;
+        this.speed = 0.2;
+        this.rotationSpeed = 25;
         this.world = world;
         this.socket = socket;
         this.parent = parent;

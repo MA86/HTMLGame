@@ -14,7 +14,7 @@ class Turret {
 
         // Properties of turret
         this.clientID = socket.id;
-        this.speed = 0.65;
+        this.speed = 0.72;
         this.readyToFire = true;
         this.firedShell = null;
         this.world = world;
@@ -48,8 +48,8 @@ class Turret {
                 let angle = thiss.body.angle + thiss.tank.body.angle;
 
                 // Prepare a force vector
-                let fdx = Math.cos(thiss.angle + thiss.tank.body.angle);
-                let fdy = Math.sin(thiss.angle + thiss.tank.body.angle);
+                let fdx = Math.cos(thiss.body.angle + thiss.tank.body.angle);
+                let fdy = Math.sin(thiss.body.angle + thiss.tank.body.angle);
 
                 // Fire shell
                 thiss.firedShell = new Shell(

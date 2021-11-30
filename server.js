@@ -51,15 +51,16 @@ const Start = function () {
     world = engine.world;
     let lastUpdateTime = Date.now();
 
-    // Game Loop //
     setImmediate(function x() {  ///
-        Engine.update(engine, 1000 / 60);
-
         // update clients
         let timeNow = Date.now();
         let timeEpased = timeNow - lastUpdateTime
-        if (timeEpased > 1000 / 180) {
+        if (timeEpased > 1000 / 120) {
             lastUpdateTime = timeNow
+
+            //*** Game Loop Start ***//
+            Engine.update(engine, timeEpased);
+
             if (entities.length > 0) {
                 for (let index = 0; index < entities.length; index++) {
                     const entity = entities[index];
@@ -71,13 +72,14 @@ const Start = function () {
                             "position": entity.body.position,
                             "angle": entity.body.angle,
                             "turretAngle": entity.turret.body.angle,
-                            "firedShellPos": (entity.turret.firedShell == null) ? { x: 0, y: 0 } : entity.turret.firedShell.body.position,
-                            "firedShellAngle": (entity.turret.firedShell == null) ? 0 : entity.turret.firedShell.body.angle
+                            "firedShellPos": (entity.turret.firedShell == undefined) ? { x: 0, y: 0 } : entity.turret.firedShell.body.position,
+                            "firedShellAngle": (entity.turret.firedShell == undefined) ? 0 : entity.turret.firedShell.body.angle
                         }
                     );
                 }
             }
         }
+        //*** Game Loop End ***//
 
         setImmediate(x);
     });

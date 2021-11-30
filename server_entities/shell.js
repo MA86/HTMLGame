@@ -6,7 +6,7 @@ const Composite = Matter.Composite;
 // TODO
 class Shell {
     constructor(initPos, world, socket, posVec, angle, forceVec, options) {
-        this.shell = Bodies.rectangle(initPos.x, initPos.y, 20, 4, {
+        this.body = Bodies.rectangle(initPos.x, initPos.y, 20, 4, {
             isStatic: false,
             isSensor: false,
         });
@@ -23,19 +23,19 @@ class Shell {
 
         // Position
         Body.setPosition(
-            this.shell,
+            this.body,
             { "x": posVec.pdx, "y": posVec.pdy }
         );
         // Angle
-        Body.setAngle(this.shell, angle);
+        Body.setAngle(this.body, angle);
 
         // Add shell to the world
-        Composite.add(world, [this.shell]);
+        Composite.add(world, [this.body]);
 
         // Apply the force vector to send off the shell
         Body.applyForce(
-            this.shell,
-            { "x": this.shell.position.x, "y": this.shell.position.y },
+            this.body,
+            { "x": this.body.position.x, "y": this.body.position.y },
             { "x": forceVec.fdx * this.speed, "y": forceVec.fdy * this.speed }
         );
     }
