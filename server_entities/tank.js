@@ -85,16 +85,6 @@ class Tank {
             thiss.body.torque = -thiss.rotationSpeed;
         });
     }
-    // TODO
-    update() {
-        let thiss = this;
-
-        thiss.socket.emit("render data", {
-            "position": thiss.body.position,
-            "angle": thiss.body.angle,
-            "turretAngle": thiss.turret.body.angle
-        });
-    }
 }
 
 module.exports = { Tank };

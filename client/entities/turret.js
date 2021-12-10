@@ -17,9 +17,16 @@ class Turret extends Entity {
         this.shellParams = shellParams;
         this.firedShell = null;
 
-        // Update turret properties
+        // Listen for update
         let thiss = this;
         window.globals.clientSocket.on("update", function (data) {
+            if (thiss.clientID == data.clientID) {
+                thiss.angle = data.turretAngle;
+            }
+        });
+
+        // Listen for creating shell
+        window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
                 thiss.angle = data.turretAngle;
             }
@@ -71,8 +78,13 @@ class Turret extends Entity {
 
                 // TODO: remove when shell is deleted.
 
-                window.globals.clientSocket.emit(
-                    "fire shell", {}
+                window.globals.clientSocket.emit(///
+                    "fire shell",
+                    {
+                        "clientID": this.clientID,
+                        "angle": this.firedShell.angle,
+                        "position": this.firedShell.position
+                    }
                 );
             }
         }
