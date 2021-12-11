@@ -2,7 +2,7 @@
 
 // NOTE: require() function executes a module and returns exports
 const Tank = require("./server_entities/tank.js").Tank;
-const Turret = require("./server_entities/turret.js").Turret;
+const Turret = require("./server_entities/turret.js").Turret;///
 
 // Returns a function object called 'express'
 const express = require("express");
@@ -72,7 +72,7 @@ const Start = function () {
                             "position": entity.body.position,
                             "angle": entity.body.angle,
                             "turretAngle": entity.turret.body.angle,
-                            "firedShellPos": (entity.turret.firedShell == undefined) ? { x: 0, y: 0 } : entity.turret.firedShell.body.position,
+                            "firedShellPos": (entity.turret.firedShell == undefined) ? { x: 0, y: 0 } : entity.turret.firedShell.body.position,///
                             "firedShellAngle": (entity.turret.firedShell == undefined) ? 0 : entity.turret.firedShell.body.angle
                         }
                     );

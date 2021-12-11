@@ -25,10 +25,17 @@ class Turret extends Entity {
             }
         });
 
-        // Listen for creating shell
+        // Listen for create shell ///
         window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
-                thiss.angle = data.turretAngle;
+                thiss.firedShell = new Shell(
+                    thiss.shellParams.ss,
+                    thiss.shellParams.ssData,
+                    thiss.shellParams.fps,
+                    data.clientID
+                );
+                // Add shell to entities 
+                window.globals.entities.push(thiss.firedShell);
             }
         });
     }
@@ -73,17 +80,14 @@ class Turret extends Entity {
                     this.shellParams.fps,
                     this.shellParams.clientID
                 );
+
                 // Add shell to entities 
                 window.globals.entities.push(this.firedShell);
-
-                // TODO: remove when shell is deleted.
 
                 window.globals.clientSocket.emit(///
                     "fire shell",
                     {
-                        "clientID": this.clientID,
-                        "angle": this.firedShell.angle,
-                        "position": this.firedShell.position
+                        "clientID": this.clientID
                     }
                 );
             }

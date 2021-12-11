@@ -67,6 +67,12 @@ class Turret {
                     }
                 );
 
+                // Tell all clients except this one to create shell
+                thiss.socket.broadcast.emit(
+                    "create shell",
+                    { "clientID": thiss.clientID }
+                );
+
                 // Wait to "load" new shell
                 thiss.readyToFire = false;
                 thiss.setLoadTime(500);
