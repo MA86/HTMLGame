@@ -74,8 +74,8 @@ class Turret {
                 );
 
                 // Wait to "load" new shell
-                thiss.readyToFire = false;
-                thiss.setLoadTime(500);
+                //thiss.readyToFire = false;
+                ///thiss.setLoadTime(500);
             }
         });
 
