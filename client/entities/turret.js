@@ -74,17 +74,7 @@ class Turret extends Entity {
 
             // Fire a shell
             if (keysDown && keysDown.Space == true) {
-                this.firedShell = new Shell(
-                    this.shellParams.ss,
-                    this.shellParams.ssData,
-                    this.shellParams.fps,
-                    this.shellParams.clientID
-                );
-
-                // Add shell to entities 
-                window.globals.entities.push(this.firedShell);
-
-                window.globals.clientSocket.emit(///
+                window.globals.clientSocket.emit(
                     "fire shell",
                     {
                         "clientID": this.clientID
