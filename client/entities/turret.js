@@ -28,6 +28,9 @@ class Turret extends Entity {
         // Listen for create shell ///
         window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
+                // TODO: Remove prev. shell from list
+                window.globals.entities.pop();
+
                 thiss.firedShell = new Shell(
                     thiss.shellParams.ss,
                     thiss.shellParams.ssData,
@@ -74,7 +77,7 @@ class Turret extends Entity {
 
             // Fire a shell
             if (keysDown && keysDown.Space == true) {
-                window.globals.clientSocket.emit(
+                window.globals.clientSocket.emit(///
                     "fire shell",
                     {
                         "clientID": this.clientID

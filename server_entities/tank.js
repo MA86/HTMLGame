@@ -8,9 +8,9 @@ const Engine = Matter.Engine;
 const Events = Matter.Events;
 
 class Tank {
-    constructor(initPos, world, socket, parent) {
+    constructor(initPos, world, socket, servSoc, parent) {
         // Create turret
-        this.turret = new Turret({ "x": initPos.x, "y": initPos.y }, world, socket, this);
+        this.turret = new Turret({ "x": initPos.x, "y": initPos.y }, world, socket, servSoc, this);
 
         // Create compound body representing tank
         this.body = Body.create({
@@ -28,6 +28,7 @@ class Tank {
 
         // Properties of tank
         this.clientID = socket.id;
+        this.serverSocket = servSoc;
         this.speed = 0.2;
         this.rotationSpeed = 25;
         this.world = world;
@@ -40,7 +41,7 @@ class Tank {
         Body.setPosition(this.turret.body, this.body.position);
 
         // Add tank compound body to the world
-        Composite.add(world, [this.body]);
+        Composite.add(world, this.body);
     }
 
     setupEventListeners() {

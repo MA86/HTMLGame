@@ -94,7 +94,7 @@ socketServer.on("connection", function (socket) {
     console.log("Client ", socket.id, " is connected");
 
     // Add entity for client
-    let entity = new Tank({ "x": 0, "y": 0 }, world, socket, null);
+    let entity = new Tank({ "x": 0, "y": 0 }, world, socket, socketServer, null);
     entity.setupEventListeners();
     entities.push(entity);
 

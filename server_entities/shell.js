@@ -30,7 +30,7 @@ class Shell {
         Body.setAngle(this.body, angle);
 
         // Add shell to the world
-        Composite.add(world, [this.body]);
+        Composite.add(world, this.body);
 
         // Apply the force vector to send off the shell
         Body.applyForce(

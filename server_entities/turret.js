@@ -6,7 +6,7 @@ const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
 
 class Turret {
-    constructor(initPos, world, socket, tank) {
+    constructor(initPos, world, socket, servSoc, tank) {
         // Create body representing turret
         this.body = Bodies.rectangle(initPos.x, initPos.y, 148, 10, {
             isSensor: true,     // Inactivate physics
@@ -14,6 +14,7 @@ class Turret {
 
         // Properties of turret
         this.clientID = socket.id;
+        this.serverSocket = servSoc;
         this.speed = 0.72;
         this.readyToFire = true;
         this.firedShell = null;
@@ -38,6 +39,11 @@ class Turret {
         // Trigger cannon fire
         thiss.socket.on("fire shell", function (data) {
             if (thiss.readyToFire) {
+                // TODO: Remove previous shell from world
+                if (thiss.firedShell) {
+                    Composite.remove(thiss.world, thiss.firedShell.body);
+                }
+
                 // Prepare position vector
                 let pdx = Math.cos(thiss.body.angle + thiss.tank.body.angle) * 140;
                 let pdy = Math.sin(thiss.body.angle + thiss.tank.body.angle) * 140;
@@ -67,8 +73,8 @@ class Turret {
                     }
                 );
 
-                // Tell all clients to create shell
-                thiss.socket.emit(
+                // Tell all clients to create shell///
+                thiss.serverSocket.emit(
                     "create shell",
                     { "clientID": thiss.clientID }
                 );
