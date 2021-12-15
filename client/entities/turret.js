@@ -28,16 +28,23 @@ class Turret extends Entity {
         // Listen for create shell ///
         window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
-                // TODO: Remove prev. shell from list
-                window.globals.entities.pop();
+                // TODO: Remove previous shell from list
+                if (thiss.firedShell != null) {
+                    let indexOfShell = window.globals.entities.map(function (obj) {
+                        return obj.clientID;
+                    }).indexOf(thiss.firedShell.clientID);
+                    console.log(indexOfShell);
+                    window.globals.entities.splice(indexOfShell, 1);
+                }
 
+                // Create new shell
                 thiss.firedShell = new Shell(
                     thiss.shellParams.ss,
                     thiss.shellParams.ssData,
                     thiss.shellParams.fps,
                     data.clientID
                 );
-                // Add shell to entities 
+                // Add shell to list 
                 window.globals.entities.push(thiss.firedShell);
             }
         });
