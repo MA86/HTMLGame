@@ -16,6 +16,7 @@ class Turret extends Entity {
         this.clientID = clientID;
         this.shellParams = shellParams;
         this.firedShell = null;
+        this.shellIsActive = false;
 
         // Listen for update
         let thiss = this;
@@ -29,12 +30,14 @@ class Turret extends Entity {
         window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
                 // TODO: Remove previous shell from list
-                if (thiss.firedShell != null) {
-                    let indexOfShell = window.globals.entities.map(function (obj) {
-                        return obj.clientID;
+                if (thiss.shellIsActive) {
+                    let indexOfShell = window.globals.entities.map(function (tank) {
+                        if (tank.turret.shellIsActive) {
+                            return tank.clientID;
+                        }
                     }).indexOf(thiss.firedShell.clientID);
-                    console.log(indexOfShell);
                     window.globals.entities.splice(indexOfShell, 1);
+                    thiss.shellIsActive = false;
                 }
 
                 // Create new shell
@@ -46,6 +49,7 @@ class Turret extends Entity {
                 );
                 // Add shell to list 
                 window.globals.entities.push(thiss.firedShell);
+                thiss.shellIsActive = true;
             }
         });
     }
