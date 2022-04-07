@@ -14,6 +14,7 @@ class Turret {
 
         // Properties of turret
         this.clientID = socket.id;
+        this.shellID = null;
         this.serverSocket = servSoc;
         this.speed = 0.72;
         this.readyToFire = true;
@@ -40,11 +41,15 @@ class Turret {
         thiss.socket.on("fire shell", function (data) {
             if (thiss.readyToFire && thiss.clientID == data.clientID) {
                 // TODO: Remove previous shell from world
-                // Move to shell, remove by x time.
+                // Remove shell after x amount of time
+                // Remove shell from entity list
+                // Remove shell from world
+                // Tell clients to play animation, and remove as well.
+                /*
                 if (thiss.firedShell) {
                     Composite.remove(thiss.world, thiss.firedShell.body);
                 }
-
+                */
 
                 // Prepare position vector
                 let pdx = Math.cos(thiss.body.angle + thiss.tank.body.angle) * 140;
@@ -59,7 +64,8 @@ class Turret {
                 let fdx = Math.cos(thiss.body.angle + thiss.tank.body.angle);
                 let fdy = Math.sin(thiss.body.angle + thiss.tank.body.angle);
 
-                // Fire shell
+                // Increment global shellID and prepare a shell
+                thiss.shellID = shellID++;
                 thiss.firedShell = new Shell(
                     { "x": thiss.body.position.x, "y": thiss.body.position.y },
                     thiss.world,
@@ -72,13 +78,20 @@ class Turret {
                         type: "HE",
                         blastRadius: 2,
                         penetration: 2
-                    }
+                    },
+                    thiss.shellID
                 );
+
+                // Add this shell to entities list
+                entities.push(thiss.firedShell);
 
                 // Tell all clients to create this shell's representation///
                 thiss.serverSocket.emit(
                     "create shell",
-                    { "clientID": thiss.clientID }
+                    {
+                        "clientID": thiss.clientID,
+                        "shellID": thiss.shellID
+                    }
                 );
 
                 // Wait to "load" new shell

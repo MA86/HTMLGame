@@ -1,7 +1,7 @@
 import { Entity } from "./entity.js";
 
 class Shell extends Entity {
-    constructor(ss, ssData, fps, clientID) {
+    constructor(ss, ssData, fps, clientID, sID) {
         super({ "x": 0, "y": 0 }, 0, false);
 
         // Variables used for rendering this object
@@ -12,13 +12,14 @@ class Shell extends Entity {
         this.spriteSheet = ss;
 
         this.clientID = clientID;
+        this.shellID = sID;
 
         // Update shell properties
         let thiss = this;
-        window.globals.clientSocket.on("update", function (data) {
-            if (thiss.clientID == data.clientID) {
-                thiss.position = data.firedShellPos;
-                thiss.angle = data.firedShellAngle;
+        window.globals.clientSocket.on("update shell", function (data) {
+            if (thiss.clientID == data.clientID && thiss.shellID == data.shellID) {
+                thiss.position = data.position;
+                thiss.angle = data.angle;
             }
         });
     }

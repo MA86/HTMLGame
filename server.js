@@ -2,7 +2,8 @@
 
 // NOTE: require() function executes a module and returns exports
 const Tank = require("./server_entities/tank.js").Tank;
-const Turret = require("./server_entities/turret.js").Turret;///
+const Turret = require("./server_entities/turret.js").Turret;
+const Shell = require("./server_entities/shell.js").Shell;
 
 // Returns a function object called 'express'
 const express = require("express");
@@ -36,9 +37,13 @@ const Runner = Matter.Runner;         // Optional game loop (Auto updates Engine
 const Events = Matter.Events;
 
 // Global variables
-var entities = [];
+global.shellID = 0;
+global.entities = [];
+
+// Variables
 var engine = null;
 var world = null;
+
 
 const Start = function () {
     // Create engine
@@ -65,21 +70,33 @@ const Start = function () {
                 for (let index = 0; index < entities.length; index++) {
                     const entity = entities[index];
                     // Update clients
-                    socketServer.emit(
-                        "update",
-                        {
-                            "clientID": entity.clientID,
-                            "position": entity.body.position,
-                            "angle": entity.body.angle,
-                            "turretAngle": entity.turret.body.angle,
-                            "firedShellPos": (entity.turret.firedShell == undefined) ? { x: 0, y: 0 } : entity.turret.firedShell.body.position,///
-                            "firedShellAngle": (entity.turret.firedShell == undefined) ? 0 : entity.turret.firedShell.body.angle
-                        }
-                    );
+                    //TODO: use if statements for tank in client instead of here!
+                    // type check entity if its Shell type.
+                    if (entity instanceof Shell) {
+                        socketServer.emit(
+                            "update shell",
+                            {
+                                "clientID": entity.clientID,
+                                "shellID": entity.shellID,
+                                "position": entity.body.position,
+                                "angle": entity.body.angle,
+                            }
+                        );
+                    } else {
+                        socketServer.emit(
+                            "update tank",
+                            {
+                                "clientID": entity.clientID,
+                                "position": entity.body.position,
+                                "angle": entity.body.angle,
+                                "turretAngle": entity.turret.body.angle
+                            }
+                        );
+                    }
                 }
             }
+            //*** Game Loop End ***//
         }
-        //*** Game Loop End ***//
 
         setImmediate(x);
     });
@@ -93,12 +110,12 @@ socketServer.on("connection", function (socket) {
     // Print client ID
     console.log("Client ", socket.id, " is connected");
 
-    // Add entity for client
+    // Prepare a tank for client
     let entity = new Tank({ "x": 0, "y": 0 }, world, socket, socketServer, null);
     entity.setupEventListeners();
     entities.push(entity);
 
-    // Emit event to create an entity for each entity in entities list
+    // Tell clients to create tank representations
     for (let index = 0; index < entities.length; index++) {
         let entity = entities[index];
         socketServer.emit("create entities", { "clientID": entity.clientID });

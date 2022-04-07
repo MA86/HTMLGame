@@ -5,7 +5,7 @@ const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
 // TODO
 class Shell {
-    constructor(initPos, world, socket, posVec, angle, forceVec, options) {
+    constructor(initPos, world, socket, posVec, angle, forceVec, options, shellID) {
         this.body = Bodies.rectangle(initPos.x, initPos.y, 20, 4, {
             isStatic: false,
             isSensor: false,
@@ -14,6 +14,7 @@ class Shell {
 
         // Properties of shell
         this.clientID = socket.id;
+        this.shellID = shellID;
 
         // Options
         this.speed = options.speed;
@@ -49,6 +50,7 @@ class Shell {
         // Destroy this shell.
         // Remove this shell from world
         // Remove this shell from cannon parent
+        // Remove this shell from entity list
     }
 }
 

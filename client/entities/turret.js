@@ -20,7 +20,7 @@ class Turret extends Entity {
 
         // Listen for update
         let thiss = this;
-        window.globals.clientSocket.on("update", function (data) {
+        window.globals.clientSocket.on("update tank", function (data) {
             if (thiss.clientID == data.clientID) {
                 thiss.angle = data.turretAngle;
             }
@@ -29,17 +29,17 @@ class Turret extends Entity {
         // Listen for create shell ///
         window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
-                // TODO: Remove previous shell from list
+                // TODO: Create a 'remove shell' and put this code there along with animation?
                 /*
-                                if (thiss.shellIsActive) {
-                                    let indexOfShell = window.globals.entities.map(function (tank) {
-                                        if (tank.turret.shellIsActive) {
-                                            return tank.clientID;
-                                        }
-                                    }).indexOf(thiss.firedShell.clientID);
-                                    window.globals.entities.splice(indexOfShell, 1);
-                                    thiss.shellIsActive = false;
-                                }
+                if (thiss.shellIsActive) {
+                    let indexOfShell = window.globals.entities.map(function (tank) {
+                        if (tank.turret.shellIsActive) {
+                            return tank.clientID;
+                        }
+                    }).indexOf(thiss.firedShell.clientID);
+                    window.globals.entities.splice(indexOfShell, 1);
+                    thiss.shellIsActive = false;
+                }
                 */
 
                 // Create new shell
@@ -47,8 +47,10 @@ class Turret extends Entity {
                     thiss.shellParams.ss,
                     thiss.shellParams.ssData,
                     thiss.shellParams.fps,
-                    data.clientID
+                    data.clientID,
+                    data.shellID
                 );
+
                 // Add shell to list 
                 window.globals.entities.push(thiss.firedShell);
                 thiss.shellIsActive = true;
