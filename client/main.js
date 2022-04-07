@@ -104,7 +104,7 @@ addEventListener("load", function (e) {
         var timeThen = 0;
 
         (function gameLoop(timeStamp) {
-            // Calculate Time between two frames
+            // Calculate time between two frames
             timeNow = (timeStamp == undefined) ? 0 : timeStamp;
             delta = (timeNow - timeThen);
 

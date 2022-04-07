@@ -38,11 +38,13 @@ class Turret {
 
         // Trigger cannon fire
         thiss.socket.on("fire shell", function (data) {
-            if (thiss.readyToFire) {
+            if (thiss.readyToFire && thiss.clientID == data.clientID) {
                 // TODO: Remove previous shell from world
+                // Move to shell, remove by x time.
                 if (thiss.firedShell) {
                     Composite.remove(thiss.world, thiss.firedShell.body);
                 }
+
 
                 // Prepare position vector
                 let pdx = Math.cos(thiss.body.angle + thiss.tank.body.angle) * 140;
@@ -73,7 +75,7 @@ class Turret {
                     }
                 );
 
-                // Tell all clients to create shell///
+                // Tell all clients to create this shell's representation///
                 thiss.serverSocket.emit(
                     "create shell",
                     { "clientID": thiss.clientID }

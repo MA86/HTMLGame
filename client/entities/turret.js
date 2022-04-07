@@ -30,15 +30,17 @@ class Turret extends Entity {
         window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
                 // TODO: Remove previous shell from list
-                if (thiss.shellIsActive) {
-                    let indexOfShell = window.globals.entities.map(function (tank) {
-                        if (tank.turret.shellIsActive) {
-                            return tank.clientID;
-                        }
-                    }).indexOf(thiss.firedShell.clientID);
-                    window.globals.entities.splice(indexOfShell, 1);
-                    thiss.shellIsActive = false;
-                }
+                /*
+                                if (thiss.shellIsActive) {
+                                    let indexOfShell = window.globals.entities.map(function (tank) {
+                                        if (tank.turret.shellIsActive) {
+                                            return tank.clientID;
+                                        }
+                                    }).indexOf(thiss.firedShell.clientID);
+                                    window.globals.entities.splice(indexOfShell, 1);
+                                    thiss.shellIsActive = false;
+                                }
+                */
 
                 // Create new shell
                 thiss.firedShell = new Shell(
