@@ -3,18 +3,26 @@ const Matter = require("matter-js/build/matter");
 const Body = Matter.Body;
 const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
-// TODO
+const Collision = Matter.Collision;
+const Events = Matter.Events;
+
 class Shell {
-    constructor(initPos, world, socket, posVec, angle, forceVec, options, shellID) {
+    constructor(initPos, world, socket, posVec, angle, forceVec, options, shellID, eng) {
         this.body = Bodies.rectangle(initPos.x, initPos.y, 20, 4, {
+            collisionFilter: {
+                group: -1
+            },
             isStatic: false,
             isSensor: false,
+            label: "shell"
         });
 
 
         // Properties of shell
         this.clientID = socket.id;
         this.shellID = shellID;
+        this.engine = eng;
+        this.world = world;
 
         // Options
         this.speed = options.speed;
@@ -31,7 +39,7 @@ class Shell {
         Body.setAngle(this.body, angle);
 
         // Add shell to the world
-        Composite.add(world, this.body);
+        Composite.add(this.world, this.body);
 
         // Apply the force vector to send off the shell
         Body.applyForce(
@@ -42,15 +50,46 @@ class Shell {
     }
 
     setupEventListeners() {
-        // TODO: "oimpact.on()..."
+        // TODO: 
+        let thiss = this;
+
+        Events.on(thiss.engine, "collisionStart", thiss.destroyShell(events));
     }
 
-    onImpact() {
-        // TODO:
-        // Destroy this shell.
-        // Remove this shell from world
-        // Remove this shell from cannon parent
-        // Remove this shell from entity list
+
+    destroyShell(events) {
+        // TODO: How to detect body 'impact'?
+        // Update health?
+        // Remove this shell-body from world
+        // Remove this shell from entities list
+        // Command clients to do the same plus explode
+        let thiss = this;
+
+        events.pairs.ForEach(function (pair) {
+            // If this shell and tank collided, remove this shell-body from world
+            if (pair.bodyA.label == "shell" && pair.bodyB.label == "tank" && pair.bodyA.id == thiss.body.id) {
+                Composite.remove(thiss.world, pair.bodyA);
+
+                // TODO:Remove this shell from entities list
+                let indexOfShell = entities.map(function (obj) {
+                    if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                        return obj.shellID;
+                    }
+                }).indexOf(thiss.shellID);
+                entities.splice(indexOfShell, 1);
+            }
+            if (pair.bodyB.label == "shell" && pair.bodyA.label == "tank" && pair.bodyB.id == thiss.body.id) {
+                Composite.remove(thiss.world, pair.bodyB);
+
+                // TODO:Remove this shell from entities list
+                let indexOfShell = entities.map(function (obj) {
+                    if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                        return obj.shellID;
+                    }
+                }).indexOf(thiss.shellID);
+                entities.splice(indexOfShell, 1);
+            }
+        });
     }
 }
 

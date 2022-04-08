@@ -26,7 +26,7 @@ class Turret extends Entity {
             }
         });
 
-        // Listen for create shell ///
+        // Trigger to create shell representation
         window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
                 // TODO: Create a 'remove shell' and put this code there along with animation?
@@ -42,7 +42,7 @@ class Turret extends Entity {
                 }
                 */
 
-                // Create new shell
+                // Create new shell representation
                 thiss.firedShell = new Shell(
                     thiss.shellParams.ss,
                     thiss.shellParams.ssData,
@@ -51,7 +51,7 @@ class Turret extends Entity {
                     data.shellID
                 );
 
-                // Add shell to list 
+                // Add this shell rep. to entities list 
                 window.globals.entities.push(thiss.firedShell);
                 thiss.shellIsActive = true;
             }
@@ -90,9 +90,9 @@ class Turret extends Entity {
                 );
             }
 
-            // Fire a shell
+            // Client tells server to fire a shell
             if (keysDown && keysDown.Space == true) {
-                window.globals.clientSocket.emit(///
+                window.globals.clientSocket.emit(
                     "fire shell",
                     {
                         "clientID": this.clientID

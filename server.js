@@ -16,7 +16,7 @@ const httpServer = require("http").createServer(httpHandler);
 const socket = require("socket.io");
 const socketServer = new socket.Server(httpServer);
 
-// Treat the client folder as "public folder"
+// Treat client's folder as "public folder"
 // (Requested files will be searched here first)
 httpHandler.use(express.static(__dirname + "/client"));
 
@@ -25,9 +25,8 @@ httpHandler.get("/", function (req, res) {
     res.sendFile(__dirname + "./client/index.html");
 });
 
+// Aliases for Matter exports
 const Matter = require("matter-js/build/matter");
-
-// Create aliases for Matter exports
 const Engine = Matter.Engine;         // For updating physics.
 const Render = Matter.Render;         // For rendering results of Engine.
 const Bodies = Matter.Bodies;         // To use a pre-made Body.
@@ -41,8 +40,8 @@ global.shellID = 0;
 global.entities = [];
 
 // Variables
-var engine = null;
-var world = null;
+var engine;
+var world;
 
 
 const Start = function () {
@@ -54,24 +53,22 @@ const Start = function () {
     });
 
     world = engine.world;
-    let lastUpdateTime = Date.now();
 
-    setImmediate(function x() {  ///
-        // update clients
+    let lastUpdateTime = Date.now();
+    setImmediate(function x() {
         let timeNow = Date.now();
-        let timeEpased = timeNow - lastUpdateTime
-        if (timeEpased > 1000 / 120) {
+        let timeElapsed = timeNow - lastUpdateTime
+        if (timeElapsed > 1000 / 120) {
             lastUpdateTime = timeNow
 
             //*** Game Loop Start ***//
-            Engine.update(engine, timeEpased);
+            Engine.update(engine, timeElapsed);
 
             if (entities.length > 0) {
                 for (let index = 0; index < entities.length; index++) {
                     const entity = entities[index];
+
                     // Update clients
-                    //TODO: use if statements for tank in client instead of here!
-                    // type check entity if its Shell type.
                     if (entity instanceof Shell) {
                         socketServer.emit(
                             "update shell",
@@ -97,12 +94,10 @@ const Start = function () {
             }
             //*** Game Loop End ***//
         }
-
         setImmediate(x);
     });
 }
 
-// Start game
 Start();
 
 // Trigger when a new client opens TCP/UDP socket
@@ -110,18 +105,18 @@ socketServer.on("connection", function (socket) {
     // Print client ID
     console.log("Client ", socket.id, " is connected");
 
-    // Prepare a tank for client
+    // Prepare an entity for client
     let entity = new Tank({ "x": 0, "y": 0 }, world, socket, socketServer, null);
     entity.setupEventListeners();
     entities.push(entity);
 
-    // Tell clients to create tank representations
+    // Tell clients to create entity representations
     for (let index = 0; index < entities.length; index++) {
         let entity = entities[index];
         socketServer.emit("create entities", { "clientID": entity.clientID });
     }
 
-    // Trigger when client leaves
+    // Trigger when client exits
     socket.on("disconnect", () => {
         // Print client ID
         console.log("Client ", socket.id, " is disconnected");
@@ -132,7 +127,7 @@ socketServer.on("connection", function (socket) {
         }).indexOf(socket.id);
         entities.splice(indexOfDisconnectedClient, 1);
 
-        // Remove entity from client
+        // Remove entity from browsers
         socketServer.emit("remove entities", { "clientID": socket.id });
     });
 });

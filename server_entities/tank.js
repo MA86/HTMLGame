@@ -12,17 +12,20 @@ class Tank {
         // Create turret
         this.turret = new Turret({ "x": initPos.x, "y": initPos.y }, world, socket, servSoc, this);
 
-        // Create compound body representing tank
+        // Create a compound body representing tank
         this.body = Body.create({
             parts: [
                 Bodies.rectangle(initPos.x, initPos.y, 225, 100, {}),
                 this.turret.body
             ],
+            collisionFilter: {
+                group: 1
+            },
             isStatic: false,
             frictionAir: 0.5,
             restitution: 0.01,
             density: 1,
-            //friction: 1,
+            friction: 1,
             //frictionStatic: 10,
         });
 
@@ -35,12 +38,12 @@ class Tank {
         this.socket = socket;
         this.parent = parent;
 
-        // Move turret center from middle to left
+        // Redefine turret's center from middle to left
         Body.setCentre(this.turret.body, { x: -48, y: -4 }, true);
         // Position turret on tank (based on new center)
         Body.setPosition(this.turret.body, this.body.position);
 
-        // Add tank compound body to the world
+        // Add tank body to the world
         Composite.add(world, this.body);
     }
 

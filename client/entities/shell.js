@@ -14,7 +14,7 @@ class Shell extends Entity {
         this.clientID = clientID;
         this.shellID = sID;
 
-        // Update shell properties
+        // Listen for updates
         let thiss = this;
         window.globals.clientSocket.on("update shell", function (data) {
             if (thiss.clientID == data.clientID && thiss.shellID == data.shellID) {

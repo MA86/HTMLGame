@@ -7,7 +7,7 @@ const Composite = Matter.Composite;
 
 class Turret {
     constructor(initPos, world, socket, servSoc, tank) {
-        // Create body representing turret
+        // Create a body representing turret
         this.body = Bodies.rectangle(initPos.x, initPos.y, 148, 10, {
             isSensor: true,     // Inactivate physics
         });
@@ -41,7 +41,7 @@ class Turret {
         thiss.socket.on("fire shell", function (data) {
             if (thiss.readyToFire && thiss.clientID == data.clientID) {
                 // TODO: Remove previous shell from world
-                // Remove shell after x amount of time
+                // Remove shell after x amount of time or after collision
                 // Remove shell from entity list
                 // Remove shell from world
                 // Tell clients to play animation, and remove as well.
@@ -64,7 +64,7 @@ class Turret {
                 let fdx = Math.cos(thiss.body.angle + thiss.tank.body.angle);
                 let fdy = Math.sin(thiss.body.angle + thiss.tank.body.angle);
 
-                // Increment global shellID and prepare a shell
+                // Increment shellID and create a shell
                 thiss.shellID = shellID++;
                 thiss.firedShell = new Shell(
                     { "x": thiss.body.position.x, "y": thiss.body.position.y },
@@ -84,8 +84,9 @@ class Turret {
 
                 // Add this shell to entities list
                 entities.push(thiss.firedShell);
+                thiss.firedShell = null;
 
-                // Tell all clients to create this shell's representation///
+                // Tell all clients to create this shell's representation
                 thiss.serverSocket.emit(
                     "create shell",
                     {
@@ -94,7 +95,7 @@ class Turret {
                     }
                 );
 
-                // Wait to "load" new shell
+                // Wait-time to "load" new shell
                 thiss.readyToFire = false;
                 thiss.setLoadTime(500);
             }
@@ -106,6 +107,8 @@ class Turret {
     setLoadTime(time) {
         let thiss = this;
         setTimeout(function () {
+            // TODO: Perhaps do something while shell is being loaded?
+
             thiss.readyToFire = true;
         }, time);
     }
