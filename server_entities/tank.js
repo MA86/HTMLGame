@@ -8,14 +8,14 @@ const Engine = Matter.Engine;
 const Events = Matter.Events;
 
 class Tank {
-    constructor(initPos, world, socket, servSoc, parent) {
+    constructor(initPos, world, socket, servSoc, parent, eng) {
         // Create turret
-        this.turret = new Turret({ "x": initPos.x, "y": initPos.y }, world, socket, servSoc, this);
+        this.turret = new Turret({ "x": initPos.x, "y": initPos.y }, world, socket, servSoc, this, eng);
 
         // Create a compound body representing tank
         this.body = Body.create({
             parts: [
-                Bodies.rectangle(initPos.x, initPos.y, 225, 100, {}),
+                Bodies.rectangle(initPos.x, initPos.y, 225, 100, { label: "tank" }),
                 this.turret.body
             ],
             collisionFilter: {
@@ -35,6 +35,7 @@ class Tank {
         this.speed = 0.2;
         this.rotationSpeed = 25;
         this.world = world;
+        this.engine = eng;
         this.socket = socket;
         this.parent = parent;
 

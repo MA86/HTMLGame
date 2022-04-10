@@ -13,10 +13,9 @@ class Shell {
                 group: -1
             },
             isStatic: false,
-            isSensor: false,
+            isSensor: true,///
             label: "shell"
         });
-
 
         // Properties of shell
         this.clientID = socket.id;
@@ -50,46 +49,67 @@ class Shell {
     }
 
     setupEventListeners() {
-        // TODO: 
         let thiss = this;
+        // TODO: fix logic
+        Events.on(thiss.engine, "collisionStart", function (event) {
+            for (let index = 0; index < event.pairs.length; index++) {
+                const pair = event.pairs[index];
+                console.log(pair.bodyA.id);///
+                console.log(pair.bodyB.id);///
 
-        Events.on(thiss.engine, "collisionStart", thiss.destroyShell(events));
+                // If this shell and tank collided, remove shell from world
+                if (pair.bodyA.label == "shell" && pair.bodyB.label == "tank" && pair.bodyA.id == thiss.body.id) {
+                    Composite.remove(thiss.world, pair.bodyA);
+
+                    // Remove this shell from entities list
+                    let indexOfShell = entities.findIndex(function (obj) {
+                        if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                            return true;
+                        }
+                    });
+                    entities.splice(indexOfShell, 1);
+
+                    // Tell clients to do the same
+                    serverSocket.emit(
+                        "destroy shell",
+                        {
+                            "clientID": thiss.clientID,
+                            "shellID": thiss.shellID
+                        }
+                    );
+                }
+                if (pair.bodyB.label == "shell" && pair.bodyA.label == "tank" && pair.bodyB.id == thiss.body.id) {
+                    Composite.remove(thiss.world, pair.bodyB);
+
+                    // Remove this shell from entities list
+                    let indexOfShell = entities.findIndex(function (obj) {
+                        if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                            return true;
+                        }
+                    });
+                    entities.splice(indexOfShell, 1);
+                    ///
+                    for (let index = 0; index < entities.length; index++) {
+                        const element = entities[index];
+                        console.log(typeof element);
+                    }
+                    // Tell clients to do the same
+                    socketServer.emit(
+                        "destroy shell",
+                        {
+                            "clientID": thiss.clientID,
+                            "shellID": thiss.shellID
+                        }
+                    );
+                }
+            }
+        });
     }
 
 
-    destroyShell(events) {
-        // TODO: How to detect body 'impact'?
-        // Update health?
-        // Remove this shell-body from world
-        // Remove this shell from entities list
-        // Command clients to do the same plus explode
+    destroyShell(event) {
+        // TODO
         let thiss = this;
-
-        events.pairs.ForEach(function (pair) {
-            // If this shell and tank collided, remove this shell-body from world
-            if (pair.bodyA.label == "shell" && pair.bodyB.label == "tank" && pair.bodyA.id == thiss.body.id) {
-                Composite.remove(thiss.world, pair.bodyA);
-
-                // TODO:Remove this shell from entities list
-                let indexOfShell = entities.map(function (obj) {
-                    if ("shellID" in obj && obj.shellID == thiss.shellID) {
-                        return obj.shellID;
-                    }
-                }).indexOf(thiss.shellID);
-                entities.splice(indexOfShell, 1);
-            }
-            if (pair.bodyB.label == "shell" && pair.bodyA.label == "tank" && pair.bodyB.id == thiss.body.id) {
-                Composite.remove(thiss.world, pair.bodyB);
-
-                // TODO:Remove this shell from entities list
-                let indexOfShell = entities.map(function (obj) {
-                    if ("shellID" in obj && obj.shellID == thiss.shellID) {
-                        return obj.shellID;
-                    }
-                }).indexOf(thiss.shellID);
-                entities.splice(indexOfShell, 1);
-            }
-        });
     }
 }
 

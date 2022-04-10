@@ -6,7 +6,7 @@ const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
 
 class Turret {
-    constructor(initPos, world, socket, servSoc, tank) {
+    constructor(initPos, world, socket, servSoc, tank, eng) {
         // Create a body representing turret
         this.body = Bodies.rectangle(initPos.x, initPos.y, 148, 10, {
             isSensor: true,     // Inactivate physics
@@ -20,6 +20,7 @@ class Turret {
         this.readyToFire = true;
         this.firedShell = null;
         this.world = world;
+        this.engine = eng;
         this.socket = socket;
         this.tank = tank;
     }
@@ -40,17 +41,6 @@ class Turret {
         // Trigger cannon fire
         thiss.socket.on("fire shell", function (data) {
             if (thiss.readyToFire && thiss.clientID == data.clientID) {
-                // TODO: Remove previous shell from world
-                // Remove shell after x amount of time or after collision
-                // Remove shell from entity list
-                // Remove shell from world
-                // Tell clients to play animation, and remove as well.
-                /*
-                if (thiss.firedShell) {
-                    Composite.remove(thiss.world, thiss.firedShell.body);
-                }
-                */
-
                 // Prepare position vector
                 let pdx = Math.cos(thiss.body.angle + thiss.tank.body.angle) * 140;
                 let pdy = Math.sin(thiss.body.angle + thiss.tank.body.angle) * 140;
@@ -79,8 +69,12 @@ class Turret {
                         blastRadius: 2,
                         penetration: 2
                     },
-                    thiss.shellID
+                    thiss.shellID,
+                    thiss.engine
                 );
+
+                // Setup child events TODO: move it to shell...
+                thiss.firedShell.setupEventListeners();
 
                 // Add this shell to entities list
                 entities.push(thiss.firedShell);
@@ -97,7 +91,7 @@ class Turret {
 
                 // Wait-time to "load" new shell
                 thiss.readyToFire = false;
-                thiss.setLoadTime(500);
+                thiss.setLoadTime(2000);
             }
         });
 
