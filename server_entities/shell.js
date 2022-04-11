@@ -54,8 +54,6 @@ class Shell {
         Events.on(thiss.engine, "collisionStart", function (event) {
             for (let index = 0; index < event.pairs.length; index++) {
                 const pair = event.pairs[index];
-                console.log(pair.bodyA.id);///
-                console.log(pair.bodyB.id);///
 
                 // If this shell and tank collided, remove shell from world
                 if (pair.bodyA.label == "shell" && pair.bodyB.label == "tank" && pair.bodyA.id == thiss.body.id) {
@@ -88,11 +86,7 @@ class Shell {
                         }
                     });
                     entities.splice(indexOfShell, 1);
-                    ///
-                    for (let index = 0; index < entities.length; index++) {
-                        const element = entities[index];
-                        console.log(typeof element);
-                    }
+
                     // Tell clients to do the same
                     socketServer.emit(
                         "destroy shell",
