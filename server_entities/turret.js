@@ -6,7 +6,7 @@ const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
 
 class Turret {
-    constructor(initPos, world, socket, servSoc, tank, eng) {
+    constructor(initPos, world, socket, server, tank, eng) {
         // Create a body representing turret
         this.body = Bodies.rectangle(initPos.x, initPos.y, 148, 10, {
             isSensor: true,     // Inactivate physics
@@ -15,7 +15,7 @@ class Turret {
         // Properties of turret
         this.clientID = socket.id;
         this.shellID = null;
-        this.serverSocket = servSoc;
+        this.socketServer = server;
         this.speed = 0.72;
         this.readyToFire = true;
         this.firedShell = null;
@@ -23,6 +23,8 @@ class Turret {
         this.engine = eng;
         this.socket = socket;
         this.tank = tank;
+
+        this.setupEventListeners();
     }
 
     setupEventListeners() {
@@ -70,18 +72,16 @@ class Turret {
                         penetration: 2
                     },
                     thiss.shellID,
-                    thiss.engine
+                    thiss.engine,
+                    thiss.socketServer
                 );
-
-                // Setup child events TODO: move it to shell...
-                thiss.firedShell.setupEventListeners();
 
                 // Add this shell to entities list
                 entities.push(thiss.firedShell);
                 thiss.firedShell = null;
 
                 // Tell all clients to create this shell's representation
-                thiss.serverSocket.emit(
+                thiss.socketServer.emit(
                     "create shell",
                     {
                         "clientID": thiss.clientID,

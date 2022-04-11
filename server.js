@@ -14,7 +14,7 @@ const httpServer = require("http").createServer(httpHandler);
 
 // Create TCP/UDP socket server (httpServer passed because all "websockets" start with HTTP handshake)
 const socket = require("socket.io");
-global.socketServer = new socket.Server(httpServer);
+const socketServer = new socket.Server(httpServer);
 
 // Treat client's folder as "public folder"
 // (Requested files will be searched here first)
@@ -107,7 +107,6 @@ socketServer.on("connection", function (socket) {
 
     // Prepare an entity for client
     let entity = new Tank({ "x": 0, "y": 0 }, world, socket, socketServer, null, engine);
-    entity.setupEventListeners();
     entities.push(entity);
 
     // Tell clients to create entity representations
