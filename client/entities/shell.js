@@ -22,6 +22,15 @@ class Shell extends Entity {
                 thiss.angle = data.angle;
             }
         });
+        // Destroy shell and play animation
+        window.globals.clientSocket.on("destroy shell", function (data) {
+            let indexOfShell = window.globals.entities.findIndex(function (obj) {
+                if ("shellID" in obj && obj.clientID == data.clientID && obj.shellID == data.shellID) {
+                    return true;
+                }
+                window.globals.entities.splice(indexOfShell, 1);
+            });
+        });
     }
 
     renderThis(ctx) {
@@ -51,6 +60,10 @@ class Shell extends Entity {
             this.index = this.index % this.spriteSheetData.frames.length;
             this.timeTracker = 0;
         }
+    }
+
+    explode() {
+        // TODO: animation
     }
 }
 

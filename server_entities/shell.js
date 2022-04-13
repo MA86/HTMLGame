@@ -110,12 +110,6 @@ class Shell {
             }
         });
     }
-
-
-    destroyShell(event) {
-        // TODO
-        let thiss = this;
-    }
 }
 
 module.exports = { Shell };

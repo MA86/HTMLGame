@@ -29,19 +29,6 @@ class Turret extends Entity {
         // Trigger to create shell representation
         window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
-                // TODO: Create a 'remove shell' and put this code there along with animation?
-                /*
-                if (thiss.shellIsActive) {
-                    let indexOfShell = window.globals.entities.map(function (tank) {
-                        if (tank.turret.shellIsActive) {
-                            return tank.clientID;
-                        }
-                    }).indexOf(thiss.firedShell.clientID);
-                    window.globals.entities.splice(indexOfShell, 1);
-                    thiss.shellIsActive = false;
-                }
-                */
-
                 // Create new shell representation
                 thiss.firedShell = new Shell(
                     thiss.shellParams.ss,
