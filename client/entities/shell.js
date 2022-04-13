@@ -22,14 +22,19 @@ class Shell extends Entity {
                 thiss.angle = data.angle;
             }
         });
-        // Destroy shell and play animation
+
+        // Listen for destroy shell
         window.globals.clientSocket.on("destroy shell", function (data) {
-            let indexOfShell = window.globals.entities.findIndex(function (obj) {
-                if ("shellID" in obj && obj.clientID == data.clientID && obj.shellID == data.shellID) {
-                    return true;
-                }
+            // Check if the message is for this shell
+            if (thiss.clientID == data.clientID && thiss.shellID == data.shellID) {
+                // Find and remove this shell from entities list
+                let indexOfShell = window.globals.entities.findIndex(function (obj) {
+                    if ("shellID" in obj && thiss.shellID == obj.shellID) {
+                        return true
+                    }
+                });
                 window.globals.entities.splice(indexOfShell, 1);
-            });
+            }
         });
     }
 
