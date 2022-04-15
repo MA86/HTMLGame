@@ -7,10 +7,14 @@
 import { mSixTankBodyData } from "./images_and_data/mSixTankBodyData.js";
 import { mSixTankTurretData } from "./images_and_data/mSixTankTurretData.js";
 import { shellData } from "./images_and_data/shellData.js";
+import { explosionsData } from "./images_and_data/explosionsData.js"; /// Delete if not needed
+import { hitData } from "./images_and_data/hitData.js";
 
 // Export JSONs
 export {
     mSixTankBodyData,
     mSixTankTurretData,
-    shellData
+    shellData,
+    explosionsData, /// Delete if not needed
+    hitData
 };

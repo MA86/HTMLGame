@@ -2,7 +2,6 @@
 
 import * as spriteSheetsData from "./spritesheetsData.js";
 import { Tank } from "./entities/tank.js";
-import { Turret } from "./entities/turret.js";
 
 
 /*** On Window Load Event ***/
@@ -18,7 +17,9 @@ addEventListener("load", function (e) {
     window.globals.imagePaths = [
         "./images_and_data/mSixTankBody.png",
         "./images_and_data/mSixTankTurret.png",
-        "./images_and_data/shell.png"
+        "./images_and_data/shell.png",
+        "./images_and_data/explosions.png", /// Delete if not needed
+        "./images_and_data/hit.png"
     ];
     window.globals.clientSocket = null;
 
@@ -76,7 +77,7 @@ addEventListener("load", function (e) {
                     {
                         "ss": window.globals.images["./images_and_data/shell.png"],
                         "ssData": spriteSheetsData.shellData,
-                        "fps": 0,
+                        "fps": 30,
                         "clientID": data.clientID
                     }
                 );

@@ -1,4 +1,6 @@
 import { Entity } from "./entity.js";
+import { Sprite } from "./sprite.js";
+import * as spriteSheetsData from "../spriteSheetsData.js";
 
 class Shell extends Entity {
     constructor(ss, ssData, fps, clientID, sID) {
@@ -25,15 +27,13 @@ class Shell extends Entity {
 
         // Listen for destroy shell
         window.globals.clientSocket.on("destroy shell", function (data) {
-            // Check if the message is for this shell
+            // Check if the message is for this shell...
             if (thiss.clientID == data.clientID && thiss.shellID == data.shellID) {
-                // Find and remove this shell from entities list
-                let indexOfShell = window.globals.entities.findIndex(function (obj) {
-                    if ("shellID" in obj && thiss.shellID == obj.shellID) {
-                        return true
-                    }
-                });
-                window.globals.entities.splice(indexOfShell, 1);
+                // Play shell animation one time
+                thiss.animateShellPenetration();
+
+                // Remove shell from entities list
+                thiss.removeSelfFromList();
             }
         });
     }
@@ -57,7 +57,7 @@ class Shell extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        // Update index
+        // Update animation index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;
         if (this.timeTracker >= delay) {
@@ -67,8 +67,33 @@ class Shell extends Entity {
         }
     }
 
-    explode() {
-        // TODO: animation
+    animateShellPenetration() {
+        let thiss = this;
+
+        // Play shell penetration animation one time
+        let shellPenetrationAnimation = new Sprite(
+            thiss.position,
+            thiss.angle,
+            window.globals.images["./images_and_data/hit.png"],
+            spriteSheetsData.hitData,
+            30,
+            5,
+            thiss.shellID,
+            null
+        );
+        window.globals.entities.push(shellPenetrationAnimation);
+    }
+
+    removeSelfFromList() {
+        let thiss = this;
+
+        // Find index of this shell and remove it from list
+        let indexOfShell = window.globals.entities.findIndex(function (obj) {
+            if (thiss.clientID == obj.clientID && thiss.shellID == obj.shellID) {
+                return true;
+            }
+        });
+        window.globals.entities.splice(indexOfShell, 1);
     }
 }
 

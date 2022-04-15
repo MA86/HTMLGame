@@ -72,7 +72,6 @@ class Shell {
                             return true;
                         }
                     });
-                    entities.splice(indexOfShell, 1);
 
                     // Tell clients to do the same
                     thiss.socketServer.emit(
@@ -82,6 +81,8 @@ class Shell {
                             "shellID": thiss.shellID
                         }
                     );
+
+                    entities.splice(indexOfShell, 1);
                 }
                 if (pair.bodyB.label == "shell" && pair.bodyA.label == "tank" && pair.bodyB.id == thiss.body.id) {
                     // Remove this shell body from world
@@ -96,7 +97,6 @@ class Shell {
                             return true;
                         }
                     });
-                    entities.splice(indexOfShell, 1);
 
                     // Tell clients to do the same
                     thiss.socketServer.emit(
@@ -106,6 +106,8 @@ class Shell {
                             "shellID": thiss.shellID
                         }
                     );
+
+                    entities.splice(indexOfShell, 1);
                 }
             }
         });
