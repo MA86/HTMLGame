@@ -12,15 +12,15 @@ class Sprite extends Entity {
         this.spriteSheet = ss;
         this.numberOfTimeToRepeat = repeatNum;
         this.timesPlayed = 0;
-
+        this.resize = 2;///
         // Properties
         this.parent = parent;
         this.id = id;
     }
     renderThis(ctx) {
-        let frameCenter = {
-            "x": this.spriteSheetData.frames[this.index].frame.w / 2,
-            "y": this.spriteSheetData.frames[this.index].frame.h / 2
+        let frameCenter = {///
+            "x": (this.spriteSheetData.frames[this.index].frame.w * this.resize) / 2,
+            "y": (this.spriteSheetData.frames[this.index].frame.h * this.resize) / 2
         };
 
         ctx.drawImage(
@@ -31,8 +31,8 @@ class Sprite extends Entity {
             this.spriteSheetData.frames[this.index].frame.h,
             -frameCenter.x,
             -frameCenter.y,
-            this.spriteSheetData.frames[this.index].frame.w,
-            this.spriteSheetData.frames[this.index].frame.h
+            this.spriteSheetData.frames[this.index].frame.w * this.resize,///
+            this.spriteSheetData.frames[this.index].frame.h * this.resize///
         );
     }
 

@@ -33,7 +33,9 @@ class Shell extends Entity {
                 thiss.animateShellPenetration();
 
                 // Remove shell from entities list
-                thiss.removeSelfFromList();
+                ///thiss.removeSelfFromList();
+                console.log(data.posTEST)///
+                console.log(thiss.position)///
             }
         });
     }
@@ -77,7 +79,7 @@ class Shell extends Entity {
             window.globals.images["./images_and_data/hit.png"],
             spriteSheetsData.hitData,
             30,
-            5,
+            10,
             thiss.shellID,
             null
         );

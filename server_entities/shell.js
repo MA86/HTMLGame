@@ -13,7 +13,7 @@ class Shell {
                 group: -1
             },
             isStatic: false,
-            isSensor: true,///
+            isSensor: true,
             label: "shell"
         });
 
@@ -61,10 +61,15 @@ class Shell {
 
                 // If this shell and tank collided, remove shell from world
                 if (pair.bodyA.label == "shell" && pair.bodyB.label == "tank" && pair.bodyA.id == thiss.body.id) {
-                    Composite.remove(thiss.world, pair.bodyA);
-
-                    // Unsubscribe from engine's collision report
-                    Events.off(thiss.engine);
+                    // Tell clients to destroy shell (TODO: sent current position?? then delete at that position in client??)
+                    thiss.socketServer.emit(
+                        "destroy shell",
+                        {
+                            "clientID": thiss.clientID,
+                            "shellID": thiss.shellID,
+                            "posTEST": thiss.body.position///
+                        }
+                    );
 
                     // Remove this shell from entities list
                     let indexOfShell = entities.findIndex(function (obj) {
@@ -72,42 +77,40 @@ class Shell {
                             return true;
                         }
                     });
+                    entities.splice(indexOfShell, 1);
 
-                    // Tell clients to do the same
+                    // Remove this shell body from world
+                    Composite.remove(thiss.world, pair.bodyA);
+
+                    // Then, unsubscribe from engine's collision signal
+                    Events.off(thiss.engine);
+                    console.log(thiss.body.position)///
+                }
+                if (pair.bodyB.label == "shell" && pair.bodyA.label == "tank" && pair.bodyB.id == thiss.body.id) {
+                    // Tell clients to destroy shell
                     thiss.socketServer.emit(
                         "destroy shell",
                         {
                             "clientID": thiss.clientID,
-                            "shellID": thiss.shellID
+                            "shellID": thiss.shellID,
+                            "posTEST": thiss.body.position///
                         }
                     );
 
+                    // Remove this shell from entities list
+                    let indexOfShell = entities.findIndex(function (obj) {
+                        if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                            return true;
+                        }
+                    });
                     entities.splice(indexOfShell, 1);
-                }
-                if (pair.bodyB.label == "shell" && pair.bodyA.label == "tank" && pair.bodyB.id == thiss.body.id) {
+
                     // Remove this shell body from world
                     Composite.remove(thiss.world, pair.bodyB);
 
-                    // Unsubscribe from engine's collision report
+                    // Then, unsubscribe from engine's collision signal
                     Events.off(thiss.engine);
-
-                    // Remove this shell from entities list
-                    let indexOfShell = entities.findIndex(function (obj) {
-                        if ("shellID" in obj && obj.shellID == thiss.shellID) {
-                            return true;
-                        }
-                    });
-
-                    // Tell clients to do the same
-                    thiss.socketServer.emit(
-                        "destroy shell",
-                        {
-                            "clientID": thiss.clientID,
-                            "shellID": thiss.shellID
-                        }
-                    );
-
-                    entities.splice(indexOfShell, 1);
+                    console.log(thiss.body.position)///
                 }
             }
         });
