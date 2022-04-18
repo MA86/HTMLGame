@@ -30,12 +30,10 @@ class Shell extends Entity {
             // Check if the message is for this shell...
             if (thiss.clientID == data.clientID && thiss.shellID == data.shellID) {
                 // Play shell animation one time
-                thiss.animateShellPenetration();
+                thiss.animateShellPenetration(data.currentPosition, data.currentAngle);
 
                 // Remove shell from entities list
-                ///thiss.removeSelfFromList();
-                console.log(data.posTEST)///
-                console.log(thiss.position)///
+                thiss.removeSelfFromList();
             }
         });
     }
@@ -69,17 +67,17 @@ class Shell extends Entity {
         }
     }
 
-    animateShellPenetration() {
+    animateShellPenetration(position, angle) {
         let thiss = this;
 
         // Play shell penetration animation one time
         let shellPenetrationAnimation = new Sprite(
-            thiss.position,
-            thiss.angle,
+            position,
+            angle,
             window.globals.images["./images_and_data/hit.png"],
             spriteSheetsData.hitData,
             30,
-            10,
+            1,
             thiss.shellID,
             null
         );

@@ -67,7 +67,8 @@ class Shell {
                         {
                             "clientID": thiss.clientID,
                             "shellID": thiss.shellID,
-                            "posTEST": thiss.body.position///
+                            "currentPosition": thiss.body.position,
+                            "currentAngle": thiss.body.angle
                         }
                     );
 
@@ -84,7 +85,6 @@ class Shell {
 
                     // Then, unsubscribe from engine's collision signal
                     Events.off(thiss.engine);
-                    console.log(thiss.body.position)///
                 }
                 if (pair.bodyB.label == "shell" && pair.bodyA.label == "tank" && pair.bodyB.id == thiss.body.id) {
                     // Tell clients to destroy shell
@@ -93,7 +93,8 @@ class Shell {
                         {
                             "clientID": thiss.clientID,
                             "shellID": thiss.shellID,
-                            "posTEST": thiss.body.position///
+                            "currentPosition": thiss.body.position,
+                            "currentAngle": thiss.body.angle
                         }
                     );
 
@@ -110,7 +111,6 @@ class Shell {
 
                     // Then, unsubscribe from engine's collision signal
                     Events.off(thiss.engine);
-                    console.log(thiss.body.position)///
                 }
             }
         });
