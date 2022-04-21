@@ -5,13 +5,14 @@
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/matter-js/0.17.1/matter.min.js"></script> -->
     <script type="module" src="/spritesheetsData.js"></script>
     <script type="module" src="/socket.io/socket.io.js"></script>
-
     <script type="module" src="/main.js"></script>
 </head>
 
 <body>
     <div id="canvas-div">
-        <canvas id="canvas" width="1000" height="1000" style="position: absolute; z-index: 0;"></canvas>
+        <canvas id="bg-canvas" width="1000" height="1000" style="position: absolute; z-index: 0;"></canvas>
+        <canvas id="game-canvas" width="1000" height="1000" style="position: absolute; z-index: 1;"></canvas>
+        <canvas id="ui-canvas" width="1000" height="1000" style="position: absolute; z-index: 2;"></canvas>
     </div>
 </body>
 

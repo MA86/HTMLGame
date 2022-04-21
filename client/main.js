@@ -2,14 +2,20 @@
 
 import * as spriteSheetsData from "./spritesheetsData.js";
 import { Tank } from "./entities/tank.js";
+import { TerrainLayer } from "./entities/terrainlayer.js";
+
 
 
 /*** On Window Load Event ***/
 addEventListener("load", function (e) {
     // Global Variables 
     window.globals = {};
-    window.globals.canvas = document.getElementById("canvas");
-    window.globals.context = window.globals.canvas.getContext("2d");
+    window.globals.bgCanvas = document.getElementById("bg-canvas");
+    window.globals.bgContext = window.globals.bgCanvas.getContext("2d");
+    window.globals.gameCanvas = document.getElementById("game-canvas");
+    window.globals.gameContext = window.globals.gameCanvas.getContext("2d");
+    window.globals.uiCanvas = document.getElementById("ui-canvas");
+    window.globals.uiContext = window.globals.uiCanvas.getContext("2d");
     window.globals.keysDown = {};
     window.globals.images = {};
     window.globals.entities = [];
@@ -19,7 +25,8 @@ addEventListener("load", function (e) {
         "./images_and_data/mSixTankTurret.png",
         "./images_and_data/shell.png",
         "./images_and_data/explosions.png", /// Delete if not needed
-        "./images_and_data/hit.png"
+        "./images_and_data/hit.png",
+        "./images_and_data/ground.png"
     ];
     window.globals.clientSocket = null;
 
@@ -49,11 +56,22 @@ addEventListener("load", function (e) {
     const Start = function () {
         setupKeyboardHandler(window.globals.keysDown);
 
-        // Canvas screen match browser screen
-        window.globals.canvas.width = window.innerWidth;
-        window.globals.canvas.height = window.innerHeight;
+        // UI, game, and background canvases match browser screen
+        window.globals.bgCanvas.width = window.innerWidth;
+        window.globals.bgCanvas.height = window.innerHeight;
+        window.globals.gameCanvas.width = window.innerWidth;
+        window.globals.gameCanvas.height = window.innerHeight;
+        window.globals.uiCanvas.width = window.innerWidth;
+        window.globals.uiCanvas.height = window.innerHeight;
 
-        //TODO: Load the map
+        //TODO: Render the map
+        let testTerrain = new TerrainLayer(
+            0, 0, null, 10, 10, window.globals.images["./images_and_data/ground.png"], 128, 8, 8
+        );
+        testTerrain.setTiles(spriteSheetsData.oasis.layerOne);
+        testTerrain.renderThis(window.globals.bgContext);
+        testTerrain.setTiles(spriteSheetsData.oasis.layerTwo);
+        testTerrain.renderThis(window.globals.bgContext);
 
         // Open a TCP/UDP socket connection to server
         window.globals.clientSocket = io();
@@ -114,17 +132,17 @@ addEventListener("load", function (e) {
                 window.globals.entities[i].update(window.globals.keysDown, delta);
             }
 
-            // Clear canvas when default renderer is not used
-            window.globals.context.clearRect(
+            // Clear game canvas
+            window.globals.gameContext.clearRect(
                 0,
                 0,
-                window.globals.canvas.width,
-                window.globals.canvas.height
+                window.globals.gameCanvas.width,
+                window.globals.gameCanvas.height
             );
 
             // Draw entities
             for (let i = 0; i < window.globals.entities.length; i++) {
-                window.globals.entities[i].render(window.globals.context);
+                window.globals.entities[i].render(window.globals.gameContext);
             }
 
             // Request to run Game Loop again
