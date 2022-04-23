@@ -16,7 +16,6 @@ class StaticObject extends Entity {
         this.staticObjectID = id;
         this.position = posVec;
         this.angle = angle;
-        this.drawnOnce = false;
 
         window.globals.staticEntities.push(this);
 
@@ -47,9 +46,6 @@ class StaticObject extends Entity {
             this.spriteSheetData.frames[this.index].frame.w,
             this.spriteSheetData.frames[this.index].frame.h
         );
-
-        // PERFORMANCE TODO: Draw once
-        this.drawnOnce = true;
     }
 
     updateThis(keysDown, dt) {
@@ -64,14 +60,14 @@ class StaticObject extends Entity {
     }
 
     animateAfterDestruction() {
-        // OPTIONAL TODO: Copy from client's Shell class
+        // OPTIONAL TODO: Copy from client's Shell class for animation on destruction
     }
 
     removeSelfFromList() {
         let thiss = this;
 
         // Find index of this shell and remove it from list
-        let indexOfStaticObject = window.globals.entities.findIndex(function (obj) {
+        let indexOfStaticObject = window.globals.staticEntities.findIndex(function (obj) {
             if (thiss.clientID == obj.clientID && thiss.staticObjectID == obj.staticObjectID) {
                 return true;
             }

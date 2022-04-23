@@ -33,8 +33,6 @@ class StaticObject {
 
     removeSelf(time) {
         let thiss = this;
-
-        // removeSelf is optional
         if (time > -1) {
             // After x amount of time, remove static object
             setTimeout(function () {

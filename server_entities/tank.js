@@ -38,6 +38,7 @@ class Tank {
         this.engine = eng;
         this.socket = socket;
         this.parent = parent;
+        this.placeTreadMark = true;
 
         // Redefine turret's center from middle to left
         Body.setCentre(this.turret.body, { x: -48, y: -4 }, true);
@@ -64,32 +65,40 @@ class Tank {
                 { "x": dx, "y": dy }
             );
 
-            // TODO: Create position vector and tracks
-            // Prepare position vector
-            let pdx = Math.cos(thiss.body.angle) * 140;
-            let pdy = Math.sin(thiss.body.angle) * 140;
-            pdx = pdx + thiss.body.position.x;
-            pdy = pdy + thiss.body.position.y;
-            let treadTrack = new StaticObject(
-                { "pdx": pdx, "pdy": pdy },
-                thiss.body.angle,
-                thiss.world,
-                thiss.engine,
-                thiss.socketServer,
-                thiss.clientID,
-                10000
-            );
+            if (thiss.placeTreadMark) {
+                // TODO: 
+                // Prepare position vector for tread mark
+                let pdx = Math.cos(thiss.body.angle) * 140;
+                let pdy = Math.sin(thiss.body.angle) * 140;
+                pdx = pdx + thiss.body.position.x;
+                pdy = pdy + thiss.body.position.y;
 
-            // TODO: Tell all clients to create this tread mark's representation
-            thiss.socketServer.emit(
-                "create tread mark",
-                {
-                    "clientID": treadTrack.clientID,
-                    "staticObjectID": treadTrack.staticObjectID,
-                    "position": treadTrack.body.position,
-                    "angle": treadTrack.body.angle
-                }
-            );
+                // Create tread mark
+                let treadTrack = new StaticObject(
+                    { "pdx": pdx, "pdy": pdy },
+                    thiss.body.angle,
+                    thiss.world,
+                    thiss.engine,
+                    thiss.socketServer,
+                    thiss.clientID,
+                    5000
+                );
+
+                // Tell all clients to create this tread mark's representation
+                thiss.socketServer.emit(
+                    "create tread mark",
+                    {
+                        "clientID": treadTrack.clientID,
+                        "staticObjectID": treadTrack.staticObjectID,
+                        "position": treadTrack.body.position,
+                        "angle": treadTrack.body.angle
+                    }
+                );
+                // Reset flag
+                thiss.placeTreadMark = false;
+                // Set timeout between tread marks
+                thiss.setTreadMarkTimeOut(1000);
+            }
         });
 
         // Trigger backward movement
@@ -140,6 +149,13 @@ class Tank {
         thiss.socket.on("turn left", function (data) {
             thiss.body.torque = -thiss.rotationSpeed;
         });
+    }
+
+    setTreadMarkTimeOut(time) {
+        let thiss = this;
+        setTimeout(function () {
+            thiss.placeTreadMark = true;
+        }, time);
     }
 }
 

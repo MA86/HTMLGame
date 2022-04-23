@@ -118,6 +118,8 @@ addEventListener("load", function (e) {
             }
         });
 
+        // PERFORMANCE TODO: Create a track canvas, draw static obj once on it. On remove obj, clear track canvas
+
         /*** Game Loop ***/
         var delta = 0;
         var timeNow = 0;
@@ -128,12 +130,7 @@ addEventListener("load", function (e) {
             timeNow = (timeStamp == undefined) ? 0 : timeStamp;
             delta = (timeNow - timeThen);
 
-            // Update game canvas's entities
-            for (let i = 0; i < window.globals.entities.length; i++) {
-                window.globals.entities[i].update(window.globals.keysDown, delta);
-            }
-
-            // Clear game canvas
+            // Clear game-canvas
             window.globals.gameContext.clearRect(
                 0,
                 0,
@@ -141,14 +138,14 @@ addEventListener("load", function (e) {
                 window.globals.gameCanvas.height
             );
 
-            // Draw game canvas's entities
+            // Update and render game-canvas's entities
             for (let i = 0; i < window.globals.entities.length; i++) {
+                window.globals.entities[i].update(window.globals.keysDown, delta);
                 window.globals.entities[i].render(window.globals.gameContext);
             }
 
-            //TODO: Draw game canvas's static entities
+            //TODO: Update and render game-canvas's static entities
             for (let i = 0; i < window.globals.staticEntities.length; i++) {
-                // If not drawn already, draw
                 window.globals.staticEntities[i].render(window.globals.gameContext);
             }
 
