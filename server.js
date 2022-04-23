@@ -37,7 +37,9 @@ const Events = Matter.Events;
 
 // Global variables
 global.shellID = 0;
+global.staticObjectID = 0;
 global.entities = [];
+global.staticEntities = [];
 
 // Variables
 var engine;
@@ -79,7 +81,8 @@ const Start = function () {
                                 "angle": entity.body.angle,
                             }
                         );
-                    } else {
+                    }
+                    if (entity instanceof Tank) {
                         socketServer.emit(
                             "update tank",
                             {
@@ -108,7 +111,8 @@ socketServer.on("connection", function (socket) {
     // Prepare an entity for client
     let entity = new Tank({ "x": 0, "y": 0 }, world, socket, socketServer, null, engine);
     entities.push(entity);
-
+    // TODO: send clients static list too.
+    // when new client enters, load shells on his screen too!
     // Tell clients to create entity representations
     for (let index = 0; index < entities.length; index++) {
         let entity = entities[index];

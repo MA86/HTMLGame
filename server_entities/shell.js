@@ -3,11 +3,10 @@ const Matter = require("matter-js/build/matter");
 const Body = Matter.Body;
 const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
-const Collision = Matter.Collision;
 const Events = Matter.Events;
 
 class Shell {
-    constructor(initPos, world, socket, posVec, angle, forceVec, options, shellID, eng, server) {
+    constructor(initPos, world, clientID, posVec, angle, forceVec, options, eng, server) {
         this.body = Bodies.rectangle(initPos.x, initPos.y, 20, 4, {
             collisionFilter: {
                 group: -1
@@ -18,8 +17,8 @@ class Shell {
         });
 
         // Properties of shell
-        this.clientID = socket.id;
-        this.shellID = shellID;
+        this.clientID = clientID;
+        this.shellID = shellID++;
         this.engine = eng;
         this.world = world;
         this.socketServer = server;
@@ -41,14 +40,17 @@ class Shell {
         // Add shell to the world
         Composite.add(this.world, this.body);
 
+        this.setupEventListeners();
+
+        // Add self to entities list
+        entities.push(this);
+
         // Apply the force vector to send off the shell
         Body.applyForce(
             this.body,
             { "x": this.body.position.x, "y": this.body.position.y },
             { "x": forceVec.fdx * this.speed, "y": forceVec.fdy * this.speed }
         );
-
-        this.setupEventListeners();
     }
 
     setupEventListeners() {
@@ -61,7 +63,7 @@ class Shell {
 
                 // If this shell and tank collided, remove shell from world
                 if (pair.bodyA.label == "shell" && pair.bodyB.label == "tank" && pair.bodyA.id == thiss.body.id) {
-                    // Tell clients to destroy shell (TODO: sent current position?? then delete at that position in client??)
+                    // Tell clients to destroy shell
                     thiss.socketServer.emit(
                         "destroy shell",
                         {

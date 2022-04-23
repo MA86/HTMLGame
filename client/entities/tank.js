@@ -1,5 +1,7 @@
 import { Entity } from './entity.js';
+import { StaticObject } from './static_object.js';
 import { Turret } from './turret.js';
+import * as spriteSheetsData from "../spriteSheetsData.js";
 
 class Tank extends Entity {
     constructor(ss, ssData, fps, clientID, turretParams, shellParams) {
@@ -29,6 +31,19 @@ class Tank extends Entity {
             if (thiss.clientID == data.clientID) {
                 thiss.position = data.position;
                 thiss.angle = data.angle;
+            }
+        });//TODO
+        window.globals.clientSocket.on("create tread mark", function (data) {
+            if (thiss.clientID == data.clientID) {
+                let treadMark = new StaticObject(
+                    data.position,
+                    data.angle,
+                    window.globals.images["./images_and_data/shell.png"],///
+                    spriteSheetsData.shellData,///
+                    1,
+                    data.clientID,
+                    data.staticObjectID
+                );
             }
         });
     }

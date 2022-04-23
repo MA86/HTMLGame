@@ -1,10 +1,10 @@
 const Turret = require("./turret.js").Turret;
+const StaticObject = require("./static_object.js").StaticObject;
 const Matter = require("matter-js/build/matter");
 
 const Body = Matter.Body;
 const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
-const Engine = Matter.Engine;
 const Events = Matter.Events;
 
 class Tank {
@@ -55,27 +55,79 @@ class Tank {
 
         // Trigger forward movement
         thiss.socket.on("move forward", function (data) {
-            // Create a force vector
+            // Create a force vector and apply this force
             let dx = Math.cos(thiss.body.angle) * thiss.speed;
             let dy = Math.sin(thiss.body.angle) * thiss.speed;
-
             Body.applyForce(
                 thiss.body,
                 { "x": thiss.body.position.x, "y": thiss.body.position.y },
                 { "x": dx, "y": dy }
             );
+
+            // TODO: Create position vector and tracks
+            // Prepare position vector
+            let pdx = Math.cos(thiss.body.angle) * 140;
+            let pdy = Math.sin(thiss.body.angle) * 140;
+            pdx = pdx + thiss.body.position.x;
+            pdy = pdy + thiss.body.position.y;
+            let treadTrack = new StaticObject(
+                { "pdx": pdx, "pdy": pdy },
+                thiss.body.angle,
+                thiss.world,
+                thiss.engine,
+                thiss.socketServer,
+                thiss.clientID,
+                10000
+            );
+
+            // TODO: Tell all clients to create this tread mark's representation
+            thiss.socketServer.emit(
+                "create tread mark",
+                {
+                    "clientID": treadTrack.clientID,
+                    "staticObjectID": treadTrack.staticObjectID,
+                    "position": treadTrack.body.position,
+                    "angle": treadTrack.body.angle
+                }
+            );
         });
 
         // Trigger backward movement
         thiss.socket.on("move backward", function (data) {
-            // Create a force vector
+            // Create a force vector and apply this force
             let dx = Math.cos(thiss.body.angle) * thiss.speed;
             let dy = Math.sin(thiss.body.angle) * thiss.speed;
-
             Body.applyForce(
                 thiss.body,
                 { "x": thiss.body.position.x, "y": thiss.body.position.y },
                 { "x": -dx, "y": -dy }
+            );
+
+            // TODO: Create position vector and tracks
+            // Prepare position vector
+            let pdx = Math.cos(thiss.body.angle) * 140;
+            let pdy = Math.sin(thiss.body.angle) * 140;
+            pdx = pdx + thiss.body.position.x;
+            pdy = pdy + thiss.body.position.y;
+            let treadTrack = new StaticObject(
+                { "pdx": pdx, "pdy": pdy },
+                thiss.body.angle,
+                thiss.world,
+                thiss.engine,
+                thiss.socketServer,
+                thiss.clientID,
+                10000
+            );
+
+            // TODO: Tell all clients to create this tread mark's representation
+            thiss.socketServer.emit(
+                "create tread mark",
+                {
+                    "clientID": treadTrack.clientID,
+                    "staticObjectID": treadTrack.staticObjectID,
+                    "position": treadTrack.body.position,
+                    "angle": treadTrack.body.angle
+                }
             );
         });
 

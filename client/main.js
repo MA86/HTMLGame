@@ -19,6 +19,7 @@ addEventListener("load", function (e) {
     window.globals.keysDown = {};
     window.globals.images = {};
     window.globals.entities = [];
+    window.globals.staticEntities = [];///
     window.globals.clientIDs = [];
     window.globals.imagePaths = [
         "./images_and_data/mSixTankBody.png",
@@ -64,7 +65,7 @@ addEventListener("load", function (e) {
         window.globals.uiCanvas.width = window.innerWidth;
         window.globals.uiCanvas.height = window.innerHeight;
 
-        //TODO: Render the map
+        //TODO: create multiple terrian layers instead of one. Render the map
         let testTerrain = new TerrainLayer(
             0, 0, null, 10, 10, window.globals.images["./images_and_data/ground.png"], 128, 8, 8
         );
@@ -127,7 +128,7 @@ addEventListener("load", function (e) {
             timeNow = (timeStamp == undefined) ? 0 : timeStamp;
             delta = (timeNow - timeThen);
 
-            // Update entities
+            // Update game canvas's entities
             for (let i = 0; i < window.globals.entities.length; i++) {
                 window.globals.entities[i].update(window.globals.keysDown, delta);
             }
@@ -140,9 +141,15 @@ addEventListener("load", function (e) {
                 window.globals.gameCanvas.height
             );
 
-            // Draw entities
+            // Draw game canvas's entities
             for (let i = 0; i < window.globals.entities.length; i++) {
                 window.globals.entities[i].render(window.globals.gameContext);
+            }
+
+            //TODO: Draw game canvas's static entities
+            for (let i = 0; i < window.globals.staticEntities.length; i++) {
+                // If not drawn already, draw
+                window.globals.staticEntities[i].render(window.globals.gameContext);
             }
 
             // Request to run Game Loop again

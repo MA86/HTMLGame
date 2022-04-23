@@ -3,7 +3,6 @@ const Matter = require("matter-js/build/matter");
 
 const Body = Matter.Body;
 const Bodies = Matter.Bodies;
-const Composite = Matter.Composite;
 
 class Turret {
     constructor(initPos, world, socket, server, tank, eng) {
@@ -14,7 +13,6 @@ class Turret {
 
         // Properties of turret
         this.clientID = socket.id;
-        this.shellID = null;
         this.socketServer = server;
         this.speed = 0.72;
         this.readyToFire = true;
@@ -57,37 +55,33 @@ class Turret {
                 let fdy = Math.sin(thiss.body.angle + thiss.tank.body.angle);
 
                 // Increment shellID and create a shell
-                thiss.shellID = shellID++;
                 thiss.firedShell = new Shell(
                     { "x": thiss.body.position.x, "y": thiss.body.position.y },
                     thiss.world,
-                    thiss.socket,
+                    thiss.clientID,
                     { "pdx": pdx, "pdy": pdy },
                     angle,
                     { "fdx": fdx, "fdy": fdy },
                     {
-                        speed: 0.06,
+                        speed: 0.01,
                         type: "HE",
                         blastRadius: 2,
                         penetration: 2
                     },
-                    thiss.shellID,
                     thiss.engine,
                     thiss.socketServer
                 );
-
-                // Add this shell to entities list
-                entities.push(thiss.firedShell);
-                thiss.firedShell = null;
 
                 // Tell all clients to create this shell's representation
                 thiss.socketServer.emit(
                     "create shell",
                     {
-                        "clientID": thiss.clientID,
-                        "shellID": thiss.shellID
+                        "clientID": thiss.firedShell.clientID,
+                        "shellID": thiss.firedShell.shellID
                     }
                 );
+                // Remove reference
+                thiss.firedShell = null;
 
                 // Wait-time to "load" new shell
                 thiss.readyToFire = false;
