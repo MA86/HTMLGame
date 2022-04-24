@@ -6,7 +6,7 @@ const Composite = Matter.Composite;
 
 class StaticObject {
     constructor(posVec, angle, world, eng, server, clientID, time) {
-        this.body = Bodies.rectangle(posVec.pdx, posVec.pdy, 4, 8, {
+        this.body = Bodies.rectangle(posVec.x, posVec.y, 2, 16, {
             isStatic: true,
             isSensor: true
         });

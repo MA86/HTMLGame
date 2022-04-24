@@ -33,7 +33,7 @@ class Tank {
         this.clientID = socket.id;
         this.socketServer = server;
         this.speed = 0.2;
-        this.rotationSpeed = 25;
+        this.rotationSpeed = 10;
         this.world = world;
         this.engine = eng;
         this.socket = socket;
@@ -56,7 +56,7 @@ class Tank {
 
         // Trigger forward movement
         thiss.socket.on("move forward", function (data) {
-            // Create a force vector and apply this force
+            // Create a force vector and apply force
             let dx = Math.cos(thiss.body.angle) * thiss.speed;
             let dy = Math.sin(thiss.body.angle) * thiss.speed;
             Body.applyForce(
@@ -65,17 +65,16 @@ class Tank {
                 { "x": dx, "y": dy }
             );
 
-            if (thiss.placeTreadMark) {
-                // TODO: 
-                // Prepare position vector for tread mark
-                let pdx = Math.cos(thiss.body.angle) * 140;
-                let pdy = Math.sin(thiss.body.angle) * 140;
-                pdx = pdx + thiss.body.position.x;
-                pdy = pdy + thiss.body.position.y;
+            // Prepare position vector for tread mark
+            let pdx = Math.cos(thiss.body.angle) * -60;
+            let pdy = Math.sin(thiss.body.angle) * -60;
+            pdx = pdx + thiss.body.position.x;
+            pdy = pdy + thiss.body.position.y;
 
+            if (thiss.placeTreadMark) {
                 // Create tread mark
                 let treadTrack = new StaticObject(
-                    { "pdx": pdx, "pdy": pdy },
+                    { "x": pdx, "y": pdy },
                     thiss.body.angle,
                     thiss.world,
                     thiss.engine,
@@ -97,7 +96,7 @@ class Tank {
                 // Reset flag
                 thiss.placeTreadMark = false;
                 // Set timeout between tread marks
-                thiss.setTreadMarkTimeOut(1000);
+                thiss.setTreadMarkTimeOut(70);
             }
         });
 
@@ -112,32 +111,39 @@ class Tank {
                 { "x": -dx, "y": -dy }
             );
 
-            // TODO: Create position vector and tracks
-            // Prepare position vector
-            let pdx = Math.cos(thiss.body.angle) * 140;
-            let pdy = Math.sin(thiss.body.angle) * 140;
+            // Prepare position vector for tread mark
+            let pdx = Math.cos(thiss.body.angle) * 60;
+            let pdy = Math.sin(thiss.body.angle) * 60;
             pdx = pdx + thiss.body.position.x;
             pdy = pdy + thiss.body.position.y;
-            let treadTrack = new StaticObject(
-                { "pdx": pdx, "pdy": pdy },
-                thiss.body.angle,
-                thiss.world,
-                thiss.engine,
-                thiss.socketServer,
-                thiss.clientID,
-                10000
-            );
 
-            // TODO: Tell all clients to create this tread mark's representation
-            thiss.socketServer.emit(
-                "create tread mark",
-                {
-                    "clientID": treadTrack.clientID,
-                    "staticObjectID": treadTrack.staticObjectID,
-                    "position": treadTrack.body.position,
-                    "angle": treadTrack.body.angle
-                }
-            );
+            if (thiss.placeTreadMark) {
+                // Create tread mark
+                let treadTrack = new StaticObject(
+                    { "x": pdx, "y": pdy },
+                    thiss.body.angle,
+                    thiss.world,
+                    thiss.engine,
+                    thiss.socketServer,
+                    thiss.clientID,
+                    5000
+                );
+
+                // Tell all clients to create this tread mark's representation
+                thiss.socketServer.emit(
+                    "create tread mark",
+                    {
+                        "clientID": treadTrack.clientID,
+                        "staticObjectID": treadTrack.staticObjectID,
+                        "position": treadTrack.body.position,
+                        "angle": treadTrack.body.angle
+                    }
+                );
+                // Reset flag
+                thiss.placeTreadMark = false;
+                // Set timeout between tread marks
+                thiss.setTreadMarkTimeOut(70);
+            }
         });
 
         // Trigger right turn

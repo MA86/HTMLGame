@@ -32,14 +32,14 @@ class Tank extends Entity {
                 thiss.position = data.position;
                 thiss.angle = data.angle;
             }
-        });//TODO
+        });
         window.globals.clientSocket.on("create tread mark", function (data) {
             if (thiss.clientID == data.clientID) {
                 let treadMark = new StaticObject(
                     data.position,
                     data.angle,
-                    window.globals.images["./images_and_data/shell.png"],///
-                    spriteSheetsData.shellData,///
+                    window.globals.images["./images_and_data/treadMark.png"],
+                    spriteSheetsData.treadMarkData,
                     1,
                     data.clientID,
                     data.staticObjectID

@@ -19,10 +19,11 @@ addEventListener("load", function (e) {
     window.globals.keysDown = {};
     window.globals.images = {};
     window.globals.entities = [];
-    window.globals.staticEntities = [];///
+    window.globals.staticEntities = [];
     window.globals.clientIDs = [];
     window.globals.imagePaths = [
         "./images_and_data/mSixTankBody.png",
+        "./images_and_data/treadMark.png",
         "./images_and_data/mSixTankTurret.png",
         "./images_and_data/shell.png",
         "./images_and_data/explosions.png", /// Delete if not needed
@@ -138,15 +139,15 @@ addEventListener("load", function (e) {
                 window.globals.gameCanvas.height
             );
 
-            // Update and render game-canvas's entities
+            // Update and render game-canvas's static entities (floor layer)
+            for (let i = 0; i < window.globals.staticEntities.length; i++) {
+                window.globals.staticEntities[i].render(window.globals.gameContext);
+            }
+
+            // Update and render game-canvas's entities (higher layer)
             for (let i = 0; i < window.globals.entities.length; i++) {
                 window.globals.entities[i].update(window.globals.keysDown, delta);
                 window.globals.entities[i].render(window.globals.gameContext);
-            }
-
-            //TODO: Update and render game-canvas's static entities
-            for (let i = 0; i < window.globals.staticEntities.length; i++) {
-                window.globals.staticEntities[i].render(window.globals.gameContext);
             }
 
             // Request to run Game Loop again
