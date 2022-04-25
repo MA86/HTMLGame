@@ -66,9 +66,9 @@ class Tank extends Entity {
         );
     }
 
-    updateThis(keysDown, dt) {
+    updateThis(keysDown, dt, keysUp) {
         if (this.clientID == window.globals.clientSocket.id) {
-            // Client tells server to move forward/backward
+            // Client tells server wether arrow is pressed
             if (keysDown && keysDown.ArrowUp == true) {
                 window.globals.clientSocket.emit(
                     "move forward", {}
@@ -79,6 +79,8 @@ class Tank extends Entity {
                     "move backward", {}
                 );
             }
+            // Client tells server whether arrow is released
+
 
             // Client tells server to turn right/left
             if (keysDown && keysDown.ArrowRight == true) {

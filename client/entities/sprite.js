@@ -36,7 +36,7 @@ class Sprite extends Entity {
         );
     }
 
-    updateThis(keysDown, dt) {
+    updateThis(keysDown, dt, keysUp) {
         // Update index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;

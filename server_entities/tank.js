@@ -22,17 +22,19 @@ class Tank {
                 group: 1
             },
             isStatic: false,
-            frictionAir: 0.5,
-            restitution: 0.01,
-            density: 1,
-            friction: 1,
-            //frictionStatic: 10,
+            frictionAir: 0.9,
+            restitution: 0,
+            density: 10,
+            friction: 0.6,
+            frictionStatic: 10,
         });
 
         // Properties of tank
         this.clientID = socket.id;
         this.socketServer = server;
-        this.speed = 0.2;
+        this.maxSpeed = 15;
+        this.currentBackwardSpeed = 0;
+        this.currentForwardSpeed = 0;
         this.rotationSpeed = 10;
         this.world = world;
         this.engine = eng;
@@ -56,18 +58,25 @@ class Tank {
 
         // Trigger forward movement
         thiss.socket.on("move forward", function (data) {
-            // Create a force vector and apply force
-            let dx = Math.cos(thiss.body.angle) * thiss.speed;
-            let dy = Math.sin(thiss.body.angle) * thiss.speed;
-            Body.applyForce(
-                thiss.body,
-                { "x": thiss.body.position.x, "y": thiss.body.position.y },
-                { "x": dx, "y": dy }
-            );
+            // Since moving forward, backward speed is zero
+            thiss.currentBackwardSpeed = 0;
+
+            // Slowly increment speed
+            if (thiss.currentForwardSpeed < thiss.maxSpeed) {
+                thiss.currentForwardSpeed += 0.1;
+            }
+            // Prepare velocity vector
+            let velocityX = Math.cos(thiss.body.angle) * thiss.currentForwardSpeed;
+            let velocityY = Math.sin(thiss.body.angle) * thiss.currentForwardSpeed;
+
+            // Apply velocity
+            Body.setVelocity(thiss.body, {
+                x: velocityX, y: velocityY
+            });
 
             // Prepare position vector for tread mark
-            let pdx = Math.cos(thiss.body.angle) * -60;
-            let pdy = Math.sin(thiss.body.angle) * -60;
+            let pdx = Math.cos(thiss.body.angle) * -100;
+            let pdy = Math.sin(thiss.body.angle) * -100;
             pdx = pdx + thiss.body.position.x;
             pdy = pdy + thiss.body.position.y;
 
@@ -82,6 +91,10 @@ class Tank {
                     thiss.clientID,
                     5000
                 );
+                // Reset flag
+                thiss.placeTreadMark = false;
+                // Set timeout for next tread marks
+                thiss.setTreadMarkTimeOut(100);
 
                 // Tell all clients to create this tread mark's representation
                 thiss.socketServer.emit(
@@ -93,27 +106,32 @@ class Tank {
                         "angle": treadTrack.body.angle
                     }
                 );
-                // Reset flag
-                thiss.placeTreadMark = false;
-                // Set timeout between tread marks
-                thiss.setTreadMarkTimeOut(70);
             }
+            ///
+            console.log("UP");
         });
 
         // Trigger backward movement
         thiss.socket.on("move backward", function (data) {
-            // Create a force vector and apply this force
-            let dx = Math.cos(thiss.body.angle) * thiss.speed;
-            let dy = Math.sin(thiss.body.angle) * thiss.speed;
-            Body.applyForce(
-                thiss.body,
-                { "x": thiss.body.position.x, "y": thiss.body.position.y },
-                { "x": -dx, "y": -dy }
-            );
+            // Since moving backward, forward speed is zero
+            thiss.currentForwardSpeed = 0;
+
+            // Slowly increment speed
+            if (thiss.currentBackwardSpeed < thiss.maxSpeed) {
+                thiss.currentBackwardSpeed += 0.1;
+            }
+            // Prepare velocity vector
+            let velocityX = Math.cos(thiss.body.angle) * -thiss.currentBackwardSpeed;
+            let velocityY = Math.sin(thiss.body.angle) * -thiss.currentBackwardSpeed;
+
+            // Apply velocity vector
+            Body.setVelocity(thiss.body, {
+                x: velocityX, y: velocityY
+            });
 
             // Prepare position vector for tread mark
-            let pdx = Math.cos(thiss.body.angle) * 60;
-            let pdy = Math.sin(thiss.body.angle) * 60;
+            let pdx = Math.cos(thiss.body.angle) * 100;
+            let pdy = Math.sin(thiss.body.angle) * 100;
             pdx = pdx + thiss.body.position.x;
             pdy = pdy + thiss.body.position.y;
 
@@ -128,6 +146,10 @@ class Tank {
                     thiss.clientID,
                     5000
                 );
+                // Reset flag
+                thiss.placeTreadMark = false;
+                // Set timeout for next tread marks
+                thiss.setTreadMarkTimeOut(100);
 
                 // Tell all clients to create this tread mark's representation
                 thiss.socketServer.emit(
@@ -139,11 +161,8 @@ class Tank {
                         "angle": treadTrack.body.angle
                     }
                 );
-                // Reset flag
-                thiss.placeTreadMark = false;
-                // Set timeout between tread marks
-                thiss.setTreadMarkTimeOut(70);
             }
+            console.log("DOWN")///
         });
 
         // Trigger right turn

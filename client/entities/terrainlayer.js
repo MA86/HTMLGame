@@ -34,6 +34,10 @@ class TerrainLayer extends Entity {
         this.tiles = arr;
     }
 
+    updateThis(keysDown, dt, keysUp) {
+        // Does nothing
+    }
+
     // Render this.tiles
     renderThis(ctx) {
         for (let i = 0; i < this.tiles.length; i++) {

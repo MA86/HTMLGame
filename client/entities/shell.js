@@ -56,7 +56,7 @@ class Shell extends Entity {
         );
     }
 
-    updateThis(keysDown, dt) {
+    updateThis(keysDown, dt, keysUp) {
         // Update animation index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;

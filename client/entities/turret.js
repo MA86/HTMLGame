@@ -63,7 +63,7 @@ class Turret extends Entity {
         );
     }
 
-    updateThis(keysDown, dt) {
+    updateThis(keysDown, dt, keysUp) {
         if (this.clientID == window.globals.clientSocket.id) {
             // Client tells server to rotate right/left
             if (keysDown && keysDown.KeyD == true) {
