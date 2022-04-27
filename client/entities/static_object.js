@@ -19,6 +19,10 @@ class StaticObject extends Entity {
 
         window.globals.staticEntities.push(this);
 
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
         // Listen for destroy shell
         let thiss = this;
         window.globals.clientSocket.on("destroy static object", function (data) {
@@ -48,7 +52,7 @@ class StaticObject extends Entity {
         );
     }
 
-    updateThis(keysDown, dt, keysUp) {
+    updateThis(keysDown, dt) {
         // Update animation index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;

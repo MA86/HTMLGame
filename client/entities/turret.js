@@ -18,15 +18,19 @@ class Turret extends Entity {
         this.firedShell = null;
         this.shellIsActive = false;
 
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
         // Listen for update
         let thiss = this;
-        window.globals.clientSocket.on("update tank", function (data) {
+        window.globals.clientSocket.on("update tank and turret", function (data) {
             if (thiss.clientID == data.clientID) {
                 thiss.angle = data.turretAngle;
             }
         });
 
-        // Trigger to create shell representation
+        // Listen for create shell representation
         window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
                 // Create new shell representation
@@ -63,7 +67,7 @@ class Turret extends Entity {
         );
     }
 
-    updateThis(keysDown, dt, keysUp) {
+    updateThis(keysDown, dt) {
         if (this.clientID == window.globals.clientSocket.id) {
             // Client tells server to rotate right/left
             if (keysDown && keysDown.KeyD == true) {

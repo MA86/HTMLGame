@@ -84,7 +84,7 @@ const Start = function () {
                     }
                     if (entity instanceof Tank) {
                         socketServer.emit(
-                            "update tank",
+                            "update tank and turret",
                             {
                                 "clientID": entity.clientID,
                                 "position": entity.body.position,

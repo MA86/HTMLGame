@@ -17,7 +17,6 @@ addEventListener("load", function (e) {
     window.globals.uiCanvas = document.getElementById("ui-canvas");
     window.globals.uiContext = window.globals.uiCanvas.getContext("2d");
     window.globals.keysDown = {};
-    window.globals.keysUp = {};
     window.globals.images = {};
     window.globals.entities = [];
     window.globals.staticEntities = [];
@@ -33,11 +32,9 @@ addEventListener("load", function (e) {
     ];
     window.globals.clientSocket = null;
 
-    const setupKeyboardHandler = function (pressedArray, releasedArray) {
+    const setupKeyboardHandler = function (pressedArray) {
         // Listen for key pressed
         addEventListener("keydown", function (key) {
-            // Key is no longer 'released'
-            delete releasedArray[key.code];
             // Add key to pressed array
             pressedArray[key.code] = true;
             // Prevent default key behavior
@@ -58,13 +55,11 @@ addEventListener("load", function (e) {
         addEventListener("keyup", function (key) {
             // Key is no longer 'pressed'
             delete pressedArray[key.code];
-            // Add key to released array
-            releasedArray[key.code] = true;
         }, false);
     }
 
     const Start = function () {
-        setupKeyboardHandler(window.globals.keysDown, window.globals.keysUp);
+        setupKeyboardHandler(window.globals.keysDown);
 
         // UI, game, and background canvases match browser screen
         window.globals.bgCanvas.width = window.innerWidth;
@@ -154,7 +149,7 @@ addEventListener("load", function (e) {
 
             // Update and render game-canvas's entities (higher layer)
             for (let i = 0; i < window.globals.entities.length; i++) {
-                window.globals.entities[i].update(window.globals.keysDown, delta, window.globals.keysUp);
+                window.globals.entities[i].update(window.globals.keysDown, delta);
                 window.globals.entities[i].render(window.globals.gameContext);
             }
 

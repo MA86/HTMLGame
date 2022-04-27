@@ -16,6 +16,10 @@ class Shell extends Entity {
         this.clientID = clientID;
         this.shellID = sID;
 
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
         // Listen for updates
         let thiss = this;
         window.globals.clientSocket.on("update shell", function (data) {
@@ -56,7 +60,7 @@ class Shell extends Entity {
         );
     }
 
-    updateThis(keysDown, dt, keysUp) {
+    updateThis(keysDown, dt) {
         // Update animation index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;

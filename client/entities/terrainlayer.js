@@ -34,7 +34,7 @@ class TerrainLayer extends Entity {
         this.tiles = arr;
     }
 
-    updateThis(keysDown, dt, keysUp) {
+    updateThis(keysDown, dt) {
         // Does nothing
     }
 

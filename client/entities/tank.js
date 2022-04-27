@@ -22,12 +22,15 @@ class Tank extends Entity {
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
-
         this.clientID = clientID;
 
-        // Listen for updates
+        this.setupEventListeners();
+    }
+
+    setupEventListeners() {
+        // Listen for updates event
         let thiss = this;
-        window.globals.clientSocket.on("update tank", function (data) {
+        window.globals.clientSocket.on("update tank and turret", function (data) {
             if (thiss.clientID == data.clientID) {
                 thiss.position = data.position;
                 thiss.angle = data.angle;
@@ -46,6 +49,20 @@ class Tank extends Entity {
                 );
             }
         });
+
+        // TEMP FIX: Listen for keyup event
+        addEventListener("keyup", function (key) {
+            if (key.code == "ArrowUp") {
+                window.globals.clientSocket.emit(
+                    "arrow up released", {}
+                );
+            }
+            if (key.code == "ArrowDown") {
+                window.globals.clientSocket.emit(
+                    "arrow down released", {}
+                );
+            }
+        }, false);
     }
 
     renderThis(ctx) {
@@ -66,7 +83,7 @@ class Tank extends Entity {
         );
     }
 
-    updateThis(keysDown, dt, keysUp) {
+    updateThis(keysDown, dt) {
         if (this.clientID == window.globals.clientSocket.id) {
             // Client tells server wether arrow is pressed
             if (keysDown && keysDown.ArrowUp == true) {
@@ -79,8 +96,6 @@ class Tank extends Entity {
                     "move backward", {}
                 );
             }
-            // Client tells server whether arrow is released
-
 
             // Client tells server to turn right/left
             if (keysDown && keysDown.ArrowRight == true) {

@@ -36,14 +36,14 @@ class Entity {
         // Derived class defines this method
     }
 
-    update(keysDown, dt, keysUp) {
+    update(keysDown, dt) {
         // Update self
-        this.updateThis(keysDown, dt, keysUp);
+        this.updateThis(keysDown, dt);
 
         // Update children
         for (let i = 0; i < this.children.length; i++) {
             let child = this.children[i];
-            child.update(keysDown, dt, keysUp);
+            child.update(keysDown, dt);
         }
     }
 
