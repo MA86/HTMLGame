@@ -6,6 +6,7 @@ const Body = Matter.Body;
 const Bodies = Matter.Bodies;
 const Composite = Matter.Composite;
 const Events = Matter.Events;
+const Vector = Matter.Vector;
 
 class Tank {
     constructor(initPos, world, socket, server, parent, eng) {
@@ -39,8 +40,9 @@ class Tank {
         this.engine = eng;
         this.socket = socket;
         this.parent = parent;
-        this.placeTreadMark = true;
-        this.lastTreadMarkPos = 0;
+        this.lastBackwardTreadMarkPos = Vector.create(this.body.position.x, this.body.position.y);
+        this.lastForwardTreadMarkPos = Vector.create(this.body.position.x, this.body.position.y);
+        this.spaceBetweenTreadMarks = 14;
 
         // Redefine turret's center from middle to left
         Body.setCentre(this.turret.body, { x: -48, y: -4 }, true);
@@ -79,13 +81,15 @@ class Tank {
                 x: velocityX, y: velocityY
             });
 
-            // Prepare position vector for tread mark
+            // Prepare forward position vector for tread mark
             let pdx = Math.cos(thiss.body.angle) * -100;
             let pdy = Math.sin(thiss.body.angle) * -100;
             pdx = pdx + thiss.body.position.x;
             pdy = pdy + thiss.body.position.y;
 
-            if (thiss.placeTreadMark) {
+            let distance = Vector.sub({ "x": pdx, "y": pdy }, thiss.lastForwardTreadMarkPos);
+
+            if (Vector.magnitude(distance) > thiss.spaceBetweenTreadMarks) {
                 // Create tread mark
                 let treadMark = new StaticObject(
                     { "x": pdx, "y": pdy },
@@ -96,11 +100,7 @@ class Tank {
                     thiss.clientID,
                     5000
                 );
-                thiss.lastTreadMarkPos = treadMark.body.position;
-                // Reset flag
-                thiss.placeTreadMark = false;
-                // Set timeout for next tread marks
-                thiss.setTreadMarkTimeOut(100);
+                thiss.lastForwardTreadMarkPos = treadMark.body.position;
 
                 // Tell all clients to create this tread mark's representation
                 thiss.socketServer.emit(
@@ -130,15 +130,17 @@ class Tank {
                 x: velocityX, y: velocityY
             });
 
-            // Prepare position vector for tread mark
+            // Prepare backward position vector for tread mark
             let pdx = Math.cos(thiss.body.angle) * 100;
             let pdy = Math.sin(thiss.body.angle) * 100;
             pdx = pdx + thiss.body.position.x;
             pdy = pdy + thiss.body.position.y;
 
-            if (thiss.placeTreadMark) {
+            let distance = Vector.sub({ "x": pdx, "y": pdy }, thiss.lastBackwardTreadMarkPos);
+
+            if (Vector.magnitude(distance) > thiss.spaceBetweenTreadMarks) {
                 // Create tread mark
-                let treadTrack = new StaticObject(
+                let treadMark = new StaticObject(
                     { "x": pdx, "y": pdy },
                     thiss.body.angle,
                     thiss.world,
@@ -147,20 +149,16 @@ class Tank {
                     thiss.clientID,
                     5000
                 );
-                thiss.lastTreadMarkPos = treadMark.body.position;
-                // Reset flag
-                thiss.placeTreadMark = false;
-                // Set timeout for next tread marks
-                thiss.setTreadMarkTimeOut(100);
+                thiss.lastBackwardTreadMarkPos = treadMark.body.position;
 
                 // Tell all clients to create this tread mark's representation
                 thiss.socketServer.emit(
                     "create tread mark",
                     {
-                        "clientID": treadTrack.clientID,
-                        "staticObjectID": treadTrack.staticObjectID,
-                        "position": treadTrack.body.position,
-                        "angle": treadTrack.body.angle
+                        "clientID": treadMark.clientID,
+                        "staticObjectID": treadMark.staticObjectID,
+                        "position": treadMark.body.position,
+                        "angle": treadMark.body.angle
                     }
                 );
             }
@@ -175,15 +173,6 @@ class Tank {
         thiss.socket.on("turn left", function (data) {
             thiss.body.torque = -thiss.turningSpeed;
         });
-    }
-
-    setTreadMarkTimeOut(time) {
-        let thiss = this;
-        setTimeout(function () {
-            // Keep time between tread marks consistent
-            time += 1 / thiss.currentSpeed;
-            thiss.placeTreadMark = true;
-        }, time);
     }
 }
 
