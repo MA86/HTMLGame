@@ -1,7 +1,7 @@
 import { Entity } from './entity.js';
 import { StaticObject } from './static_object.js';
 import { Turret } from './turret.js';
-import * as spriteSheetsData from "../spriteSheetsData.js";
+import * as spriteSheetsData from "../spritesheetsData.js";
 
 class Tank extends Entity {
     constructor(ss, ssData, fps, clientID, turretParams, shellParams) {

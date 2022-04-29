@@ -33,9 +33,9 @@ class Tank {
         // Properties of tank
         this.clientID = socket.id;
         this.socketServer = server;
-        this.maxSpeed = 15;
+        this.maxSpeed = 18;
         this.currentSpeed = 0;
-        this.turningSpeed = 16;
+        this.turningSpeed = 18;
         this.world = world;
         this.engine = eng;
         this.socket = socket;
@@ -166,12 +166,14 @@ class Tank {
 
         // Listen for right turn
         thiss.socket.on("turn right", function (data) {
-            thiss.body.torque = thiss.turningSpeed;
+            Body.setAngularVelocity(thiss.body, 0.03);
+            //thiss.body.torque = thiss.turningSpeed;
         });
 
         // Listen for left turn
         thiss.socket.on("turn left", function (data) {
-            thiss.body.torque = -thiss.turningSpeed;
+            Body.setAngularVelocity(thiss.body, -0.03);
+            //thiss.body.torque = -thiss.turningSpeed;
         });
     }
 }

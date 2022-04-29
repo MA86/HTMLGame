@@ -1,6 +1,6 @@
 import { Entity } from "./entity.js";
 import { Sprite } from "./sprite.js";
-import * as spriteSheetsData from "../spriteSheetsData.js";
+import * as spriteSheetsData from "../spritesheetsData.js";
 
 class Shell extends Entity {
     constructor(ss, ssData, fps, clientID, sID) {

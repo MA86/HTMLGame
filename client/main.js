@@ -142,14 +142,18 @@ addEventListener("load", function (e) {
                 window.globals.gameCanvas.height
             );
 
-            // Update and render game-canvas's static entities (floor layer)
+            // Update game-canvas's entities
+            for (let i = 0; i < window.globals.entities.length; i++) {
+                window.globals.entities[i].update(window.globals.keysDown, delta);
+            }
+
+            // Render game-canvas's static entities
             for (let i = 0; i < window.globals.staticEntities.length; i++) {
                 window.globals.staticEntities[i].render(window.globals.gameContext);
             }
 
-            // Update and render game-canvas's entities (higher layer)
+            // Render game-canvas's entities
             for (let i = 0; i < window.globals.entities.length; i++) {
-                window.globals.entities[i].update(window.globals.keysDown, delta);
                 window.globals.entities[i].render(window.globals.gameContext);
             }
 
