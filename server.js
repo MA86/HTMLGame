@@ -136,6 +136,6 @@ socketServer.on("connection", function (socket) {
 });
 
 // Start the HTTP server (listening on port 8000)
-httpServer.listen(8000, "192.168.1.11", function () {
+httpServer.listen(8000, function () {
     console.log("HTTP SERVER IS LISTENING ON PORT 8000");
 });
