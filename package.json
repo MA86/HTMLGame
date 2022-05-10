@@ -1,5 +1,5 @@
 {
-    "name": "Tank Game",
+    "name": "TankGame",
     "version": "0.1.0",
     "description": "A multiplayer tank game.",
     "dependencies": {
