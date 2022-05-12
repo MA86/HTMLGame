@@ -16,13 +16,18 @@ class Tank extends Entity {
         );
         this.children.push(this.turret);
 
+        // Properties of this object
+        this.clientID = clientID;
+        this.buttonPressed = false;
+        this.buttonReleased = false;
+
         // Variables used for rendering this object
         this.index = 0;
         this.framesPerSecond = fps;
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
-        this.clientID = clientID;
+
 
         this.setupEventListeners();
     }
@@ -90,6 +95,15 @@ class Tank extends Entity {
                 window.globals.clientSocket.emit(
                     "move forward", {}
                 );
+            }
+            if (keysDown && keysDown.ArrowUp == undefined) {
+                if (this.buttonReleased == false) {
+                    this.buttonReleased = true;
+                    this.buttonPressed = false;
+                    window.globals.clientSocket.emit(
+                        "move forward", {}
+                    );
+                }
             }
             if (keysDown && keysDown.ArrowDown == true) {
                 window.globals.clientSocket.emit(
