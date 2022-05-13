@@ -23,9 +23,9 @@ class Tank {
                 group: 1
             },
             isStatic: false,
-            frictionAir: 0.9,
+            frictionAir: 0.04,
             restitution: 0,
-            density: 10,
+            density: 5,
             friction: 0.6,
             frictionStatic: 10,
         });
@@ -33,9 +33,10 @@ class Tank {
         // Properties of tank
         this.clientID = socket.id;
         this.socketServer = server;
-        this.maxSpeed = 18;
+        this.maxSpeed = 1;
         this.currentSpeed = 0;
-        this.turningSpeed = 18;
+        this.maxTurnSpeed = 0.003
+        this.currentTurnSpeed = 0;
         this.world = world;
         this.engine = eng;
         this.socket = socket;
@@ -58,19 +59,25 @@ class Tank {
     setupEventListeners() {
         let thiss = this;
 
-        // Listen for key released/pressed
+        // Listen for key released
         thiss.socket.on("arrow up released", function (data) {
             thiss.currentSpeed = 0;
         });
-        thiss.socket.on("arrow down released", function () {
+        thiss.socket.on("arrow down released", function (data) {
             thiss.currentSpeed = 0;
+        });
+        thiss.socket.on("arrow right released", function (data) {
+            thiss.currentTurnSpeed = 0;
+        });
+        thiss.socket.on("arrow left released", function (data) {
+            thiss.currentTurnSpeed = 0;
         });
 
         // Listen for forward movement
         thiss.socket.on("move forward", function (data) {
             // Slowly increment speed
             if (thiss.currentSpeed < thiss.maxSpeed) {
-                thiss.currentSpeed += 0.1;
+                thiss.currentSpeed += 0.002;
             }
             // Prepare velocity vector
             let velocityX = Math.cos(thiss.body.angle) * thiss.currentSpeed;
@@ -119,7 +126,7 @@ class Tank {
         thiss.socket.on("move backward", function (data) {
             // Slowly increment speed
             if (thiss.currentSpeed < thiss.maxSpeed) {
-                thiss.currentSpeed += 0.1;
+                thiss.currentSpeed += 0.002;
             }
             // Prepare velocity vector
             let velocityX = Math.cos(thiss.body.angle) * -thiss.currentSpeed;
@@ -166,14 +173,18 @@ class Tank {
 
         // Listen for right turn
         thiss.socket.on("turn right", function (data) {
-            Body.setAngularVelocity(thiss.body, 0.03);
-            //thiss.body.torque = thiss.turningSpeed;
+            if (thiss.currentTurnSpeed < thiss.maxTurnSpeed) {
+                thiss.currentTurnSpeed += 0.00002;
+            }
+            Body.setAngularVelocity(thiss.body, thiss.currentTurnSpeed);
         });
 
         // Listen for left turn
         thiss.socket.on("turn left", function (data) {
-            Body.setAngularVelocity(thiss.body, -0.03);
-            //thiss.body.torque = -thiss.turningSpeed;
+            if (thiss.currentTurnSpeed < thiss.maxTurnSpeed) {
+                thiss.currentTurnSpeed += 0.00002;
+            }
+            Body.setAngularVelocity(thiss.body, -thiss.currentTurnSpeed);
         });
     }
 }

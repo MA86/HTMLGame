@@ -18,8 +18,6 @@ class Tank extends Entity {
 
         // Properties of this object
         this.clientID = clientID;
-        this.buttonPressed = false;
-        this.buttonReleased = false;
 
         // Variables used for rendering this object
         this.index = 0;
@@ -55,7 +53,7 @@ class Tank extends Entity {
             }
         });
 
-        // TEMP FIX: Listen for keyup event
+        // Listen for keys released 
         addEventListener("keyup", function (key) {
             if (key.code == "ArrowUp") {
                 window.globals.clientSocket.emit(
@@ -65,6 +63,16 @@ class Tank extends Entity {
             if (key.code == "ArrowDown") {
                 window.globals.clientSocket.emit(
                     "arrow down released", {}
+                );
+            }
+            if (key.code == "ArrowRight") {
+                window.globals.clientSocket.emit(
+                    "arrow right released", {}
+                );
+            }
+            if (key.code == "ArrowLeft") {
+                window.globals.clientSocket.emit(
+                    "arrow left released", {}
                 );
             }
         }, false);
@@ -90,28 +98,20 @@ class Tank extends Entity {
 
     updateThis(keysDown, dt) {
         if (this.clientID == window.globals.clientSocket.id) {
-            // Client tells server wether arrow is pressed
+            // Client tells server up-arrow is pressed
             if (keysDown && keysDown.ArrowUp == true) {
                 window.globals.clientSocket.emit(
                     "move forward", {}
                 );
             }
-            if (keysDown && keysDown.ArrowUp == undefined) {
-                if (this.buttonReleased == false) {
-                    this.buttonReleased = true;
-                    this.buttonPressed = false;
-                    window.globals.clientSocket.emit(
-                        "move forward", {}
-                    );
-                }
-            }
+            // Client tells server down-arrow is pressed
             if (keysDown && keysDown.ArrowDown == true) {
                 window.globals.clientSocket.emit(
                     "move backward", {}
                 );
             }
 
-            // Client tells server to turn right/left
+            // Client tells server right-arrow/left-arrow is pressed
             if (keysDown && keysDown.ArrowRight == true) {
                 window.globals.clientSocket.emit(
                     "turn right", {}
