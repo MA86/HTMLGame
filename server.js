@@ -56,15 +56,56 @@ const Start = function () {
 
     world = engine.world;
 
+    setInterval(function () {
+        //*** Game Loop Start ***//
+        Engine.update(engine, 1000 / 60);
+
+        if (entities.length > 0) {
+            for (let index = 0; index < entities.length; index++) {
+                const entity = entities[index];
+
+                // Update clients
+                if (entity instanceof Shell) {
+                    socketServer.emit(
+                        "update shell",
+                        {
+                            "clientID": entity.clientID,
+                            "shellID": entity.shellID,
+                            "position": entity.body.position,
+                            "angle": entity.body.angle,
+                        }
+                    );
+                }
+                if (entity instanceof Tank) {
+                    socketServer.emit(
+                        "update tank and turret",
+                        {
+                            "clientID": entity.clientID,
+                            "position": entity.body.position,
+                            "angle": entity.body.angle,
+                            "turretAngle": entity.turret.body.angle
+                        }
+                    );
+                }
+            }
+        }
+        //*** Game Loop End ***//
+    }, 1000 / 60);
+    /*
     let lastUpdateTime = Date.now();
     setImmediate(function x() {
         let timeNow = Date.now();
         let timeElapsed = timeNow - lastUpdateTime
-        if (timeElapsed > 1000 / 120) {
-            lastUpdateTime = timeNow
+        if (timeElapsed > 1000 / 30) {
+            lastUpdateTime = timeNow;
 
-            //*** Game Loop Start ***//
-            Engine.update(engine, timeElapsed);
+            ///TEST
+            console.log(timeElapsed);
+
+
+
+            // Game Loop Start //
+            Engine.update(engine, 1000 / 60);
 
             if (entities.length > 0) {
                 for (let index = 0; index < entities.length; index++) {
@@ -95,10 +136,11 @@ const Start = function () {
                     }
                 }
             }
-            //*** Game Loop End ***//
+            // Game Loop End //
         }
         setImmediate(x);
     });
+    */
 }
 
 Start();

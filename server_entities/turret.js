@@ -63,7 +63,7 @@ class Turret {
                     angle,
                     { "fdx": fdx, "fdy": fdy },
                     {
-                        speed: 0.01,
+                        speed: 0.009,
                         type: "HE",
                         blastRadius: 2,
                         penetration: 2

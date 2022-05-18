@@ -124,7 +124,7 @@ addEventListener("load", function (e) {
 
         // PERFORMANCE TODO: Create a track canvas, draw static obj once on it. On remove obj, clear track canvas
 
-        /*** Game Loop ***/
+        // Game Loop //
         var delta = 0;
         var timeNow = 0;
         var timeThen = 0;
@@ -163,7 +163,7 @@ addEventListener("load", function (e) {
         })();
     }
 
-        // *** Starting Point and Image Loading *** //
+        // Starting Point and Image Loading //
         ; (function () {
             let numImagesLoaded = 0;
             let numImagesRequested = window.globals.imagePaths.length;
