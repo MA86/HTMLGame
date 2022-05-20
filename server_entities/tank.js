@@ -25,7 +25,7 @@ class Tank {
             isStatic: false,
             frictionAir: 0.05,
             restitution: 0,
-            density: 1,
+            density: 5,
             friction: 0.6,
             frictionStatic: 10,
         });
@@ -43,7 +43,7 @@ class Tank {
         this.parent = parent;
         this.lastBackwardTreadMarkPos = Vector.create(this.body.position.x, this.body.position.y);
         this.lastForwardTreadMarkPos = Vector.create(this.body.position.x, this.body.position.y);
-        this.spaceBetweenTreadMarks = 14;
+        this.spaceBetweenTreadMarks = 10;
 
         // Redefine turret's center from middle to left
         Body.setCentre(this.turret.body, { x: -48, y: -4 }, true);
@@ -89,8 +89,8 @@ class Tank {
             });
 
             // Prepare forward position vector for tread mark
-            let pdx = Math.cos(thiss.body.angle) * -100;
-            let pdy = Math.sin(thiss.body.angle) * -100;
+            let pdx = Math.cos(thiss.body.angle) * -60;
+            let pdy = Math.sin(thiss.body.angle) * -60;
             pdx = pdx + thiss.body.position.x;
             pdy = pdy + thiss.body.position.y;
 
@@ -138,8 +138,8 @@ class Tank {
             });
 
             // Prepare backward position vector for tread mark
-            let pdx = Math.cos(thiss.body.angle) * 100;
-            let pdy = Math.sin(thiss.body.angle) * 100;
+            let pdx = Math.cos(thiss.body.angle) * 60;
+            let pdy = Math.sin(thiss.body.angle) * 60;
             pdx = pdx + thiss.body.position.x;
             pdy = pdy + thiss.body.position.y;
 
@@ -174,7 +174,7 @@ class Tank {
         // Listen for right turn
         thiss.socket.on("turn right", function (data) {
             if (thiss.currentTurnSpeed < thiss.maxTurnSpeed) {
-                thiss.currentTurnSpeed += 0.0001;
+                thiss.currentTurnSpeed += 0.00006;
             }
             Body.setAngularVelocity(thiss.body, thiss.currentTurnSpeed);
         });
@@ -182,7 +182,7 @@ class Tank {
         // Listen for left turn
         thiss.socket.on("turn left", function (data) {
             if (thiss.currentTurnSpeed < thiss.maxTurnSpeed) {
-                thiss.currentTurnSpeed += 0.0001;
+                thiss.currentTurnSpeed += 0.00006;
             }
             Body.setAngularVelocity(thiss.body, -thiss.currentTurnSpeed);
         });
