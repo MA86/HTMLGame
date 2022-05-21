@@ -18,8 +18,6 @@ class Tank extends Entity {
 
         // Properties of this object
         this.clientID = clientID;
-        this.oldPosition = { "x": 0, "y": 0 };
-        this.newPosition = { "x": 0, "y": 0 };
 
         // Variables used for rendering this object
         this.index = 0;
@@ -37,7 +35,10 @@ class Tank extends Entity {
         let thiss = this;
         window.globals.clientSocket.on("update tank and turret", function (data) {
             if (thiss.clientID == data.clientID) {
-                thiss.position = data.position;
+                thiss.position = thiss.updatedPosition;
+                thiss.updatedPosition = data.position;
+
+                //thiss.position = data.position;
                 thiss.angle = data.angle;
             }
         });
@@ -134,22 +135,6 @@ class Tank extends Entity {
             this.index = this.index % this.spriteSheetData.frames.length;
             this.timeTracker = 0;
         }
-    }
-
-    lerpMovement(lerpFunc, oldPosition, newPosition, timeSinceLastFrame) {
-        if (timeSinceLastFrame <= timeFactor) {
-            // Do linear interpolation
-            this.position.x = lerpFunc(oldPosition, newPosition, timeSinceLastFrame / frameLength);
-            this.position.y = lerpFunc(oldPosition, newPosition, timeSinceLastFrame / timeFactor);
-        } else {
-            // Skip linear interpolation
-            this.position.x = newPosition.x;
-            this.position.y = newPosition.y;
-        }
-    }
-
-    lerp(start, end, time) {
-        return start * (1 - time) + end * time;
     }
 }
 

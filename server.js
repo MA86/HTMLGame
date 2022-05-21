@@ -90,7 +90,7 @@ const Start = function () {
             }
         }
         //*** Game Loop End ***//
-    }, 1000 / 60);
+    }, 1000 / 2);
 }
 
 Start();

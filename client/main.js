@@ -131,7 +131,7 @@ addEventListener("load", function (e) {
 
         (function gameLoop(timeStamp) {
             // Calculate time between two frames
-            timeNow = (timeStamp == undefined) ? 0 : timeStamp;
+            timeNow = timeStamp;
             delta = (timeNow - timeThen);
 
             // Clear game-canvas
@@ -149,12 +149,12 @@ addEventListener("load", function (e) {
 
             // Render game-canvas's static entities
             for (let i = 0; i < window.globals.staticEntities.length; i++) {
-                window.globals.staticEntities[i].render(window.globals.gameContext);
+                window.globals.staticEntities[i].render(window.globals.gameContext, 500, delta);
             }
 
             // Render game-canvas's entities
             for (let i = 0; i < window.globals.entities.length; i++) {
-                window.globals.entities[i].render(window.globals.gameContext);
+                window.globals.entities[i].render(window.globals.gameContext, 500, delta);
             }
 
             // Request to run Game Loop again
