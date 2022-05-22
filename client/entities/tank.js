@@ -18,6 +18,9 @@ class Tank extends Entity {
 
         // Properties of this object
         this.clientID = clientID;
+        this.startPosition = { "x": 0, "y": 0 };
+        this.endPosition = { "x": 0, "y": 0 };
+
 
         // Variables used for rendering this object
         this.index = 0;
@@ -25,6 +28,9 @@ class Tank extends Entity {
         this.timeTracker = 0;
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
+
+        // TOD
+        this.t = 0;
 
 
         this.setupEventListeners();
@@ -35,8 +41,10 @@ class Tank extends Entity {
         let thiss = this;
         window.globals.clientSocket.on("update tank and turret", function (data) {
             if (thiss.clientID == data.clientID) {
-                thiss.position = thiss.updatedPosition;
-                thiss.updatedPosition = data.position;
+                thiss.startPosition = thiss.position;
+                thiss.endPosition = data.position;
+                ///
+                //thiss.t = 0;
 
                 //thiss.position = data.position;
                 thiss.angle = data.angle;
@@ -101,6 +109,9 @@ class Tank extends Entity {
 
     updateThis(keysDown, dt) {
         if (this.clientID == window.globals.clientSocket.id) {
+            // Lerp state
+            this.lerpMovement(this.lerp, this.startPosition, this.endPosition, dt, 500);
+
             // Client tells server up-arrow is pressed
             if (keysDown && keysDown.ArrowUp == true) {
                 window.globals.clientSocket.emit(
@@ -135,6 +146,25 @@ class Tank extends Entity {
             this.index = this.index % this.spriteSheetData.frames.length;
             this.timeTracker = 0;
         }
+    }
+
+    lerpMovement(lerpFunc, startPosition, endPosition, delta, lerpFactor) {
+        ///
+        this.t += delta / lerpFactor;
+        if (delta <= lerpFactor) {
+            // Do linear interpolation
+            this.position.x = lerpFunc(startPosition.x, endPosition.x, delta / lerpFactor);
+            this.position.y = lerpFunc(startPosition.y, endPosition.y, delta / lerpFactor);
+            console.log(this.position);
+        } else {
+            // Skip linear interpolation
+            this.position.x = endPosition.x;
+            this.position.y = endPosition.y;
+        }
+    }
+
+    lerp(start, end, time) {
+        return start * (1 - time) + end * time;
     }
 }
 
