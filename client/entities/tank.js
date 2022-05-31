@@ -29,25 +29,29 @@ class Tank extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
 
-        // TOD
-        this.t = 0;
-
+        // TODO:
+        this.timeSinceLastServerTick = 0;    // Milisecond
 
         this.setupEventListeners();
     }
 
     setupEventListeners() {
-        // Listen for updates event
+        // Listen for update (server tick)
         let thiss = this;
         window.globals.clientSocket.on("update tank and turret", function (data) {
             if (thiss.clientID == data.clientID) {
-                thiss.startPosition = thiss.position;
-                thiss.endPosition = data.position;
-                ///
-                //thiss.t = 0;
+                // Take by value not ref!
+                thiss.startPosition.x = thiss.position.x;
+                thiss.startPosition.y = thiss.position.y;
+                thiss.endPosition.x = data.position.x;
+                thiss.endPosition.y = data.position.y;
 
                 //thiss.position = data.position;
+
                 thiss.angle = data.angle;
+
+                // Reset
+                thiss.timeSinceLastServerTick = 0;
             }
         });
         window.globals.clientSocket.on("create tread mark", function (data) {
@@ -109,8 +113,8 @@ class Tank extends Entity {
 
     updateThis(keysDown, dt) {
         if (this.clientID == window.globals.clientSocket.id) {
-            // Lerp state
-            this.lerpMovement(this.lerp, this.startPosition, this.endPosition, dt, 500);
+            // Lerp 
+            this.lerpMovement(this.lerp, this.startPosition, this.endPosition, dt, window.globals.serverTickRate);
 
             // Client tells server up-arrow is pressed
             if (keysDown && keysDown.ArrowUp == true) {
@@ -148,14 +152,15 @@ class Tank extends Entity {
         }
     }
 
-    lerpMovement(lerpFunc, startPosition, endPosition, delta, lerpFactor) {
-        ///
-        this.t += delta / lerpFactor;
-        if (delta <= lerpFactor) {
+    lerpMovement(lerpFunc, startPosition, endPosition, delta, lerpDuration) {
+        //TODO
+
+        if (this.timeSinceLastServerTick < lerpDuration) {
             // Do linear interpolation
-            this.position.x = lerpFunc(startPosition.x, endPosition.x, delta / lerpFactor);
-            this.position.y = lerpFunc(startPosition.y, endPosition.y, delta / lerpFactor);
-            console.log(this.position);
+            this.position.x = lerpFunc(startPosition.x, endPosition.x, this.timeSinceLastServerTick / lerpDuration);
+            this.position.y = lerpFunc(startPosition.y, endPosition.y, this.timeSinceLastServerTick / lerpDuration);
+            this.timeSinceLastServerTick += delta;
+            console.log('this.startPosition')
         } else {
             // Skip linear interpolation
             this.position.x = endPosition.x;

@@ -44,7 +44,7 @@ global.staticEntities = [];
 // Variables
 var engine;
 var world;
-
+var tickRate = 1000 / 10;
 
 const Start = function () {
     // Create engine
@@ -90,7 +90,7 @@ const Start = function () {
             }
         }
         //*** Game Loop End ***//
-    }, 2000);
+    }, tickRate);
 }
 
 Start();

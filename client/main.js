@@ -31,6 +31,7 @@ addEventListener("load", function (e) {
         "./images_and_data/ground.png"
     ];
     window.globals.clientSocket = null;
+    window.globals.serverTickRate = 1000 / 10;     // Milisecond
 
     const setupKeyboardHandler = function (pressedArray) {
         // Listen for key pressed
@@ -134,6 +135,11 @@ addEventListener("load", function (e) {
             timeNow = timeStamp;
             delta = (timeNow - timeThen);
 
+            // Update game-canvas's entities
+            for (let i = 0; i < window.globals.entities.length; i++) {
+                window.globals.entities[i].update(window.globals.keysDown, delta);
+            }
+
             // Clear game-canvas
             window.globals.gameContext.clearRect(
                 0,
@@ -142,19 +148,14 @@ addEventListener("load", function (e) {
                 window.globals.gameCanvas.height
             );
 
-            // Update game-canvas's entities
-            for (let i = 0; i < window.globals.entities.length; i++) {
-                window.globals.entities[i].update(window.globals.keysDown, delta);
-            }
-
             // Render game-canvas's static entities
             for (let i = 0; i < window.globals.staticEntities.length; i++) {
-                window.globals.staticEntities[i].render(window.globals.gameContext, 500, delta);
+                window.globals.staticEntities[i].render(window.globals.gameContext, 1000, delta);
             }
 
             // Render game-canvas's entities
             for (let i = 0; i < window.globals.entities.length; i++) {
-                window.globals.entities[i].render(window.globals.gameContext, 500, delta);
+                window.globals.entities[i].render(window.globals.gameContext, 1000, delta);
             }
 
             // Request to run Game Loop again

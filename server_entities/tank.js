@@ -33,7 +33,7 @@ class Tank {
         // Properties of tank
         this.clientID = socket.id;
         this.socketServer = server;
-        this.maxSpeed = 200;
+        this.maxSpeed = 5;
         this.currentSpeed = 0;
         this.maxTurnSpeed = 0.01;
         this.currentTurnSpeed = 0;
@@ -77,7 +77,7 @@ class Tank {
         thiss.socket.on("move forward", function (data) {
             // Slowly increment speed
             if (thiss.currentSpeed < thiss.maxSpeed) {
-                thiss.currentSpeed += 50;
+                thiss.currentSpeed += 0.5;
             }
             // Prepare velocity vector
             let velocityX = Math.cos(thiss.body.angle) * thiss.currentSpeed;
@@ -126,7 +126,7 @@ class Tank {
         thiss.socket.on("move backward", function (data) {
             // Slowly increment speed
             if (thiss.currentSpeed < thiss.maxSpeed) {
-                thiss.currentSpeed += 50;
+                thiss.currentSpeed += 0.5;
             }
             // Prepare velocity vector
             let velocityX = Math.cos(thiss.body.angle) * -thiss.currentSpeed;
