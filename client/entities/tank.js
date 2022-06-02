@@ -20,6 +20,8 @@ class Tank extends Entity {
         this.clientID = clientID;
         this.startPosition = { "x": 0, "y": 0 };
         this.endPosition = { "x": 0, "y": 0 };
+        this.startAngle = 0; ///
+        this.endAngle = 0;
 
 
         // Variables used for rendering this object
@@ -29,8 +31,8 @@ class Tank extends Entity {
         this.spriteSheetData = ssData;
         this.spriteSheet = ss;
 
-        // TODO:
-        this.timeSinceLastServerTick = 0;    // Milisecond
+        this.timeSinceLastPositionTick = 0;    // Milisecond
+        this.timeSinceLastRotationTick = 0
 
         this.setupEventListeners();
     }
@@ -46,12 +48,12 @@ class Tank extends Entity {
                 thiss.endPosition.x = data.position.x;
                 thiss.endPosition.y = data.position.y;
 
-                //thiss.position = data.position;
+                thiss.startAngle = thiss.angle;
+                thiss.endAngle = data.angle;
 
-                thiss.angle = data.angle;
-
-                // Reset
-                thiss.timeSinceLastServerTick = 0;
+                // Reset time
+                thiss.timeSinceLastPositionTick = 0;
+                thiss.timeSinceLastRotationTick = 0;
             }
         });
         window.globals.clientSocket.on("create tread mark", function (data) {
@@ -112,10 +114,11 @@ class Tank extends Entity {
     }
 
     updateThis(keysDown, dt) {
-        if (this.clientID == window.globals.clientSocket.id) {
-            // Lerp 
-            this.lerpMovement(this.lerp, this.startPosition, this.endPosition, dt, window.globals.serverTickRate);
+        // Lerp position angle
+        this.lerpMovement(this.lerp, this.startPosition, this.endPosition, dt, window.globals.serverTickRate);
+        this.lerpRotation(this.lerp, this.startAngle, this.endAngle, dt, window.globals.serverTickRate);
 
+        if (this.clientID == window.globals.clientSocket.id) {
             // Client tells server up-arrow is pressed
             if (keysDown && keysDown.ArrowUp == true) {
                 window.globals.clientSocket.emit(
@@ -153,18 +156,26 @@ class Tank extends Entity {
     }
 
     lerpMovement(lerpFunc, startPosition, endPosition, delta, lerpDuration) {
-        //TODO
-
-        if (this.timeSinceLastServerTick < lerpDuration) {
+        if (this.timeSinceLastPositionTick < lerpDuration) {
             // Do linear interpolation
-            this.position.x = lerpFunc(startPosition.x, endPosition.x, this.timeSinceLastServerTick / lerpDuration);
-            this.position.y = lerpFunc(startPosition.y, endPosition.y, this.timeSinceLastServerTick / lerpDuration);
-            this.timeSinceLastServerTick += delta;
-            console.log('this.startPosition')
+            this.position.x = lerpFunc(startPosition.x, endPosition.x, this.timeSinceLastPositionTick / lerpDuration);
+            this.position.y = lerpFunc(startPosition.y, endPosition.y, this.timeSinceLastPositionTick / lerpDuration);
+            this.timeSinceLastPositionTick += delta;
         } else {
             // Skip linear interpolation
             this.position.x = endPosition.x;
             this.position.y = endPosition.y;
+        }
+    }
+
+    lerpRotation(lerpFunc, startAngle, endAngle, delta, lerpDuration) {
+        if (this.timeSinceLastRotationTick < lerpDuration) {
+            // Do linear interpolation
+            this.angle = lerpFunc(startAngle, endAngle, this.timeSinceLastRotationTick / lerpDuration);
+            this.timeSinceLastRotationTick += delta;
+        } else {
+            // Skip linear interpolation
+            this.angle = endAngle;
         }
     }
 
