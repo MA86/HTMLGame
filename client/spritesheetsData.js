@@ -1,7 +1,4 @@
-/** This file contains JSON data for *all* spritesheets.
- *  This file will be included in the <script> tag and 
- *  loaded by the browser. 
- */
+// Aggregator: this file contains JSON sprite data for *all* spritesheets.
 
 // Import JSONs
 import { mSixTankBodyData } from "./images_and_data/mSixTankBodyData.js";

@@ -1,10 +1,18 @@
 "use strict";
 
-import * as spriteSheetsData from "./spritesheetsData.js";
-import { Tank } from "./entities/tank.js";
-import { TerrainLayer } from "./entities/terrainlayer.js";
+//import * as spriteSheetsData from "./spritesheetsData.js";
+//import { Tank } from "./entities/tank.js";
+//import { TerrainLayer } from "./entities/terrainlayer.js";
+let TerrainLayer = null;
+let Tank = null;
+let spriteSheetsData = null;
 
-
+(async function () {
+    TerrainLayer = await import("./entities/terrainlayer.js");
+    TerrainLayer = TerrainLayer.TerrainLayer;
+    Tank = await import("./entities/tank.js").Tank;
+    spriteSheetsData = await import("./spritesheetsData.js");
+})();
 
 /*** On Window Load Event ***/
 addEventListener("load", function (e) {
