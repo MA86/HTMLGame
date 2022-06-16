@@ -3,19 +3,9 @@
 //import * as spriteSheetsData from "./spritesheetsData.js";
 //import { Tank } from "./entities/tank.js";
 //import { TerrainLayer } from "./entities/terrainlayer.js";
-let TerrainLayer = null;
-let Tank = null;
-let spriteSheetsData = null;
-
-(async function () {
-    TerrainLayer = await import("./entities/terrainlayer.js");
-    TerrainLayer = TerrainLayer.TerrainLayer;
-    Tank = await import("./entities/tank.js").Tank;
-    spriteSheetsData = await import("./spritesheetsData.js");
-})();
 
 /*** On Window Load Event ***/
-addEventListener("load", function (e) {
+window.addEventListener("load", function (e) {
     // Global Variables 
     window.globals = {};
     window.globals.bgCanvas = document.getElementById("bg-canvas");
@@ -25,6 +15,8 @@ addEventListener("load", function (e) {
     window.globals.uiCanvas = document.getElementById("ui-canvas");
     window.globals.uiContext = window.globals.uiCanvas.getContext("2d");
     window.globals.keysDown = {};
+    window.globals.spriteSheetsData = {};
+    window.globals.entityBlueprints = {};
     window.globals.images = {};
     window.globals.entities = [];
     window.globals.staticEntities = [];
@@ -79,12 +71,12 @@ addEventListener("load", function (e) {
         window.globals.uiCanvas.height = window.innerHeight;
 
         //TODO: create multiple terrian layers instead of one. Render the map
-        let testTerrain = new TerrainLayer(
+        let testTerrain = new window.globals.entityBlueprints.TerrainLayer(
             0, 0, null, 10, 10, window.globals.images["./images_and_data/ground.png"], 128, 8, 8
         );
-        testTerrain.setTiles(spriteSheetsData.oasis.layerOne);
+        testTerrain.setTiles(window.globals.spriteSheetsData.oasis.layerOne);
         testTerrain.renderThis(window.globals.bgContext);
-        testTerrain.setTiles(spriteSheetsData.oasis.layerTwo);
+        testTerrain.setTiles(window.globals.spriteSheetsData.oasis.layerTwo);
         testTerrain.renderThis(window.globals.bgContext);
 
         // Open a TCP/UDP socket connection to server
@@ -95,20 +87,20 @@ addEventListener("load", function (e) {
             // If entity doesn't exist already...
             if (!window.globals.clientIDs.includes(data.clientID)) {
                 // Create tank
-                let mSixTank = new Tank(
+                let mSixTank = new window.globals.entityBlueprints.Tank(
                     window.globals.images["./images_and_data/mSixTankBody.png"],
-                    spriteSheetsData.mSixTankBodyData,
+                    window.globals.spriteSheetsData.mSixTankBodyData,
                     0,
                     data.clientID,
                     {
                         "ss": window.globals.images,
-                        "ssData": spriteSheetsData,
+                        "ssData": window.globals.spriteSheetsData,
                         "fps": 0,
                         "clientID": data.clientID
                     },
                     {
                         "ss": window.globals.images["./images_and_data/shell.png"],
-                        "ssData": spriteSheetsData.shellData,
+                        "ssData": window.globals.spriteSheetsData.shellData,
                         "fps": 30,
                         "clientID": data.clientID
                     }
@@ -130,8 +122,6 @@ addEventListener("load", function (e) {
                 window.globals.clientIDs.splice(indexOfEntity, 1);
             }
         });
-
-        // PERFORMANCE TODO: Create a track canvas, draw static obj once on it. On remove obj, clear track canvas
 
         // Game Loop //
         var delta = 0;
@@ -172,8 +162,13 @@ addEventListener("load", function (e) {
         })();
     }
 
-        // Starting Point and Image Loading //
-        ; (function () {
+        // Self-Invoking Starting Point: Assets are loaded here //
+        ; (async function () {
+            // Download modules
+            window.globals.entityBlueprints = await import("./entityBlueprints.js");
+            window.globals.spriteSheetsData = await import("./spritesheetsData.js");
+
+            // Download sprites 
             let numImagesLoaded = 0;
             let numImagesRequested = window.globals.imagePaths.length;
             for (let i = 0; i < numImagesRequested; i++) {
