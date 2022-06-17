@@ -1,7 +1,4 @@
-import { Entity } from './entity.js';
-import { Shell } from './shell.js';
-
-class Turret extends Entity {
+class Turret extends window.globals.entityModule.Entity {
     constructor(ss, ssData, fps, clientID, shellParams) {
         super({ "x": 0, "y": 0 }, 0, true);
 
@@ -34,7 +31,7 @@ class Turret extends Entity {
         window.globals.clientSocket.on("create shell", function (data) {
             if (thiss.clientID == data.clientID) {
                 // Create new shell representation
-                thiss.firedShell = new Shell(
+                thiss.firedShell = new window.globals.shellModule.Shell(
                     thiss.shellParams.ss,
                     thiss.shellParams.ssData,
                     thiss.shellParams.fps,
@@ -97,7 +94,7 @@ class Turret extends Entity {
         let delay = 1 / this.framesPerSecond;
         if (this.timeTracker >= delay) {
             this.index += 1;
-            this.index = this.index % this.spriteSheetData.mSixTurretData.frames.length;
+            this.index = this.index % this.spriteSheetData.mSixTankTurretData.frames.length;
             this.timeTracker = 0;
         }
     }

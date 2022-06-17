@@ -108,7 +108,7 @@ socketServer.on("connection", function (socket) {
     // Tell clients to create entity representations
     for (let index = 0; index < entities.length; index++) {
         let entity = entities[index];
-        socketServer.emit("create entities", { "clientID": entity.clientID });
+        socketServer.emit("create player tank", { "clientID": entity.clientID });
     }
 
     // Trigger when client exits
@@ -123,7 +123,7 @@ socketServer.on("connection", function (socket) {
         entities.splice(indexOfDisconnectedClient, 1);
 
         // Remove entity from browsers
-        socketServer.emit("remove entities", { "clientID": socket.id });
+        socketServer.emit("remove player tank", { "clientID": socket.id });
     });
 });
 

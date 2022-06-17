@@ -1,6 +1,6 @@
 import { Entity } from './entity.js';
 
-class TerrainLayer extends Entity {
+class TerrainLayer extends window.globals.entityModule.Entity {
     constructor(pos, rot, parent, numCols, numRows, ssImage, tSize, numColsImage, numRowsImage,) {
         super(pos, rot, false);
         this.ssImage = ssImage;

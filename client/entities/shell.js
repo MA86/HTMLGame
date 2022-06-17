@@ -1,8 +1,4 @@
-import { Entity } from "./entity.js";
-import { Sprite } from "./sprite.js";
-import * as spriteSheetsData from "../spritesheetsData.js";
-
-class Shell extends Entity {
+class Shell extends window.globals.entityModule.Entity {
     constructor(ss, ssData, fps, clientID, sID) {
         super({ "x": 0, "y": 0 }, 0, false);
 
@@ -75,11 +71,11 @@ class Shell extends Entity {
         let thiss = this;
 
         // Play shell penetration animation one time
-        let shellPenetrationAnimation = new Sprite(
+        let shellPenetrationAnimation = new window.globals.spriteModule.Sprite(
             position,
             angle,
             window.globals.images["./images_and_data/hit.png"],
-            spriteSheetsData.hitData,
+            window.globals.spriteSheetsData.hitData,
             30,
             1,
             thiss.shellID,

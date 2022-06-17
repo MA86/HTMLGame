@@ -1,11 +1,7 @@
 "use strict";
 
-//import * as spriteSheetsData from "./spritesheetsData.js";
-//import { Tank } from "./entities/tank.js";
-//import { TerrainLayer } from "./entities/terrainlayer.js";
-
 /*** On Window Load Event ***/
-window.addEventListener("load", function (e) {
+window.addEventListener("load", async function (e) {
     // Global Variables 
     window.globals = {};
     window.globals.bgCanvas = document.getElementById("bg-canvas");
@@ -32,6 +28,16 @@ window.addEventListener("load", function (e) {
     ];
     window.globals.clientSocket = null;
     window.globals.serverTickRate = 1000 / 10;     // Milisecond
+
+    // Download modules in order  //TODO: handle reject error let user know
+    window.globals.spriteSheetsData = await import("./spritesheetsData.js");
+    window.globals.entityModule = await import("./entities/entity.js");
+    window.globals.terrainLayerModule = await import("./entities/terrainlayer.js");
+    window.globals.spriteModule = await import("./entities/sprite.js");
+    window.globals.staticObjectModule = await import("./entities/static_object.js");
+    window.globals.tankModule = await import("./entities/tank.js");
+    window.globals.turretModule = await import("./entities/turret.js");
+    window.globals.shellModule = await import("./entities/shell.js");
 
     const setupKeyboardHandler = function (pressedArray) {
         // Listen for key pressed
@@ -60,9 +66,7 @@ window.addEventListener("load", function (e) {
     }
 
     const Start = function () {
-        setupKeyboardHandler(window.globals.keysDown);
-
-        // UI, game, and background canvases match browser screen
+        // Turn canvases to fullscreen
         window.globals.bgCanvas.width = window.innerWidth;
         window.globals.bgCanvas.height = window.innerHeight;
         window.globals.gameCanvas.width = window.innerWidth;
@@ -70,8 +74,14 @@ window.addEventListener("load", function (e) {
         window.globals.uiCanvas.width = window.innerWidth;
         window.globals.uiCanvas.height = window.innerHeight;
 
-        //TODO: create multiple terrian layers instead of one. Render the map
-        let testTerrain = new window.globals.entityBlueprints.TerrainLayer(
+        // Open socket connection to server
+        window.globals.clientSocket = io();
+
+        // Listen for keyboard input
+        setupKeyboardHandler(window.globals.keysDown);
+
+        // Render map
+        let testTerrain = new window.globals.terrainLayerModule.TerrainLayer(
             0, 0, null, 10, 10, window.globals.images["./images_and_data/ground.png"], 128, 8, 8
         );
         testTerrain.setTiles(window.globals.spriteSheetsData.oasis.layerOne);
@@ -79,51 +89,50 @@ window.addEventListener("load", function (e) {
         testTerrain.setTiles(window.globals.spriteSheetsData.oasis.layerTwo);
         testTerrain.renderThis(window.globals.bgContext);
 
-        // Open a TCP/UDP socket connection to server
-        window.globals.clientSocket = io();
-
-        // Create entities when 'create entities' event is triggered
-        window.globals.clientSocket.on("create entities", function (data) {
-            // If entity doesn't exist already...
+        // On this server event, create player's tank
+        window.globals.clientSocket.on("create player tank", function (data) {
+            // If tank for this player isn't already created...
             if (!window.globals.clientIDs.includes(data.clientID)) {
                 // Create tank
-                let mSixTank = new window.globals.entityBlueprints.Tank(
+                let playerMSixTank = new window.globals.tankModule.Tank(
                     window.globals.images["./images_and_data/mSixTankBody.png"],
                     window.globals.spriteSheetsData.mSixTankBodyData,
-                    0,
+                    1,
                     data.clientID,
                     {
                         "ss": window.globals.images,
                         "ssData": window.globals.spriteSheetsData,
-                        "fps": 0,
+                        "fps": 1,
                         "clientID": data.clientID
                     },
                     {
                         "ss": window.globals.images["./images_and_data/shell.png"],
                         "ssData": window.globals.spriteSheetsData.shellData,
-                        "fps": 30,
+                        "fps": 1,
                         "clientID": data.clientID
                     }
                 );
-
-                // Add to list
-                window.globals.entities.push(mSixTank);
+                // Add tank to list
+                window.globals.entities.push(playerMSixTank);
                 window.globals.clientIDs.push(data.clientID);
             }
         });
 
-        // Remove entity when 'remove entities' event is triggered
-        window.globals.clientSocket.on("remove entities", function (data) {
+        // On this server event, remove player's tank
+        window.globals.clientSocket.on("remove player tank", function (data) {
+            // If tank for this player is in the list...
             if (window.globals.clientIDs.includes(data.clientID)) {
+                // Find tank ID
                 let indexOfEntity = window.globals.entities.map(function (obj) {
                     return obj.clientID;
                 }).indexOf(data.clientID);
+                // Remove tank from list
                 window.globals.entities.splice(indexOfEntity, 1);
                 window.globals.clientIDs.splice(indexOfEntity, 1);
             }
         });
 
-        // Game Loop //
+        // Client Loop //
         var delta = 0;
         var timeNow = 0;
         var timeThen = 0;
@@ -162,12 +171,8 @@ window.addEventListener("load", function (e) {
         })();
     }
 
-        // Self-Invoking Starting Point: Assets are loaded here //
-        ; (async function () {
-            // Download modules
-            window.globals.entityBlueprints = await import("./entityBlueprints.js");
-            window.globals.spriteSheetsData = await import("./spritesheetsData.js");
-
+        // Self-Invoking Starting Point: image assets loaded here
+        ; (function () {
             // Download sprites 
             let numImagesLoaded = 0;
             let numImagesRequested = window.globals.imagePaths.length;
@@ -179,7 +184,7 @@ window.addEventListener("load", function (e) {
                     window.globals.images[window.globals.imagePaths[i]] = image;
                     numImagesLoaded++;
                     if (numImagesLoaded == numImagesRequested) {
-                        // Start only when all images are loaded
+                        // Start when assets are loaded
                         Start();
                     }
                 }

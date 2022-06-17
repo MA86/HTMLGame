@@ -1,6 +1,6 @@
-import { Entity } from './entity.js';
+//import { Entity } from './entity.js';
 
-class Sprite extends Entity {
+class Sprite extends window.globals.entityModule.Entity {
     constructor(pos, rot, ss, ssData, framesPerSecond, repeatNum, id, parent = null) {
         super(pos, rot, parent);
 

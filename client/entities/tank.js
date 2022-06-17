@@ -1,13 +1,8 @@
-import { Entity } from './entity.js';
-import { StaticObject } from './static_object.js';
-import { Turret } from './turret.js';
-import * as spriteSheetsData from "../spritesheetsData.js";
-
-class Tank extends Entity {
+class Tank extends window.globals.entityModule.Entity {
     constructor(ss, ssData, fps, clientID, turretParams, shellParams) {
         super({ "x": 0, "y": 0 }, 0, false);
 
-        this.turret = new Turret(
+        this.turret = new window.globals.turretModule.Turret(
             turretParams.ss,
             turretParams.ssData,
             turretParams.fps,
@@ -58,11 +53,11 @@ class Tank extends Entity {
         });
         window.globals.clientSocket.on("create tread mark", function (data) {
             if (thiss.clientID == data.clientID) {
-                let treadMark = new StaticObject(
+                let treadMark = new window.globals.staticObjectModule.StaticObject(
                     data.position,
                     data.angle,
                     window.globals.images["./images_and_data/treadMark.png"],
-                    spriteSheetsData.treadMarkData,
+                    window.globals.spriteSheetsData.treadMarkData,
                     1,
                     data.clientID,
                     data.staticObjectID
