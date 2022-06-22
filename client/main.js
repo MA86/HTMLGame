@@ -29,7 +29,7 @@ window.addEventListener("load", async function (e) {
     window.globals.clientSocket = null;
     window.globals.serverTickRate = 1000 / 10;     // Milisecond
 
-    // Download modules in order  //TODO: handle reject error let user know
+    // Download modules in order  ///TODO: Handle reject error let user know
     window.globals.spriteSheetsData = await import("./spritesheetsData.js");
     window.globals.entityModule = await import("./entities/entity.js");
     window.globals.terrainLayerModule = await import("./entities/terrainlayer.js");

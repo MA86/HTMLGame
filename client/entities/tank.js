@@ -15,7 +15,7 @@ class Tank extends window.globals.entityModule.Entity {
         this.clientID = clientID;
         this.startPosition = { "x": 0, "y": 0 };
         this.endPosition = { "x": 0, "y": 0 };
-        this.startAngle = 0; ///
+        this.startAngle = 0;
         this.endAngle = 0;
 
 
@@ -51,6 +51,21 @@ class Tank extends window.globals.entityModule.Entity {
                 thiss.timeSinceLastRotationTick = 0;
             }
         });
+
+        ///start
+        // Listen for destroy tank event
+        window.globals.clientSocket.on("destroy tank", function (data) {
+            // Check if the message is for this tank...
+            if (thiss.clientID == data.clientID) {
+                // Play tank animation one time
+                thiss.animateTankPenetration(data.currentPosition, data.currentAngle);
+
+                // Remove tank from entities list
+                thiss.removeSelfFromList();
+            }
+        });
+        ///end
+
         window.globals.clientSocket.on("create tread mark", function (data) {
             if (thiss.clientID == data.clientID) {
                 let treadMark = new window.globals.staticObjectModule.StaticObject(
@@ -177,6 +192,37 @@ class Tank extends window.globals.entityModule.Entity {
     lerp(start, end, time) {
         return start * (1 - time) + end * time;
     }
+
+    ///start
+    animateTankPenetration(position, angle) {
+        let thiss = this;
+
+        // Play tank penetration animation one time
+        let tankPenetrationAnimation = new window.globals.spriteModule.Sprite(
+            position,
+            angle,
+            window.globals.images["./images_and_data/hit.png"],
+            window.globals.spriteSheetsData.hitData,
+            30,
+            1,
+            thiss.shellID,
+            null
+        );
+        window.globals.entities.push(tankPenetrationAnimation);
+    }
+
+    removeSelfFromList() {
+        let thiss = this;
+
+        // Find index of this shell and remove it from list
+        let indexOfTank = window.globals.entities.findIndex(function (obj) {
+            if (thiss.clientID == obj.clientID && thiss.shellID == obj.shellID) {
+                return true;
+            }
+        });
+        window.globals.entities.splice(indexOfTank, 1);
+    }
+    ///end
 }
 
 export { Tank };

@@ -56,7 +56,7 @@ class Shell {
     setupEventListeners() {
         let thiss = this;
 
-        // On engine's collisions report...
+        // On engine's collisions event...
         Events.on(thiss.engine, "collisionStart", function (event) {
             for (let index = 0; index < event.pairs.length; index++) {
                 const pair = event.pairs[index];

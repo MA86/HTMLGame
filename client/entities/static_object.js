@@ -1,6 +1,4 @@
-import { Entity } from "./entity.js";
-
-class StaticObject extends Entity {
+class StaticObject extends window.globals.entityModule.Entity {
     constructor(posVec, angle, ss, ssData, fps, clientID, id) {
         super({ "x": 0, "y": 0 }, 0, false);
 

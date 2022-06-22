@@ -1,5 +1,3 @@
-//import { Entity } from './entity.js';
-
 class Sprite extends window.globals.entityModule.Entity {
     constructor(pos, rot, ss, ssData, framesPerSecond, repeatNum, id, parent = null) {
         super(pos, rot, parent);
@@ -61,7 +59,7 @@ class Sprite extends window.globals.entityModule.Entity {
 
     removeSelfFromList() {
         let thiss = this;
-        let indexOfShell = window.globals.entities.findIndex(function (obj) {
+        let indexOfSprite = window.globals.entities.findIndex(function (obj) {
             // If it has shellID check by shellID, else check by clientID
             if ("shellID" in obj && thiss.id == obj.shellID) {
                 return true;
@@ -69,7 +67,7 @@ class Sprite extends window.globals.entityModule.Entity {
                 return true;
             }
         });
-        window.globals.entities.splice(indexOfShell, 1);
+        window.globals.entities.splice(indexOfSprite, 1);
     }
 }
 

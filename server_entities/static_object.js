@@ -27,7 +27,6 @@ class StaticObject {
         // Add static object to static list
         staticEntities.push(this);
 
-        // TODO: Remove (fade in client?) after 10 seconds
         this.removeSelf(time);
     }
 

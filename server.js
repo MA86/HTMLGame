@@ -22,7 +22,7 @@ httpHandler.use(express.static(__dirname + "/client"));
 
 // For GET request @ path "/", send index.html file
 httpHandler.get("/", function (req, res) {
-    res.sendFile(__dirname + "./client/index.html");
+    res.sendFile(__dirname + "/client/index.html");
 });
 
 // Aliases for Matter exports

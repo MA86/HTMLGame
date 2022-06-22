@@ -186,6 +186,67 @@ class Tank {
             }
             Body.setAngularVelocity(thiss.body, -thiss.currentTurnSpeed);
         });
+
+        ///begin
+        // On engine's collisions event // TODO PERFORMANCE: shell should tell tank to destroy! Logic in shell ONLY
+        Events.on(thiss.engine, "collisionStart", function (event) {
+            for (let index = 0; index < event.pairs.length; index++) {
+                const pair = event.pairs[index];
+
+                // If this tank and shell collided, remove tank from world
+                if (pair.bodyA.label == "shell" && pair.bodyB.label == "tank" && pair.bodyA.id == thiss.body.id) {
+                    // Tell clients to destroy this tank
+                    thiss.socketServer.emit(
+                        "destroy tank",
+                        {
+                            "clientID": thiss.clientID,
+                            "currentPosition": thiss.body.position,
+                            "currentAngle": thiss.body.angle
+                        }
+                    );
+
+                    // Remove this tank from entities list
+                    let indexOfTank = entities.findIndex(function (obj) {
+                        if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                            return true;
+                        }
+                    });
+                    entities.splice(indexOfTank, 1);
+
+                    // Remove this tank body from world
+                    Composite.remove(thiss.world, pair.bodyA);
+
+                    // Then, unsubscribe from engine's collision signal
+                    Events.off(thiss.engine);
+                }
+                if (pair.bodyB.label == "shell" && pair.bodyA.label == "tank" && pair.bodyB.id == thiss.body.id) {
+                    // Tell clients to destroy this tank
+                    thiss.socketServer.emit(
+                        "destroy tank",
+                        {
+                            "clientID": thiss.clientID,
+                            "currentPosition": thiss.body.position,
+                            "currentAngle": thiss.body.angle
+                        }
+                    );
+
+                    // Remove this tank from entities list
+                    let indexOfTank = entities.findIndex(function (obj) {
+                        if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                            return true;
+                        }
+                    });
+                    entities.splice(indexOfTank, 1);
+
+                    // Remove this tank body from world
+                    Composite.remove(thiss.world, pair.bodyB);
+
+                    // Then, unsubscribe from engine's collision signal
+                    Events.off(thiss.engine);
+                }
+            }
+        });
+        ///end
     }
 }
 
