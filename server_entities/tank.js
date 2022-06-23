@@ -16,7 +16,7 @@ class Tank {
         // Create a compound body representing tank
         this.body = Body.create({
             parts: [
-                Bodies.rectangle(initPos.x, initPos.y, 225, 100, { label: "tank" }),
+                Bodies.rectangle(initPos.x, initPos.y, 225, 100, { label: "hull" }),
                 this.turret.body
             ],
             collisionFilter: {
@@ -193,9 +193,11 @@ class Tank {
             for (let index = 0; index < event.pairs.length; index++) {
                 const pair = event.pairs[index];
 
-                // If this tank and shell collided, remove tank from world
-                if (pair.bodyA.label == "shell" && pair.bodyB.label == "tank" && pair.bodyA.id == thiss.body.id) {
+                console.log(thiss.body.parts[0].id)
+                // If hull and shell collid, remove tank from world
+                if (pair.bodyA.label == "hull" && pair.bodyB.label == "shell" && pair.bodyA.id == thiss.body.parts[0].id) {
                     // Tell clients to destroy this tank
+                    console.log("1st")
                     thiss.socketServer.emit(
                         "destroy tank",
                         {
@@ -207,7 +209,7 @@ class Tank {
 
                     // Remove this tank from entities list
                     let indexOfTank = entities.findIndex(function (obj) {
-                        if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                        if (obj.clientID == thiss.clientID) {
                             return true;
                         }
                     });
@@ -219,8 +221,9 @@ class Tank {
                     // Then, unsubscribe from engine's collision signal
                     Events.off(thiss.engine);
                 }
-                if (pair.bodyB.label == "shell" && pair.bodyA.label == "tank" && pair.bodyB.id == thiss.body.id) {
+                if (pair.bodyB.label == "hull" && pair.bodyA.label == "shell" && pair.bodyB.id == thiss.body.parts[0].id) {
                     // Tell clients to destroy this tank
+                    console.log("2nd")
                     thiss.socketServer.emit(
                         "destroy tank",
                         {
@@ -232,7 +235,7 @@ class Tank {
 
                     // Remove this tank from entities list
                     let indexOfTank = entities.findIndex(function (obj) {
-                        if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                        if (obj.clientID == thiss.clientID) {
                             return true;
                         }
                     });

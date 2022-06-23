@@ -216,7 +216,7 @@ class Tank extends window.globals.entityModule.Entity {
 
         // Find index of this shell and remove it from list
         let indexOfTank = window.globals.entities.findIndex(function (obj) {
-            if (thiss.clientID == obj.clientID && thiss.shellID == obj.shellID) {
+            if (thiss.clientID == obj.clientID) {
                 return true;
             }
         });

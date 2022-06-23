@@ -62,7 +62,7 @@ class Shell {
                 const pair = event.pairs[index];
 
                 // If this shell and tank collided, remove shell from world
-                if (pair.bodyA.label == "shell" && pair.bodyB.label == "tank" && pair.bodyA.id == thiss.body.id) {
+                if (pair.bodyA.label == "shell" && pair.bodyB.label == "hull" && pair.bodyA.id == thiss.body.id) {
                     // Tell clients to destroy shell
                     thiss.socketServer.emit(
                         "destroy shell",
@@ -88,7 +88,7 @@ class Shell {
                     // Then, unsubscribe from engine's collision signal
                     Events.off(thiss.engine);
                 }
-                if (pair.bodyB.label == "shell" && pair.bodyA.label == "tank" && pair.bodyB.id == thiss.body.id) {
+                if (pair.bodyB.label == "shell" && pair.bodyA.label == "hull" && pair.bodyB.id == thiss.body.id) {
                     // Tell clients to destroy shell
                     thiss.socketServer.emit(
                         "destroy shell",
