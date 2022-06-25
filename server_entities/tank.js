@@ -187,9 +187,8 @@ class Tank {
             Body.setAngularVelocity(thiss.body, -thiss.currentTurnSpeed);
         });
 
-        ///begin
         // On engine's collisions event // TODO PERFORMANCE: shell should tell tank to destroy! Logic in shell ONLY
-        Events.on(thiss.engine, "collisionStart", function (event) {
+        Events.on(thiss.engine, "collisionStart", function handleCollision(event) {
             for (let index = 0; index < event.pairs.length; index++) {
                 const pair = event.pairs[index];
 
@@ -205,9 +204,6 @@ class Tank {
                         }
                     );
 
-                    // Remove this tank body from world
-                    Composite.remove(thiss.world, thiss.body);
-
                     // Remove this tank from entities list
                     let indexOfTank = entities.findIndex(function (obj) {
                         if (obj.clientID == thiss.clientID) {
@@ -216,8 +212,11 @@ class Tank {
                     });
                     entities.splice(indexOfTank, 1);
 
+                    // Remove this tank body from world
+                    Composite.remove(thiss.world, thiss.body);
+
                     // Then, unsubscribe from engine's collision signal
-                    Events.off(thiss.engine);
+                    Events.off(thiss.engine, "collisionStart", handleCollision);
                 }
                 if (pair.bodyB.label == "hull" && pair.bodyA.label == "shell" && pair.bodyB.clientID == thiss.clientID) {
                     // Tell clients to destroy this tank
@@ -230,9 +229,6 @@ class Tank {
                         }
                     );
 
-                    // Remove this tank body from world
-                    Composite.remove(thiss.world, thiss.body);
-
                     // Remove this tank from entities list
                     let indexOfTank = entities.findIndex(function (obj) {
                         if (obj.clientID == thiss.clientID) {
@@ -241,12 +237,14 @@ class Tank {
                     });
                     entities.splice(indexOfTank, 1);
 
+                    // Remove this tank body from world
+                    Composite.remove(thiss.world, thiss.body);
+
                     // Then, unsubscribe from engine's collision signal
-                    Events.off(thiss.engine);
+                    Events.off(thiss.engine, "collisionStart", handleCollision);
                 }
             }
         });
-        ///end
     }
 }
 

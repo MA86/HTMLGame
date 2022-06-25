@@ -57,7 +57,7 @@ class Shell {
         let thiss = this;
 
         // On engine's collisions event...
-        Events.on(thiss.engine, "collisionStart", function (event) {
+        Events.on(thiss.engine, "collisionStart", function handleCollision(event) {
             for (let index = 0; index < event.pairs.length; index++) {
                 const pair = event.pairs[index];
 
@@ -83,10 +83,10 @@ class Shell {
                     entities.splice(indexOfShell, 1);
 
                     // Remove this shell body from world
-                    Composite.remove(thiss.world, pair.bodyA);
+                    Composite.remove(thiss.world, thiss.body);
 
                     // Then, unsubscribe from engine's collision signal
-                    Events.off(thiss.engine);
+                    Events.off(thiss.engine, "collisionStart", handleCollision);
                 }
                 if (pair.bodyB.label == "shell" && pair.bodyA.label == "hull" && pair.bodyB.id == thiss.body.id) {
                     // Tell clients to destroy shell
@@ -109,10 +109,10 @@ class Shell {
                     entities.splice(indexOfShell, 1);
 
                     // Remove this shell body from world
-                    Composite.remove(thiss.world, pair.bodyB);
+                    Composite.remove(thiss.world, thiss.body);
 
                     // Then, unsubscribe from engine's collision signal
-                    Events.off(thiss.engine);
+                    Events.off(thiss.engine, "collisionStart", handleCollision);
                 }
             }
         });

@@ -201,8 +201,8 @@ class Tank extends window.globals.entityModule.Entity {
         let tankPenetrationAnimation = new window.globals.spriteModule.Sprite(
             position,
             angle,
-            window.globals.images["./images_and_data/hit.png"],
-            window.globals.spriteSheetsData.hitData,
+            window.globals.images["./images_and_data/explosions.png"],
+            window.globals.spriteSheetsData.explosionsData,
             30,
             1,
             thiss.shellID,
