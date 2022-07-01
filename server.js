@@ -100,7 +100,7 @@ socketServer.on("connection", function (socket) {
     // Print client ID
     console.log("Client ", socket.id, " is connected");
 
-    // Prepare an entity for client
+    // Prepare a player for client
     let entity = new Tank({ "x": 0, "y": 0 }, world, socket, socketServer, null, engine);
     entities.push(entity);
     // TODO: send clients static list too.
@@ -121,6 +121,8 @@ socketServer.on("connection", function (socket) {
             return obj.clientID;
         }).indexOf(socket.id);
         entities.splice(indexOfDisconnectedClient, 1);
+
+        // TODO: Remove stuff from physics!
 
         // Remove entity from browsers
         socketServer.emit("remove player tank", { "clientID": socket.id });

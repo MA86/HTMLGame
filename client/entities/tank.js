@@ -13,6 +13,7 @@ class Tank extends window.globals.entityModule.Entity {
 
         // Properties of this object
         this.clientID = clientID;
+        this.isDestroyed = false;
         this.startPosition = { "x": 0, "y": 0 };
         this.endPosition = { "x": 0, "y": 0 };
         this.startAngle = 0;
@@ -52,19 +53,31 @@ class Tank extends window.globals.entityModule.Entity {
             }
         });
 
-        ///start
         // Listen for destroy tank event
         window.globals.clientSocket.on("destroy tank", function (data) {
-            // Check if the message is for this tank...
+            // Check which tank is the message for...
             if (thiss.clientID == data.clientID) {
+                // This tank is destroyed
+                thiss.isDestroyed = true;
+
                 // Play tank animation one time
                 thiss.animateTankPenetration(data.currentPosition, data.currentAngle);
 
                 // Remove tank from entities list
                 thiss.removeSelfFromList();
+
+                // If it's the playable tank
+                if (thiss.clientID == window.globals.clientSocket.id) {
+                    // Unsubscribe events
+                    removeEventListener("keyup", thiss.emitKeyUp);
+                    removeEventListener("keydown", window.globals.keyDownHandler);
+                    removeEventListener("keyup", window.globals.keyUpHandler);
+
+                    // Reset key list
+                    window.globals.keysDown = {};
+                }
             }
         });
-        ///end
 
         window.globals.clientSocket.on("create tread mark", function (data) {
             if (thiss.clientID == data.clientID) {
@@ -80,29 +93,8 @@ class Tank extends window.globals.entityModule.Entity {
             }
         });
 
-        // Listen for keys released 
-        addEventListener("keyup", function (key) {
-            if (key.code == "ArrowUp") {
-                window.globals.clientSocket.emit(
-                    "arrow up released", {}
-                );
-            }
-            if (key.code == "ArrowDown") {
-                window.globals.clientSocket.emit(
-                    "arrow down released", {}
-                );
-            }
-            if (key.code == "ArrowRight") {
-                window.globals.clientSocket.emit(
-                    "arrow right released", {}
-                );
-            }
-            if (key.code == "ArrowLeft") {
-                window.globals.clientSocket.emit(
-                    "arrow left released", {}
-                );
-            }
-        }, false);
+        // Communicate keyup event to server 
+        addEventListener("keyup", this.emitKeyUp, false);
     }
 
     renderThis(ctx) {
@@ -124,7 +116,7 @@ class Tank extends window.globals.entityModule.Entity {
     }
 
     updateThis(keysDown, dt) {
-        // Lerp position angle
+        // Lerp position and angle
         this.lerpMovement(this.lerp, this.startPosition, this.endPosition, dt, window.globals.serverTickRate);
         this.lerpRotation(this.lerp, this.startAngle, this.endAngle, dt, window.globals.serverTickRate);
 
@@ -193,7 +185,6 @@ class Tank extends window.globals.entityModule.Entity {
         return start * (1 - time) + end * time;
     }
 
-    ///start
     animateTankPenetration(position, angle) {
         let thiss = this;
 
@@ -222,7 +213,29 @@ class Tank extends window.globals.entityModule.Entity {
         });
         window.globals.entities.splice(indexOfTank, 1);
     }
-    ///end
+
+    emitKeyUp(key) {
+        if (key.code == "ArrowUp") {
+            window.globals.clientSocket.emit(
+                "arrow up released", {}
+            );
+        }
+        if (key.code == "ArrowDown") {
+            window.globals.clientSocket.emit(
+                "arrow down released", {}
+            );
+        }
+        if (key.code == "ArrowRight") {
+            window.globals.clientSocket.emit(
+                "arrow right released", {}
+            );
+        }
+        if (key.code == "ArrowLeft") {
+            window.globals.clientSocket.emit(
+                "arrow left released", {}
+            );
+        }
+    }
 }
 
 export { Tank };

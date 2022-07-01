@@ -28,6 +28,8 @@ window.addEventListener("load", async function (e) {
     ];
     window.globals.clientSocket = null;
     window.globals.serverTickRate = 1000 / 10;     // Milisecond
+    window.globals.keyUpHandler = null;
+    window.globals.keyDownHandler = null;
 
     // Download modules in order  ///TODO: Handle reject error let user know
     window.globals.spriteSheetsData = await import("./spritesheetsData.js");
@@ -39,30 +41,34 @@ window.addEventListener("load", async function (e) {
     window.globals.turretModule = await import("./entities/turret.js");
     window.globals.shellModule = await import("./entities/shell.js");
 
-    const setupKeyboardHandler = function (pressedArray) {
+    window.globals.keyDownHandler = function (key) {
+        // Add key to pressed array
+        window.globals.keysDown[key.code] = true;
+        // Prevent default key behavior
+        switch (key.code) {
+            case "ArrowUp":
+            case "ArrowDown":
+            case "ArrowLeft":
+            case "ArrowRight":
+            case "Space":
+                key.preventDefault();
+                break;
+            default:
+                break;
+        }
+    }
+
+    window.globals.keyUpHandler = function (key) {
+        // Key is no longer 'pressed'
+        delete window.globals.keysDown[key.code];
+    }
+
+    const setupKeyboardHandler = function () {
         // Listen for key pressed
-        addEventListener("keydown", function (key) {
-            // Add key to pressed array
-            pressedArray[key.code] = true;
-            // Prevent default key behavior
-            switch (key.code) {
-                case "ArrowUp":
-                case "ArrowDown":
-                case "ArrowLeft":
-                case "ArrowRight":
-                case "Space":
-                    key.preventDefault();
-                    break;
-                default:
-                    break;
-            }
-        }, false);
+        addEventListener("keydown", window.globals.keyDownHandler, false);
 
         // Listen for key released
-        addEventListener("keyup", function (key) {
-            // Key is no longer 'pressed'
-            delete pressedArray[key.code];
-        }, false);
+        addEventListener("keyup", window.globals.keyUpHandler, false);
     }
 
     const Start = function () {
@@ -78,7 +84,7 @@ window.addEventListener("load", async function (e) {
         window.globals.clientSocket = io();
 
         // Listen for keyboard input
-        setupKeyboardHandler(window.globals.keysDown);
+        setupKeyboardHandler();
 
         // Render map
         let testTerrain = new window.globals.terrainLayerModule.TerrainLayer(

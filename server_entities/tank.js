@@ -246,6 +246,10 @@ class Tank {
             }
         });
     }
+
+    deleteTank() {
+        //TODO: called by server.js on disconnect
+    }
 }
 
 module.exports = { Tank };
