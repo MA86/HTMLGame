@@ -228,9 +228,7 @@ class Tank {
     cleanupSelf(engineListener) {
         let thiss = this;
         // Cleanup child turret
-        thiss.turret.cleanupSelf();
-
-        console.log("pass");
+        // Nothing to clean up yet
 
         // Remove tank from entities list
         let indexOfTank = entities.findIndex(function (obj) {

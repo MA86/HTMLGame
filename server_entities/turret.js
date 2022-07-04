@@ -100,6 +100,11 @@ class Turret {
             thiss.readyToFire = true;
         }, time);
     }
+
+    cleanupSelf(engineListener) {
+        // Nothing to clean up yet
+        // Tank parent will remove all listeners
+    }
 }
 
 module.exports = { Turret };
