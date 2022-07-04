@@ -116,16 +116,20 @@ socketServer.on("connection", function (socket) {
         // Print client ID
         console.log("Client ", socket.id, " is disconnected");
 
-        // Remove entity from server
-        let indexOfDisconnectedClient = entities.map(function (obj) {
-            return obj.clientID;
-        }).indexOf(socket.id);
+        // Cleanup and remove playable-tank
+        let indexOfDisconnectedClient = entities.findIndex(function (obj) {
+            if (obj.clientID == socket.id) {
+                return true;
+            }
+        });
+        entities[indexOfDisconnectedClient].cleanupSelf();
         entities.splice(indexOfDisconnectedClient, 1);
 
-        // TODO: Remove stuff from physics!
-
-        // Remove entity from browsers
+        // Tell clients to remove this entity as well
         socketServer.emit("remove player tank", { "clientID": socket.id });
+
+        // Close connection
+        socket.disconnect();
     });
 });
 
