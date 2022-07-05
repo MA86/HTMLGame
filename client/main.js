@@ -96,7 +96,7 @@ window.addEventListener("load", async function (e) {
         testTerrain.renderThis(window.globals.bgContext);
 
         // On this server event, create player's tank
-        window.globals.clientSocket.on("create player tank", function (data) {
+        window.globals.clientSocket.on("client connected", function (data) {
             // If tank for this player isn't already created...
             if (!window.globals.clientIDs.includes(data.clientID)) {
                 // Create tank
@@ -124,17 +124,21 @@ window.addEventListener("load", async function (e) {
             }
         });
 
-        // On this server event, remove player's tank
-        window.globals.clientSocket.on("remove player tank", function (data) {
+        // When client disconnects...
+        window.globals.clientSocket.on("client disconnected", function (data) {
             // If tank for this player is in the list...
             if (window.globals.clientIDs.includes(data.clientID)) {
                 // Find tank ID
                 let indexOfEntity = window.globals.entities.map(function (obj) {
                     return obj.clientID;
                 }).indexOf(data.clientID);
+
+                // Delete tank 
+                window.globals.entities[indexOfEntity].cleanupSelf();
+
                 // Remove tank from list
-                window.globals.entities.splice(indexOfEntity, 1);
-                window.globals.clientIDs.splice(indexOfEntity, 1);
+                //window.globals.entities.splice(indexOfEntity, 1);
+                // window.globals.clientIDs.splice(indexOfEntity, 1);
             }
         });
 

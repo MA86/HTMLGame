@@ -22,6 +22,7 @@ class Turret extends window.globals.entityModule.Entity {
         // Listen for update
         let thiss = this;
         window.globals.clientSocket.on("update tank and turret", function (data) {
+            // Update if it's this turret
             if (thiss.clientID == data.clientID) {
                 thiss.angle = data.turretAngle;
             }

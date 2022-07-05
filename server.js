@@ -105,10 +105,12 @@ socketServer.on("connection", function (socket) {
     entities.push(entity);
     // TODO: send clients static list too.
     // when new client enters, load shells on his screen too!
+
+    // TODO: send them start screen!
     // Tell clients to create entity representations
     for (let index = 0; index < entities.length; index++) {
         let entity = entities[index];
-        socketServer.emit("create player tank", { "clientID": entity.clientID });
+        socketServer.emit("client connected", { "clientID": entity.clientID });
     }
 
     // Trigger when client exits
@@ -126,7 +128,7 @@ socketServer.on("connection", function (socket) {
         entities.splice(indexOfDisconnectedClient, 1);
 
         // Tell clients to remove this entity as well
-        socketServer.emit("remove player tank", { "clientID": socket.id });
+        socketServer.emit("client disconnected", { "clientID": socket.id });
 
         // Close connection
         socket.disconnect();

@@ -13,7 +13,6 @@ class Tank extends window.globals.entityModule.Entity {
 
         // Properties of this object
         this.clientID = clientID;
-        this.isDestroyed = false;
         this.startPosition = { "x": 0, "y": 0 };
         this.endPosition = { "x": 0, "y": 0 };
         this.startAngle = 0;
@@ -57,25 +56,11 @@ class Tank extends window.globals.entityModule.Entity {
         window.globals.clientSocket.on("destroy tank", function (data) {
             // Check which tank is the message for...
             if (thiss.clientID == data.clientID) {
-                // This tank is destroyed
-                thiss.isDestroyed = true;
-
                 // Play tank animation one time
                 thiss.animateTankPenetration(data.currentPosition, data.currentAngle);
 
-                // Remove tank from entities list
-                thiss.removeSelfFromList();
-
-                // If it's the playable tank
-                if (thiss.clientID == window.globals.clientSocket.id) {
-                    // Unsubscribe events
-                    removeEventListener("keyup", thiss.emitKeyUp);
-                    removeEventListener("keydown", window.globals.keyDownHandler);
-                    removeEventListener("keyup", window.globals.keyUpHandler);
-
-                    // Reset key list
-                    window.globals.keysDown = {};
-                }
+                // Remove tank from entities list and clientIDs list
+                thiss.cleanupSelf();
             }
         });
 
@@ -202,7 +187,7 @@ class Tank extends window.globals.entityModule.Entity {
         window.globals.entities.push(tankPenetrationAnimation);
     }
 
-    removeSelfFromList() {
+    cleanupSelf() {
         let thiss = this;
 
         // Find index of this shell and remove it from list
@@ -212,6 +197,21 @@ class Tank extends window.globals.entityModule.Entity {
             }
         });
         window.globals.entities.splice(indexOfTank, 1);
+        window.globals.clientIDs.splice(indexOfEntity, 1);
+
+        // Delete child turret
+        delete thiss.turret;
+
+        // If it's the playable tank
+        if (thiss.clientID == window.globals.clientSocket.id) {
+            // Unsubscribe events
+            removeEventListener("keyup", thiss.emitKeyUp);
+            removeEventListener("keydown", window.globals.keyDownHandler);
+            removeEventListener("keyup", window.globals.keyUpHandler);
+
+            // Reset key list
+            window.globals.keysDown = {};
+        }
     }
 
     emitKeyUp(key) {
