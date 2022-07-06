@@ -36,6 +36,7 @@ class Tank extends window.globals.entityModule.Entity {
         // Listen for update (server tick)
         let thiss = this;
         window.globals.clientSocket.on("update tank and turret", function (data) {
+            // Check which tank is the message for...
             if (thiss.clientID == data.clientID) {
                 // Take by value not ref!
                 thiss.startPosition.x = thiss.position.x;
@@ -190,17 +191,15 @@ class Tank extends window.globals.entityModule.Entity {
     cleanupSelf() {
         let thiss = this;
 
-        // Find index of this shell and remove it from list
+        // Find index of this tank and remove it from list
         let indexOfTank = window.globals.entities.findIndex(function (obj) {
             if (thiss.clientID == obj.clientID) {
                 return true;
             }
         });
+        // Remove tank and remove client
         window.globals.entities.splice(indexOfTank, 1);
-        window.globals.clientIDs.splice(indexOfEntity, 1);
-
-        // Delete child turret
-        delete thiss.turret;
+        window.globals.clientIDs.splice(indexOfTank, 1);
 
         // If it's the playable tank
         if (thiss.clientID == window.globals.clientSocket.id) {

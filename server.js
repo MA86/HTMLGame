@@ -56,7 +56,7 @@ const Start = function () {
 
     world = engine.world;
 
-    setInterval(function () {
+    setInterval(function loop() {
         //*** Game Loop Start ***//
         Engine.update(engine, 1000 / 60);
 
@@ -95,26 +95,26 @@ const Start = function () {
 
 Start();
 
-// Trigger when a new client opens TCP/UDP socket
-socketServer.on("connection", function (socket) {
+// Server trigers onConnect() when a new client opens TCP socket connection
+socketServer.on("connection", function onConnect(socket) {
     // Print client ID
     console.log("Client ", socket.id, " is connected");
 
-    // Prepare a player for client
+    // Create a playable-tank for this client
     let entity = new Tank({ "x": 0, "y": 0 }, world, socket, socketServer, null, engine);
     entities.push(entity);
     // TODO: send clients static list too.
-    // when new client enters, load shells on his screen too!
-
+    // TODO: when new client enters, load shells on his screen too!
     // TODO: send them start screen!
-    // Tell clients to create entity representations
+
+    // Tell all clients to create tank representations
     for (let index = 0; index < entities.length; index++) {
         let entity = entities[index];
         socketServer.emit("client connected", { "clientID": entity.clientID });
     }
 
     // Trigger when client exits
-    socket.on("disconnect", () => {
+    socket.on("disconnect", function onDisconnect() {
         // Print client ID
         console.log("Client ", socket.id, " is disconnected");
 
@@ -125,13 +125,9 @@ socketServer.on("connection", function (socket) {
             }
         });
         entities[indexOfDisconnectedClient].cleanupSelf();
-        entities.splice(indexOfDisconnectedClient, 1);
 
         // Tell clients to remove this entity as well
         socketServer.emit("client disconnected", { "clientID": socket.id });
-
-        // Close connection
-        socket.disconnect();
     });
 });
 

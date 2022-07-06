@@ -80,8 +80,8 @@ window.addEventListener("load", async function (e) {
         window.globals.uiCanvas.width = window.innerWidth;
         window.globals.uiCanvas.height = window.innerHeight;
 
-        // Open socket connection to server
-        window.globals.clientSocket = io();
+        // Open socket connection to server and stop using HTTP polling
+        window.globals.clientSocket = io({ transports: ['websocket'], upgrade: false });
 
         // Listen for keyboard input
         setupKeyboardHandler();
@@ -95,12 +95,12 @@ window.addEventListener("load", async function (e) {
         testTerrain.setTiles(window.globals.spriteSheetsData.oasis.layerTwo);
         testTerrain.renderThis(window.globals.bgContext);
 
-        // On this server event, create player's tank
+        // When client connects...
         window.globals.clientSocket.on("client connected", function (data) {
-            // If tank for this player isn't already created...
+            // If tank for this client isn't already created...
             if (!window.globals.clientIDs.includes(data.clientID)) {
                 // Create tank
-                let playerMSixTank = new window.globals.tankModule.Tank(
+                let mSixTank = new window.globals.tankModule.Tank(
                     window.globals.images["./images_and_data/mSixTankBody.png"],
                     window.globals.spriteSheetsData.mSixTankBodyData,
                     1,
@@ -118,27 +118,26 @@ window.addEventListener("load", async function (e) {
                         "clientID": data.clientID
                     }
                 );
-                // Add tank to list
-                window.globals.entities.push(playerMSixTank);
+                // Add tank to entities list and client to client list
+                window.globals.entities.push(mSixTank);
                 window.globals.clientIDs.push(data.clientID);
             }
         });
 
         // When client disconnects...
         window.globals.clientSocket.on("client disconnected", function (data) {
-            // If tank for this player is in the list...
+            console.log("jdsldf")
+            // Active clients removes this tank...
             if (window.globals.clientIDs.includes(data.clientID)) {
-                // Find tank ID
-                let indexOfEntity = window.globals.entities.map(function (obj) {
-                    return obj.clientID;
-                }).indexOf(data.clientID);
+                // Find index of this tank and remove it from list
+                let indexOfTank = window.globals.entities.findIndex(function (obj) {
+                    if (obj.clientID == data.clientID && obj instanceof window.globals.tankModule.Tank) {
+                        return true;
+                    }
+                });
 
                 // Delete tank 
-                window.globals.entities[indexOfEntity].cleanupSelf();
-
-                // Remove tank from list
-                //window.globals.entities.splice(indexOfEntity, 1);
-                // window.globals.clientIDs.splice(indexOfEntity, 1);
+                window.globals.entities[indexOfTank].cleanupSelf();
             }
         });
 
