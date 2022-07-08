@@ -187,12 +187,11 @@ class Tank {
             Body.setAngularVelocity(thiss.body, -thiss.currentTurnSpeed);
         });
 
-        // On collision... // TODO PERFORMANCE: shell should tell tank to destroy! Logic in shell ONLY
         Events.on(thiss.engine, "collisionStart", function handleCollision(event) {
             for (let index = 0; index < event.pairs.length; index++) {
                 const pair = event.pairs[index];
-
-                // If hull and shell collide, remove tank from world
+                console.log(thiss.clientID)
+                // If this hull and any shell collide, remove tank from world
                 if (pair.bodyA.label == "hull" && pair.bodyB.label == "shell" && pair.bodyA.clientID == thiss.clientID) {
                     // Tell clients to destroy this tank
                     thiss.socketServer.emit(
@@ -203,6 +202,8 @@ class Tank {
                             "currentAngle": thiss.body.angle
                         }
                     );
+
+
 
                     // Clean up
                     thiss.cleanupSelf(handleCollision);
@@ -218,6 +219,8 @@ class Tank {
                         }
                     );
 
+                    console.log(thiss.clientID)
+
                     // Clean up
                     thiss.cleanupSelf(handleCollision);
                 }
@@ -230,15 +233,15 @@ class Tank {
         // Cleanup child turret
         // Nothing to clean up yet
 
-        // Remove tank from entities list
+        // Remove this tank from entities list
         let indexOfTank = entities.findIndex(function (obj) {
-            if (obj.clientID == thiss.clientID) {
+            if (obj instanceof Tank && obj.clientID == thiss.clientID) {
                 return true;
             }
         });
         entities.splice(indexOfTank, 1);
 
-        // Remove body from physics world
+        // Remove this body from physics world
         Composite.remove(thiss.world, thiss.body);
 
         // Unsubscribe from events of this socket connection

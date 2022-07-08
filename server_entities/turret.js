@@ -54,7 +54,7 @@ class Turret {
                 let fdx = Math.cos(thiss.body.angle + thiss.tank.body.angle);
                 let fdy = Math.sin(thiss.body.angle + thiss.tank.body.angle);
 
-                // Increment shellID and create a shell
+                // Create a shell
                 thiss.firedShell = new Shell(
                     { "x": thiss.body.position.x, "y": thiss.body.position.y },
                     thiss.world,

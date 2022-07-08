@@ -182,8 +182,9 @@ class Tank extends window.globals.entityModule.Entity {
             window.globals.spriteSheetsData.explosionsData,
             30,
             1,
-            thiss.shellID,
-            null
+            thiss.clientID,
+            null,
+            thiss.clientID
         );
         window.globals.entities.push(tankPenetrationAnimation);
     }
@@ -193,7 +194,7 @@ class Tank extends window.globals.entityModule.Entity {
 
         // Find index of this tank and remove it from list
         let indexOfTank = window.globals.entities.findIndex(function (obj) {
-            if (thiss.clientID == obj.clientID) {
+            if (obj instanceof Tank && thiss.clientID == obj.clientID) {
                 return true;
             }
         });

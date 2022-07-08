@@ -46,7 +46,7 @@ class StaticObject {
 
                 // Remove this tread marks from entities list
                 let indexOfStaticObject = staticEntities.findIndex(function (obj) {
-                    if ("staticObjectID" in obj && obj.staticObjectID == thiss.staticObjectID) {
+                    if (obj instanceof StaticObject && obj.staticObjectID == thiss.staticObjectID) {
                         return true;
                     }
                 });

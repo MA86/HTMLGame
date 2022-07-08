@@ -11,6 +11,7 @@ class Shell {
             collisionFilter: {
                 group: -1
             },
+            clientID: clientID,
             isStatic: false,
             isSensor: true,
             label: "shell"
@@ -18,7 +19,7 @@ class Shell {
 
         // Properties of shell
         this.clientID = clientID;
-        this.shellID = shellID++;
+        this.shellID = this.body.id;///
         this.engine = eng;
         this.world = world;
         this.socketServer = server;
@@ -76,7 +77,7 @@ class Shell {
 
                     // Remove this shell from entities list
                     let indexOfShell = entities.findIndex(function (obj) {
-                        if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                        if (obj instanceof Shell && obj.shellID == thiss.shellID) {
                             return true;
                         }
                     });
@@ -102,7 +103,7 @@ class Shell {
 
                     // Remove this shell from entities list
                     let indexOfShell = entities.findIndex(function (obj) {
-                        if ("shellID" in obj && obj.shellID == thiss.shellID) {
+                        if (obj instanceof Shell && obj.shellID == thiss.shellID) {
                             return true;
                         }
                     });

@@ -70,7 +70,7 @@ const Start = function () {
                         "update shell",
                         {
                             "clientID": entity.clientID,
-                            "shellID": entity.shellID,
+                            "shellID": entity.shellID,///
                             "position": entity.body.position,
                             "angle": entity.body.angle,
                         }
@@ -118,9 +118,9 @@ socketServer.on("connection", function onConnect(socket) {
         // Print client ID
         console.log("Client ", socket.id, " is disconnected");
 
-        // Cleanup and remove playable-tank
+        // Cleanup and remove this client's connection
         let indexOfDisconnectedClient = entities.findIndex(function (obj) {
-            if (obj.clientID == socket.id) {
+            if (obj instanceof Tank && obj.clientID == socket.id) {
                 return true;
             }
         });

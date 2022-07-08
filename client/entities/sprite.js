@@ -1,5 +1,5 @@
 class Sprite extends window.globals.entityModule.Entity {
-    constructor(pos, rot, ss, ssData, framesPerSecond, repeatNum, id, parent = null) {
+    constructor(pos, rot, ss, ssData, framesPerSecond, repeatNum, id, parent = null, clientID) {
         super(pos, rot, parent);
 
         // Variables used for rendering
@@ -13,7 +13,8 @@ class Sprite extends window.globals.entityModule.Entity {
         this.resize = 2;
         // Properties
         this.parent = parent;
-        this.id = id;
+        this.clientID = clientID;///
+        this.animationID = id;///
     }
     renderThis(ctx) {
         let frameCenter = {
@@ -60,10 +61,7 @@ class Sprite extends window.globals.entityModule.Entity {
     removeSelfFromList() {
         let thiss = this;
         let indexOfSprite = window.globals.entities.findIndex(function (obj) {
-            // If it has shellID check by shellID, else check by clientID
-            if ("shellID" in obj && thiss.id == obj.shellID) {
-                return true;
-            } else if (thiss.id == obj.clientID) {
+            if (obj instanceof Sprite && thiss.animationID == obj.animationID) {
                 return true;
             }
         });

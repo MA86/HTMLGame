@@ -79,7 +79,8 @@ class Shell extends window.globals.entityModule.Entity {
             30,
             1,
             thiss.shellID,
-            null
+            null,
+            thiss.clientID
         );
         window.globals.entities.push(shellPenetrationAnimation);
     }
@@ -89,7 +90,7 @@ class Shell extends window.globals.entityModule.Entity {
 
         // Find index of this shell and remove it from list
         let indexOfShell = window.globals.entities.findIndex(function (obj) {
-            if (thiss.clientID == obj.clientID && thiss.shellID == obj.shellID) {
+            if (obj instanceof Shell && thiss.shellID == obj.shellID) {
                 return true;
             }
         });
