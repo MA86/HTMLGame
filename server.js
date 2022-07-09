@@ -106,10 +106,11 @@ socketServer.on("connection", function onConnect(socket) {
     // TODO: send clients static list too.
     // TODO: when new client enters, load shells on his screen too!
     // TODO: send them start screen!
-
     // Tell all clients to create tank representations
     for (let index = 0; index < entities.length; index++) {
         let entity = entities[index];
+        console.log(entity.clientID)
+
         socketServer.emit("client connected", { "clientID": entity.clientID });
     }
 
@@ -124,10 +125,11 @@ socketServer.on("connection", function onConnect(socket) {
                 return true;
             }
         });
+        console.log(entities[indexOfDisconnectedClient].clientID);
         entities[indexOfDisconnectedClient].cleanupSelf();
 
         // Tell clients to remove this entity as well
-        socketServer.emit("client disconnected", { "clientID": socket.id });
+        socket.broadcast.emit("client disconnected", { "clientID": socket.id });
     });
 });
 

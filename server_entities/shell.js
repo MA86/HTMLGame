@@ -9,7 +9,7 @@ class Shell {
     constructor(initPos, world, clientID, posVec, angle, forceVec, options, eng, server) {
         this.body = Bodies.rectangle(initPos.x, initPos.y, 20, 4, {
             collisionFilter: {
-                group: -1
+                group: 1
             },
             clientID: clientID,
             isStatic: false,
@@ -87,7 +87,7 @@ class Shell {
                     Composite.remove(thiss.world, thiss.body);
 
                     // Then, unsubscribe from engine's collision signal
-                    Events.off(thiss.engine, "collisionStart", handleCollision);
+                    ///Events.off(thiss.engine, "collisionStart", handleCollision);
                 }
                 if (pair.bodyB.label == "shell" && pair.bodyA.label == "hull" && pair.bodyB.id == thiss.body.id) {
                     // Tell clients to destroy shell
@@ -113,7 +113,7 @@ class Shell {
                     Composite.remove(thiss.world, thiss.body);
 
                     // Then, unsubscribe from engine's collision signal
-                    Events.off(thiss.engine, "collisionStart", handleCollision);
+                    ///Events.off(thiss.engine, "collisionStart", handleCollision);
                 }
             }
         });
