@@ -190,11 +190,7 @@ class Tank {
         Events.on(thiss.engine, "collisionStart", function handleCollision(event) {
             for (let index = 0; index < event.pairs.length; index++) {
                 const pair = event.pairs[index];
-                console.log(pair.bodyA.label);
-                console.log(pair.bodyA.clientID);
-                console.log(thiss.clientID);
-                console.log(pair.bodyB.label);
-                console.log(pair.bodyB.clientID);
+
                 // If this hull and any shell collide, remove tank from world
                 if (pair.bodyA.label == "hull" && pair.bodyB.label == "shell" && pair.bodyA.clientID == thiss.clientID) {
                     // Tell clients to destroy this tank
@@ -207,8 +203,13 @@ class Tank {
                         }
                     );
 
-                    /// Clean up
-                    //thiss.cleanupSelf(handleCollision);
+                    // Remove this body from physics world
+                    Composite.remove(thiss.world, thiss.body, true);
+
+                    // Unsubscribe from events of this socket connection
+                    thiss.socket.removeAllListeners();
+
+                    Events.off(thiss.engine, "collisionStart", handleCollision);
 
                     // Remove this tank from entities list
                     let indexOfTank = entities.findIndex(function (obj) {
@@ -217,14 +218,6 @@ class Tank {
                         }
                     });
                     entities.splice(indexOfTank, 1);
-
-                    // Remove this body from physics world
-                    Composite.remove(thiss.world, thiss.body);
-
-                    // Unsubscribe from events of this socket connection
-                    thiss.socket.removeAllListeners();
-                    console.log(handleCollision);
-                    Events.off(thiss.engine, "collisionStart", handleCollision);
                 }
                 if (pair.bodyB.label == "hull" && pair.bodyA.label == "shell" && pair.bodyB.clientID == thiss.clientID) {
                     // Tell clients to destroy this tank
@@ -237,8 +230,14 @@ class Tank {
                         }
                     );
 
-                    /// Clean up
-                    //thiss.cleanupSelf(handleCollision);
+                    // Remove this body from physics world
+                    Composite.remove(thiss.world, thiss.body, true);
+
+                    // Unsubscribe from events of this socket connection
+                    thiss.socket.removeAllListeners();
+
+                    Events.off(thiss.engine, "collisionStart", handleCollision);
+
                     // Remove this tank from entities list
                     let indexOfTank = entities.findIndex(function (obj) {
                         if (obj instanceof Tank && obj.clientID == thiss.clientID) {
@@ -246,14 +245,6 @@ class Tank {
                         }
                     });
                     entities.splice(indexOfTank, 1);
-
-                    // Remove this body from physics world
-                    Composite.remove(thiss.world, thiss.body);
-
-                    // Unsubscribe from events of this socket connection
-                    thiss.socket.removeAllListeners();
-
-                    Events.off(thiss.engine, "collisionStart", handleCollision);
                 }
             }
         });
@@ -268,10 +259,10 @@ class Tank {
         thiss.socket.removeAllListeners();
 
         // Unsubscribe from other events
-        Events.off(thiss.engine, "collisionStart");
+        //Events.off(thiss.engine, "collisionStart", thiss.calback);
 
         // Remove this body from physics world
-        Composite.remove(thiss.world, thiss.body);
+        Composite.remove(thiss.world, thiss.body, true);
 
         // Remove this tank from entities list
         let indexOfTank = entities.findIndex(function (obj) {

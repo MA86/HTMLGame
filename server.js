@@ -109,11 +109,11 @@ socketServer.on("connection", function onConnect(socket) {
     // Tell all clients to create tank representations
     for (let index = 0; index < entities.length; index++) {
         let entity = entities[index];
-        console.log(entity.clientID)
 
         socketServer.emit("client connected", { "clientID": entity.clientID });
     }
-
+    ///
+    console.log(entities.length);
     // Trigger when client exits
     socket.on("disconnect", function onDisconnect() {
         // Print client ID
@@ -125,7 +125,7 @@ socketServer.on("connection", function onConnect(socket) {
                 return true;
             }
         });
-        console.log(entities[indexOfDisconnectedClient].clientID);
+        console.log(entities.length);
         entities[indexOfDisconnectedClient].cleanupSelf();
 
         // Tell clients to remove this entity as well
