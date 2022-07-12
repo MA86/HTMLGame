@@ -36,7 +36,6 @@ const Runner = Matter.Runner;         // Optional game loop (Auto updates Engine
 const Events = Matter.Events;
 
 // Global variables
-global.shellID = 0;
 global.staticObjectID = 0;
 global.entities = [];
 global.staticEntities = [];
@@ -112,8 +111,7 @@ socketServer.on("connection", function onConnect(socket) {
 
         socketServer.emit("client connected", { "clientID": entity.clientID });
     }
-    ///
-    console.log(entities.length);
+
     // Trigger when client exits
     socket.on("disconnect", function onDisconnect() {
         // Print client ID
@@ -125,11 +123,13 @@ socketServer.on("connection", function onConnect(socket) {
                 return true;
             }
         });
-        console.log(entities.length);
+
+        console.log(entities[indexOfDisconnectedClient].clientID);///
+        Events.off(engine, "collisionStart", entities[indexOfDisconnectedClient].handleCollision);
         entities[indexOfDisconnectedClient].cleanupSelf();
 
         // Tell clients to remove this entity as well
-        socket.broadcast.emit("client disconnected", { "clientID": socket.id });
+        socketServer.emit("client disconnected", { "clientID": socket.id });
     });
 });
 

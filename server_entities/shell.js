@@ -87,7 +87,7 @@ class Shell {
                     Composite.remove(thiss.world, thiss.body);
 
                     // Then, unsubscribe from engine's collision signal
-                    ///Events.off(thiss.engine, "collisionStart", handleCollision);
+                    Events.off(thiss.engine, "collisionStart", handleCollision);
                 }
                 if (pair.bodyB.label == "shell" && pair.bodyA.label == "hull" && pair.bodyB.id == thiss.body.id) {
                     // Tell clients to destroy shell
@@ -113,7 +113,7 @@ class Shell {
                     Composite.remove(thiss.world, thiss.body);
 
                     // Then, unsubscribe from engine's collision signal
-                    ///Events.off(thiss.engine, "collisionStart", handleCollision);
+                    Events.off(thiss.engine, "collisionStart", handleCollision);
                 }
             }
         });
