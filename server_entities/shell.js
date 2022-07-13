@@ -17,6 +17,11 @@ class Shell {
             label: "shell"
         });
 
+        // Bind this object to its functions
+        this.setupEventListeners = this.setupEventListeners.bind(this);
+        this.handleCollision = this.handleCollision.bind(this);
+        this.cleanupSelf = this.cleanupSelf.bind(this);
+
         // Properties of shell
         this.clientID = clientID;
         this.shellID = this.body.id;///
@@ -58,65 +63,88 @@ class Shell {
         let thiss = this;
 
         // On engine's collisions event...
-        Events.on(thiss.engine, "collisionStart", function handleCollision(event) {
-            for (let index = 0; index < event.pairs.length; index++) {
-                const pair = event.pairs[index];
+        Events.on(thiss.engine, "collisionStart", thiss.handleCollision);
+    }
 
-                // If this shell and tank collided, remove shell from world
-                if (pair.bodyA.label == "shell" && pair.bodyB.label == "hull" && pair.bodyA.id == thiss.body.id) {
-                    // Tell clients to destroy shell
-                    thiss.socketServer.emit(
-                        "destroy shell",
-                        {
-                            "clientID": thiss.clientID,
-                            "shellID": thiss.shellID,
-                            "currentPosition": thiss.body.position,
-                            "currentAngle": thiss.body.angle
-                        }
-                    );
+    handleCollision(event) {
+        let thiss = this;
 
-                    // Remove this shell from entities list
-                    let indexOfShell = entities.findIndex(function (obj) {
-                        if (obj instanceof Shell && obj.shellID == thiss.shellID) {
-                            return true;
-                        }
-                    });
-                    entities.splice(indexOfShell, 1);
+        for (let index = 0; index < event.pairs.length; index++) {
+            const pair = event.pairs[index];
 
-                    // Remove this shell body from world
-                    Composite.remove(thiss.world, thiss.body);
+            // If this shell and tank collided, delete shell
+            if (pair.bodyA.label == "shell" && pair.bodyB.label == "hull" && pair.bodyA.id == thiss.shellID) {
+                // Tell clients to destroy this shell
+                thiss.socketServer.emit(
+                    "destroy shell",
+                    {
+                        "clientID": thiss.clientID,
+                        "shellID": thiss.shellID,
+                        "currentPosition": thiss.body.position,
+                        "currentAngle": thiss.body.angle
+                    }
+                );
 
-                    // Then, unsubscribe from engine's collision signal
-                    Events.off(thiss.engine, "collisionStart", handleCollision);
-                }
-                if (pair.bodyB.label == "shell" && pair.bodyA.label == "hull" && pair.bodyB.id == thiss.body.id) {
-                    // Tell clients to destroy shell
-                    thiss.socketServer.emit(
-                        "destroy shell",
-                        {
-                            "clientID": thiss.clientID,
-                            "shellID": thiss.shellID,
-                            "currentPosition": thiss.body.position,
-                            "currentAngle": thiss.body.angle
-                        }
-                    );
+                // Remove this shell from entities list
+                let indexOfShell = entities.findIndex(function (obj) {
+                    if (obj instanceof Shell && obj.shellID == thiss.shellID) {
+                        return true;
+                    }
+                });
+                entities.splice(indexOfShell, 1);
 
-                    // Remove this shell from entities list
-                    let indexOfShell = entities.findIndex(function (obj) {
-                        if (obj instanceof Shell && obj.shellID == thiss.shellID) {
-                            return true;
-                        }
-                    });
-                    entities.splice(indexOfShell, 1);
+                // Remove this shell body from world
+                Composite.remove(thiss.world, thiss.body, true);
 
-                    // Remove this shell body from world
-                    Composite.remove(thiss.world, thiss.body);
+                // Lose references to important objects
+                delete thiss.body;
 
-                    // Then, unsubscribe from engine's collision signal
-                    Events.off(thiss.engine, "collisionStart", handleCollision);
-                }
+                // Then, unsubscribe from engine's collision signal
+                Events.off(thiss.engine, "collisionStart", thiss.handleCollision);
             }
-        });
+            if (pair.bodyB.label == "shell" && pair.bodyA.label == "hull" && pair.bodyB.id == thiss.shellID) {
+                // Tell clients to destroy this shell
+                thiss.socketServer.emit(
+                    "destroy shell",
+                    {
+                        "clientID": thiss.clientID,
+                        "shellID": thiss.shellID,
+                        "currentPosition": thiss.body.position,
+                        "currentAngle": thiss.body.angle
+                    }
+                );
+
+                // Remove this shell from entities list
+                let indexOfShell = entities.findIndex(function (obj) {
+                    if (obj instanceof Shell && obj.shellID == thiss.shellID) {
+                        return true;
+                    }
+                });
+                entities.splice(indexOfShell, 1);
+
+                // Remove this shell body from world
+                Composite.remove(thiss.world, thiss.body, true);
+
+                // Lose references to important objects
+                delete thiss.body;
+
+                // Then, unsubscribe from engine's collision signal
+                Events.off(thiss.engine, "collisionStart", thiss.handleCollision);
+            }
+        }
+    }
+
+    cleanupSelf() {
+        let thiss = this;
+
+        // Remove this body from physics world
+        Composite.remove(thiss.world, thiss.body, true);
+
+        // Lose reference to important properties
+        delete thiss.body;
+
+        // Unsubscribe from other events
+        Events.off(thiss.engine, "collisionStart", thiss.handleCollision);
     }
 }
 

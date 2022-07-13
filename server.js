@@ -117,16 +117,27 @@ socketServer.on("connection", function onConnect(socket) {
         // Print client ID
         console.log("Client ", socket.id, " is disconnected");
 
-        // Cleanup and remove this client's connection
-        let indexOfDisconnectedClient = entities.findIndex(function (obj) {
+        /*
+        // Find and delete tank belonging to this client
+        let indexOfDisconnectedTank = entities.findIndex(function (obj) {
             if (obj instanceof Tank && obj.clientID == socket.id) {
                 return true;
             }
         });
+        entities[indexOfDisconnectedTank].cleanupSelf();
+        */
 
-        console.log(entities[indexOfDisconnectedClient].clientID);///
-        Events.off(engine, "collisionStart", entities[indexOfDisconnectedClient].handleCollision);
-        entities[indexOfDisconnectedClient].cleanupSelf();
+        // Find and delete all of shells belonging to this client
+        entities.slice().forEach(function (obj, index) {
+            if (obj instanceof Tank && obj.clientID == socket.id) {
+                entities[index].cleanupSelf();
+                entities.splice(index, 1);
+            }
+            if (obj instanceof Shell && obj.clientID == socket.id) {
+                entities[index].cleanupSelf();
+                entities.splice(index, 1);
+            }
+        });
 
         // Tell clients to remove this entity as well
         socketServer.emit("client disconnected", { "clientID": socket.id });

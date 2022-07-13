@@ -29,8 +29,10 @@ class Tank {
             friction: 0.6,
             frictionStatic: 10,
         });
-        ///TEST
+        // Bind this object to its functions
+        this.setupEventListeners = this.setupEventListeners.bind(this);
         this.handleCollision = this.handleCollision.bind(this);
+        this.cleanupSelf = this.cleanupSelf.bind(this);
 
         // Properties of tank
         this.clientID = socket.id;
@@ -197,9 +199,6 @@ class Tank {
 
     handleCollision(event) {
         let thiss = this;
-        //thiss.calback = handleCollision;///
-        ///
-        console.log(event.pairs.bodyA + " pass");///
 
         for (let index = 0; index < event.pairs.length; index++) {
             const pair = event.pairs[index];
@@ -272,7 +271,7 @@ class Tank {
 
         // Unsubscribe from events of this socket connection
         thiss.socket.removeAllListeners();
-
+        /*
         // Remove this tank from entities list
         let indexOfTank = entities.findIndex(function (obj) {
             if (obj instanceof Tank && obj.clientID == thiss.clientID) {
@@ -280,9 +279,10 @@ class Tank {
             }
         });
         entities.splice(indexOfTank, 1);
+        */
 
         // Unsubscribe from other events
-        //Events.off(thiss.engine, "collisionStart", thiss.handleCollision);
+        Events.off(thiss.engine, "collisionStart", thiss.handleCollision);
     }
 }
 
