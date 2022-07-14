@@ -97,11 +97,7 @@ window.addEventListener("load", async function (e) {
 
         // When client connects...
         window.globals.clientSocket.on("create client", function (data) {
-            ///
-            window.globals.entities = [];
-            window.globals.clientIDs = [];
-
-            // If a tank for this client isn't already created...
+            // If a rep for this client isn't already created...
             if (!window.globals.clientIDs.includes(data.clientID)) {
                 // Create tank
                 let mSixTank = new window.globals.tankModule.Tank(
@@ -129,7 +125,7 @@ window.addEventListener("load", async function (e) {
         });
 
         // When client disconnects...
-        window.globals.clientSocket.on("client disconnected", function (data) {
+        window.globals.clientSocket.on("delete client", function (data) {
             // Clients remove this tank...
             if (window.globals.clientIDs.includes(data.clientID)) {
                 // Find and delete all shells belonging to this client

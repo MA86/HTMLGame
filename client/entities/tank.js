@@ -18,6 +18,11 @@ class Tank extends window.globals.entityModule.Entity {
         this.startAngle = 0;
         this.endAngle = 0;
 
+        // Bind this object to its functions
+        this.setupEventListeners = this.setupEventListeners.bind(this);
+        this.handleCollision = this.handleCollision.bind(this);
+        this.cleanupSelf = this.cleanupSelf.bind(this);
+
         // Variables used for rendering this object
         this.index = 0;
         this.framesPerSecond = fps;

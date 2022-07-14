@@ -107,29 +107,32 @@ socketServer.on("connection", function onConnect(socket) {
     // TODO: send clients static list too.
     // TODO: when new client enters, load shells on his screen too!
     // TODO: send them start screen!
-    // For every tank in the entities list, emit create client message
+    // For every item in the entities list, broadcast message to connected clients to create items
     entities.forEach(function (item, index, arr) {
-        socketServer.emit("create client", { "clientID": entity.clientID });
+        if (item instanceof Tank) {
+            socketServer.emit("create client", { "clientID": item.clientID });
+        }
     });
-    for (let index = 0; index < entities.length; index++) {
-        let entity = entities[index];
 
-        socketServer.emit("create client", { "clientID": entity.clientID });
-    }
+    entities.forEach(function (item, index, arr) {
+        if (item instanceof Shell) {
+            socketServer.emit("create shell", { "clientID": item.clientID, "shellID": item.shellID });
+        }
+    });
 
-    // Trigger when client exits
+    // When this socket disconnects...
     socket.on("disconnect", function onDisconnect() {
-        // Print client ID
+        // Print this client's socket.id
         console.log("Client ", socket.id, " is disconnected");
 
-        // Find and delete tank and all shells belonging to this client
+        // Broadcast message to connected clients to delete items associated with this client
         entities.slice().reverse().forEach(function (item, index, arr) {
-            if (item instanceof Tank && item.clientID == socket.id) {
+            if (item.clientID == socket.id) {
                 entities[arr.length - 1 - index].cleanupSelf();
                 entities.splice(arr.length - 1 - index, 1);
 
                 // Tell clients to remove this entity as well
-                socketServer.emit("client disconnected", { "clientID": socket.id });
+                socketServer.emit("delete client", { "clientID": item.clientID });
             }
         });
         /* TODO: Auto destroy shell like treads
