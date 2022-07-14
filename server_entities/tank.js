@@ -202,10 +202,21 @@ class Tank {
 
         for (let index = 0; index < event.pairs.length; index++) {
             const pair = event.pairs[index];
-
             // If this hull and any shell collide, remove tank from world
             if (pair.bodyA.label == "hull" && pair.bodyB.label == "shell" && pair.bodyA.clientID == thiss.clientID) {
-                // Tell clients to destroy this tank
+                // Remove this tank from entities list, so is update not sent
+                let indexOfTank = entities.findIndex(function (obj) {
+                    if (obj instanceof Tank && obj.clientID == thiss.clientID) {
+                        return true;
+                    }
+                });
+                entities.splice(indexOfTank, 1);
+
+                // Cleanup child turret
+                thiss.turret.cleanupSelf();
+                delete thiss.turret;
+
+                // Broadcast to clients to destroy this tank
                 thiss.socketServer.emit(
                     "destroy tank",
                     {
@@ -215,24 +226,28 @@ class Tank {
                     }
                 );
 
+                // Unsubscribe from events of this socket connection, so no messages received
+                //thiss.socket.removeAllListeners();
+
                 // Remove this body from physics world
                 Composite.remove(thiss.world, thiss.body, true);
-
-                // Unsubscribe from events of this socket connection
-                thiss.socket.removeAllListeners();
-
-                // Remove this tank from entities list
-                let indexOfTank = entities.findIndex(function (obj) {
-                    if (obj instanceof Tank && obj.clientID == thiss.clientID) {
-                        return true;
-                    }
-                });
-                entities.splice(indexOfTank, 1);
 
                 Events.off(thiss.engine, "collisionStart", thiss.handleCollision);
             }
             if (pair.bodyB.label == "hull" && pair.bodyA.label == "shell" && pair.bodyB.clientID == thiss.clientID) {
-                // Tell clients to destroy this tank
+                // Remove this tank from entities list
+                let indexOfTank = entities.findIndex(function (obj) {
+                    if (obj instanceof Tank && obj.clientID == thiss.clientID) {
+                        return true;
+                    }
+                });
+                entities.splice(indexOfTank, 1);
+
+                // Cleanup child turret
+                thiss.turret.cleanupSelf();
+                delete thiss.turret;
+
+                // Broadcast to clients to destroy this tank
                 thiss.socketServer.emit(
                     "destroy tank",
                     {
@@ -242,19 +257,11 @@ class Tank {
                     }
                 );
 
+                // Unsubscribe from events of this socket connection
+                //thiss.socket.removeAllListeners();
+
                 // Remove this body from physics world
                 Composite.remove(thiss.world, thiss.body, true);
-
-                // Unsubscribe from events of this socket connection
-                thiss.socket.removeAllListeners();
-
-                // Remove this tank from entities list
-                let indexOfTank = entities.findIndex(function (obj) {
-                    if (obj instanceof Tank && obj.clientID == thiss.clientID) {
-                        return true;
-                    }
-                });
-                entities.splice(indexOfTank, 1);
 
                 Events.off(thiss.engine, "collisionStart", thiss.handleCollision);
             }
@@ -264,13 +271,14 @@ class Tank {
     cleanupSelf() {
         let thiss = this;
         // Cleanup child turret
-        // Nothing to clean up yet
+        thiss.turret.cleanupSelf();
+        delete thiss.turret;
 
         // Remove this body from physics world
         Composite.remove(thiss.world, thiss.body, true);
 
         // Unsubscribe from events of this socket connection
-        thiss.socket.removeAllListeners();
+        //thiss.socket.removeAllListeners();
         /*
         // Remove this tank from entities list
         let indexOfTank = entities.findIndex(function (obj) {

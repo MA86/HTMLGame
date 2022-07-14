@@ -65,6 +65,7 @@ const Start = function () {
 
                 // Update clients
                 if (entity instanceof Shell) {
+                    console.log(entity.clientID + " Shell")///
                     socketServer.emit(
                         "update shell",
                         {
@@ -76,6 +77,7 @@ const Start = function () {
                     );
                 }
                 if (entity instanceof Tank) {
+                    console.log(entity.clientID + " Tank")///
                     socketServer.emit(
                         "update tank and turret",
                         {
@@ -94,22 +96,25 @@ const Start = function () {
 
 Start();
 
-// Server trigers onConnect() when a new client opens TCP socket connection
+// When a new client connects to server...
 socketServer.on("connection", function onConnect(socket) {
-    // Print client ID
+    // Print this client ID
     console.log("Client ", socket.id, " is connected");
 
-    // Create a playable-tank for this client
+    // Create a new tank for this client, add it to entities list
     let entity = new Tank({ "x": 0, "y": 0 }, world, socket, socketServer, null, engine);
     entities.push(entity);
     // TODO: send clients static list too.
     // TODO: when new client enters, load shells on his screen too!
     // TODO: send them start screen!
-    // Tell all clients to create tank representations
+    // For every tank in the entities list, emit create client message
+    entities.forEach(function (item, index, arr) {
+        socketServer.emit("create client", { "clientID": entity.clientID });
+    });
     for (let index = 0; index < entities.length; index++) {
         let entity = entities[index];
 
-        socketServer.emit("client connected", { "clientID": entity.clientID });
+        socketServer.emit("create client", { "clientID": entity.clientID });
     }
 
     // Trigger when client exits
@@ -117,30 +122,24 @@ socketServer.on("connection", function onConnect(socket) {
         // Print client ID
         console.log("Client ", socket.id, " is disconnected");
 
-        /*
-        // Find and delete tank belonging to this client
-        let indexOfDisconnectedTank = entities.findIndex(function (obj) {
-            if (obj instanceof Tank && obj.clientID == socket.id) {
-                return true;
+        // Find and delete tank and all shells belonging to this client
+        entities.slice().reverse().forEach(function (item, index, arr) {
+            if (item instanceof Tank && item.clientID == socket.id) {
+                entities[arr.length - 1 - index].cleanupSelf();
+                entities.splice(arr.length - 1 - index, 1);
+
+                // Tell clients to remove this entity as well
+                socketServer.emit("client disconnected", { "clientID": socket.id });
             }
         });
-        entities[indexOfDisconnectedTank].cleanupSelf();
+        /* TODO: Auto destroy shell like treads
+        entities.slice().reverse().forEach(function (item, index, arr) {
+            if (item instanceof Shell && item.clientID == socket.id) {
+                entities[arr.length - 1 - index].cleanupSelf();
+                entities.splice(arr.length - 1 - index, 1);
+            }
+        });
         */
-
-        // Find and delete all of shells belonging to this client
-        entities.slice().forEach(function (obj, index) {
-            if (obj instanceof Tank && obj.clientID == socket.id) {
-                entities[index].cleanupSelf();
-                entities.splice(index, 1);
-            }
-            if (obj instanceof Shell && obj.clientID == socket.id) {
-                entities[index].cleanupSelf();
-                entities.splice(index, 1);
-            }
-        });
-
-        // Tell clients to remove this entity as well
-        socketServer.emit("client disconnected", { "clientID": socket.id });
     });
 });
 

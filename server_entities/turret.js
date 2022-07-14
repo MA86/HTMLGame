@@ -11,6 +11,11 @@ class Turret {
             isSensor: true,     // Inactivate physics
         });
 
+        // Bind this object to its functions
+        this.setupEventListeners = this.setupEventListeners.bind(this);
+        this.setLoadTime = this.setLoadTime.bind(this);
+        this.cleanupSelf = this.cleanupSelf.bind(this);
+
         // Properties of turret
         this.clientID = socket.id;
         this.socketServer = server;
@@ -101,9 +106,10 @@ class Turret {
         }, time);
     }
 
-    cleanupSelf(engineListener) {
-        // Nothing to clean up yet
-        // Tank parent will remove all listeners
+    cleanupSelf() {
+        let thiss = this;
+
+        delete thiss.tank;
     }
 }
 

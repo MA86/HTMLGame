@@ -99,6 +99,10 @@ class Turret extends window.globals.entityModule.Entity {
             this.timeTracker = 0;
         }
     }
+
+    cleanupSelf() {
+        // Does nothing yet
+    }
 }
 
 export { Turret };

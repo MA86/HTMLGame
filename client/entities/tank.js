@@ -18,7 +18,6 @@ class Tank extends window.globals.entityModule.Entity {
         this.startAngle = 0;
         this.endAngle = 0;
 
-
         // Variables used for rendering this object
         this.index = 0;
         this.framesPerSecond = fps;
@@ -60,8 +59,17 @@ class Tank extends window.globals.entityModule.Entity {
                 // Play tank animation one time
                 thiss.animateTankPenetration(data.currentPosition, data.currentAngle);
 
-                // Remove tank from entities list and clientIDs list
-                thiss.cleanupSelf();
+                // Find and delete this tank from lists
+                window.globals.entities.slice().reverse().forEach(function (item, index, arr) {
+                    if (item instanceof Tank && item.clientID == thiss.clientID) {
+                        window.globals.entities.splice(arr.length - 1 - index, 1);
+
+                        let indexOfClient = window.globals.clientIDs.indexOf(thiss.clientID);
+                        window.globals.clientIDs.splice(indexOfClient, 1);
+
+                        thiss.cleanupSelf();
+                    }
+                });
             }
         });
 
@@ -191,25 +199,26 @@ class Tank extends window.globals.entityModule.Entity {
 
     cleanupSelf() {
         let thiss = this;
-
+        /*
         // Find index of this tank and remove it from list
         let indexOfTank = window.globals.entities.findIndex(function (obj) {
             if (obj instanceof Tank && thiss.clientID == obj.clientID) {
                 return true;
             }
         });
-        // Remove tank and remove client
+        // Remove client and associated tank
         window.globals.entities.splice(indexOfTank, 1);
         window.globals.clientIDs.splice(indexOfTank, 1);
+        */
 
-        // If it's the playable tank
+        // If it is the playable tank, disable input
         if (thiss.clientID == window.globals.clientSocket.id) {
-            // Unsubscribe events
+            // Unsubscribe from input events
             removeEventListener("keyup", thiss.emitKeyUp);
             removeEventListener("keydown", window.globals.keyDownHandler);
             removeEventListener("keyup", window.globals.keyUpHandler);
 
-            // Reset key list
+            // Reset key container
             window.globals.keysDown = {};
         }
     }

@@ -96,8 +96,12 @@ window.addEventListener("load", async function (e) {
         testTerrain.renderThis(window.globals.bgContext);
 
         // When client connects...
-        window.globals.clientSocket.on("client connected", function (data) {
-            // If tank for this client isn't already created...
+        window.globals.clientSocket.on("create client", function (data) {
+            ///
+            window.globals.entities = [];
+            window.globals.clientIDs = [];
+
+            // If a tank for this client isn't already created...
             if (!window.globals.clientIDs.includes(data.clientID)) {
                 // Create tank
                 let mSixTank = new window.globals.tankModule.Tank(
@@ -126,18 +130,27 @@ window.addEventListener("load", async function (e) {
 
         // When client disconnects...
         window.globals.clientSocket.on("client disconnected", function (data) {
-            console.log("jdsldf")
-            // Active clients removes this tank...
+            // Clients remove this tank...
             if (window.globals.clientIDs.includes(data.clientID)) {
-                // Find index of this tank and remove it from list
-                let indexOfTank = window.globals.entities.findIndex(function (obj) {
-                    if (obj.clientID == data.clientID && obj instanceof window.globals.tankModule.Tank) {
-                        return true;
+                // Find and delete all shells belonging to this client
+                window.globals.entities.slice().reverse().forEach(function (item, index, arr) {
+                    if (item instanceof window.globals.tankModule.Tank && item.clientID == data.clientID) {
+                        window.globals.entities[arr.length - 1 - index].cleanupSelf();
+                        window.globals.entities.splice(arr.length - 1 - index, 1);
+
+                        // Find and delete clientID
+                        let indexOfClient = window.globals.clientIDs.indexOf(data.clientID);
+                        window.globals.clientIDs.splice(indexOfClient, 1);
                     }
                 });
-
-                // Delete tank 
-                window.globals.entities[indexOfTank].cleanupSelf();
+                /*
+                //TODO: delete shell automaticall after certain time like threads.
+                window.globals.entities.slice().reverse().forEach(function (item, index, arr) {
+                    if (item instanceof window.globals.shellModule.Shell && item.clientID == data.clientID) {
+                        window.globals.entities.splice(arr.length - 1 - index, 1);
+                    }
+                });
+                */
             }
         });
 
