@@ -126,28 +126,37 @@ window.addEventListener("load", async function (e) {
 
         // When client disconnects...
         window.globals.clientSocket.on("delete client", function (data) {
-            // Clients remove this tank...
-            if (window.globals.clientIDs.includes(data.clientID)) {
-                // Find and delete all shells belonging to this client
-                window.globals.entities.slice().reverse().forEach(function (item, index, arr) {
-                    if (item instanceof window.globals.tankModule.Tank && item.clientID == data.clientID) {
-                        window.globals.entities[arr.length - 1 - index].cleanupSelf();
-                        window.globals.entities.splice(arr.length - 1 - index, 1);
+            // Find and delete all shells belonging to this client
+            window.globals.entities.slice().reverse().forEach(function (item, index, arr) {
+                if (item instanceof window.globals.tankModule.Tank && item.clientID == data.clientID) {
+                    console.log(window.globals.entities[arr.length - 1 - index].clientID + " tank")///
+                    window.globals.entities[arr.length - 1 - index].cleanupSelf();
+                    window.globals.entities.splice(arr.length - 1 - index, 1);
 
-                        // Find and delete clientID
-                        let indexOfClient = window.globals.clientIDs.indexOf(data.clientID);
-                        window.globals.clientIDs.splice(indexOfClient, 1);
-                    }
-                });
-                /*
-                //TODO: delete shell automaticall after certain time like threads.
-                window.globals.entities.slice().reverse().forEach(function (item, index, arr) {
-                    if (item instanceof window.globals.shellModule.Shell && item.clientID == data.clientID) {
-                        window.globals.entities.splice(arr.length - 1 - index, 1);
-                    }
-                });
-                */
-            }
+                    // Find and delete clientID
+                    let indexOfClient = window.globals.clientIDs.indexOf(data.clientID);
+                    window.globals.clientIDs.splice(indexOfClient, 1);
+                }
+            });
+            /*
+            window.globals.entities.slice().reverse().forEach(function (item, index, arr) {
+                if (item instanceof window.globals.shellModule.Shell && item.clientID == data.clientID) {
+                    console.log(window.globals.entities[arr.length - 1 - index].clientID)///
+                    //window.globals.entities[arr.length - 1 - index].cleanupSelf();
+                    window.globals.entities.splice(arr.length - 1 - index, 1);
+                }
+            });
+            */
+        });
+        ///
+        window.globals.clientSocket.on("delete shall", function (data) {
+            window.globals.entities.slice().reverse().forEach(function (item, index, arr) {
+                if (item instanceof window.globals.shellModule.Shell && item.clientID == data.clientID) {
+                    console.log(window.globals.entities[arr.length - 1 - index].clientID + " shell")///
+                    //window.globals.entities[arr.length - 1 - index].cleanupSelf();
+                    window.globals.entities.splice(arr.length - 1 - index, 1);
+                }
+            });
         });
 
         // Client Loop //

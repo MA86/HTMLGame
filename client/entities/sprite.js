@@ -11,10 +11,11 @@ class Sprite extends window.globals.entityModule.Entity {
         this.numberOfTimeToRepeat = repeatNum;
         this.timesPlayed = 0;
         this.resize = 2;
+
         // Properties
         this.parent = parent;
-        this.clientID = clientID;///
-        this.animationID = id;///
+        this.clientID = clientID;
+        this.animationID = id;
     }
     renderThis(ctx) {
         let frameCenter = {

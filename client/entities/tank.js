@@ -20,8 +20,15 @@ class Tank extends window.globals.entityModule.Entity {
 
         // Bind this object to its functions
         this.setupEventListeners = this.setupEventListeners.bind(this);
-        this.handleCollision = this.handleCollision.bind(this);
+        this.renderThis = this.renderThis.bind(this);
+        this.updateThis = this.updateThis.bind(this);
+        this.lerpMovement = this.lerpMovement.bind(this);
+        this.lerpRotation = this.lerpRotation.bind(this);
+        this.lerp = this.lerp.bind(this);
+        this.animateTankPenetration = this.animateTankPenetration.bind(this);
         this.cleanupSelf = this.cleanupSelf.bind(this);
+        this.emitKeyUp = this.emitKeyUp.bind(this);
+
 
         // Variables used for rendering this object
         this.index = 0;
@@ -40,7 +47,7 @@ class Tank extends window.globals.entityModule.Entity {
         // Listen for update (server tick)
         let thiss = this;
         window.globals.clientSocket.on("update tank and turret", function (data) {
-            // Check which tank is the message for...
+            // Check if the message is for this tank
             if (thiss.clientID == data.clientID) {
                 // Take by value not ref!
                 thiss.startPosition.x = thiss.position.x;
@@ -57,9 +64,8 @@ class Tank extends window.globals.entityModule.Entity {
             }
         });
 
-        // Listen for destroy tank event
         window.globals.clientSocket.on("destroy tank", function (data) {
-            // Check which tank is the message for...
+            // Check if the message is for this tank
             if (thiss.clientID == data.clientID) {
                 // Play tank animation one time
                 thiss.animateTankPenetration(data.currentPosition, data.currentAngle);
@@ -79,6 +85,7 @@ class Tank extends window.globals.entityModule.Entity {
         });
 
         window.globals.clientSocket.on("create tread mark", function (data) {
+            // Create marks if the message is for this tank
             if (thiss.clientID == data.clientID) {
                 let treadMark = new window.globals.staticObjectModule.StaticObject(
                     data.position,
@@ -123,25 +130,25 @@ class Tank extends window.globals.entityModule.Entity {
             // Client tells server up-arrow is pressed
             if (keysDown && keysDown.ArrowUp == true) {
                 window.globals.clientSocket.emit(
-                    "move forward", {}
+                    "move forward", { "clientID": this.clientID }
                 );
             }
             // Client tells server down-arrow is pressed
             if (keysDown && keysDown.ArrowDown == true) {
                 window.globals.clientSocket.emit(
-                    "move backward", {}
+                    "move backward", { "clientID": this.clientID }
                 );
             }
 
             // Client tells server right-arrow/left-arrow is pressed
             if (keysDown && keysDown.ArrowRight == true) {
                 window.globals.clientSocket.emit(
-                    "turn right", {}
+                    "turn right", { "clientID": this.clientID }
                 );
             }
             if (keysDown && keysDown.ArrowLeft == true) {
                 window.globals.clientSocket.emit(
-                    "turn left", {}
+                    "turn left", { "clientID": this.clientID }
                 );
             }
         }
@@ -204,19 +211,8 @@ class Tank extends window.globals.entityModule.Entity {
 
     cleanupSelf() {
         let thiss = this;
-        /*
-        // Find index of this tank and remove it from list
-        let indexOfTank = window.globals.entities.findIndex(function (obj) {
-            if (obj instanceof Tank && thiss.clientID == obj.clientID) {
-                return true;
-            }
-        });
-        // Remove client and associated tank
-        window.globals.entities.splice(indexOfTank, 1);
-        window.globals.clientIDs.splice(indexOfTank, 1);
-        */
 
-        // If it is the playable tank, disable input
+        // Disable input if this is playable-tank
         if (thiss.clientID == window.globals.clientSocket.id) {
             // Unsubscribe from input events
             removeEventListener("keyup", thiss.emitKeyUp);
@@ -229,25 +225,28 @@ class Tank extends window.globals.entityModule.Entity {
     }
 
     emitKeyUp(key) {
-        if (key.code == "ArrowUp") {
-            window.globals.clientSocket.emit(
-                "arrow up released", {}
-            );
-        }
-        if (key.code == "ArrowDown") {
-            window.globals.clientSocket.emit(
-                "arrow down released", {}
-            );
-        }
-        if (key.code == "ArrowRight") {
-            window.globals.clientSocket.emit(
-                "arrow right released", {}
-            );
-        }
-        if (key.code == "ArrowLeft") {
-            window.globals.clientSocket.emit(
-                "arrow left released", {}
-            );
+        // Emit keyup message if this is playable-tank
+        if (this.clientID == window.globals.clientSocket.id) {
+            if (key.code == "ArrowUp") {
+                window.globals.clientSocket.emit(
+                    "arrow up released", { "clientID": this.clientID }
+                );
+            }
+            if (key.code == "ArrowDown") {
+                window.globals.clientSocket.emit(
+                    "arrow down released", { "clientID": this.clientID }
+                );
+            }
+            if (key.code == "ArrowRight") {
+                window.globals.clientSocket.emit(
+                    "arrow right released", { "clientID": this.clientID }
+                );
+            }
+            if (key.code == "ArrowLeft") {
+                window.globals.clientSocket.emit(
+                    "arrow left released", { "clientID": this.clientID }
+                );
+            }
         }
     }
 }

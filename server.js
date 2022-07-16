@@ -113,7 +113,6 @@ socketServer.on("connection", function onConnect(socket) {
             socketServer.emit("create client", { "clientID": item.clientID });
         }
     });
-
     entities.forEach(function (item, index, arr) {
         if (item instanceof Shell) {
             socketServer.emit("create shell", { "clientID": item.clientID, "shellID": item.shellID });
@@ -127,7 +126,7 @@ socketServer.on("connection", function onConnect(socket) {
 
         // Broadcast message to connected clients to delete items associated with this client
         entities.slice().reverse().forEach(function (item, index, arr) {
-            if (item.clientID == socket.id) {
+            if (item instanceof Tank && item.clientID == socket.id) {
                 entities[arr.length - 1 - index].cleanupSelf();
                 entities.splice(arr.length - 1 - index, 1);
 
@@ -135,14 +134,16 @@ socketServer.on("connection", function onConnect(socket) {
                 socketServer.emit("delete client", { "clientID": item.clientID });
             }
         });
-        /* TODO: Auto destroy shell like treads
         entities.slice().reverse().forEach(function (item, index, arr) {
             if (item instanceof Shell && item.clientID == socket.id) {
                 entities[arr.length - 1 - index].cleanupSelf();
                 entities.splice(arr.length - 1 - index, 1);
+
+                // Tell clients to remove this entity as well
+                socketServer.emit("delete shall", { "clientID": item.clientID });
             }
         });
-        */
+        // TODO: Auto destroy shell like treads
     });
 });
 

@@ -49,9 +49,6 @@ class Tank {
         this.lastForwardTreadMarkPos = Vector.create(this.body.position.x, this.body.position.y);
         this.spaceBetweenTreadMarks = 10;
 
-        ///
-        this.calback;
-
         // Redefine turret's center from middle to left
         Body.setCentre(this.turret.body, { x: -48, y: -4 }, true);
         // Position turret on tank (based on new center)
@@ -279,15 +276,6 @@ class Tank {
 
         // Unsubscribe from events of this socket connection
         //thiss.socket.removeAllListeners();
-        /*
-        // Remove this tank from entities list
-        let indexOfTank = entities.findIndex(function (obj) {
-            if (obj instanceof Tank && obj.clientID == thiss.clientID) {
-                return true;
-            }
-        });
-        entities.splice(indexOfTank, 1);
-        */
 
         // Unsubscribe from other events
         Events.off(thiss.engine, "collisionStart", thiss.handleCollision);
