@@ -24,7 +24,7 @@ class Shell {
 
         // Properties of shell
         this.clientID = clientID;
-        this.shellID = this.body.id;///
+        this.shellID = this.body.id;
         this.engine = eng;
         this.world = world;
         this.socketServer = server;

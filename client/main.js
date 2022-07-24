@@ -126,7 +126,7 @@ window.addEventListener("load", async function (e) {
 
         // When client disconnects...
         window.globals.clientSocket.on("delete client", function (data) {
-            // Find and delete all shells belonging to this client
+            // Find and delete all tanks belonging to this client
             window.globals.entities.slice().reverse().forEach(function (item, index, arr) {
                 if (item instanceof window.globals.tankModule.Tank && item.clientID == data.clientID) {
                     console.log(window.globals.entities[arr.length - 1 - index].clientID + " tank")///
