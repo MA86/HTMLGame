@@ -138,7 +138,6 @@ window.addEventListener("load", async function (e) {
                     window.globals.clientIDs.splice(indexOfClient, 1);
                 }
             });
-            /*
             window.globals.entities.slice().reverse().forEach(function (item, index, arr) {
                 if (item instanceof window.globals.shellModule.Shell && item.clientID == data.clientID) {
                     console.log(window.globals.entities[arr.length - 1 - index].clientID)///
@@ -146,7 +145,7 @@ window.addEventListener("load", async function (e) {
                     window.globals.entities.splice(arr.length - 1 - index, 1);
                 }
             });
-            */
+
         });
         ///
         window.globals.clientSocket.on("delete shall", function (data) {
