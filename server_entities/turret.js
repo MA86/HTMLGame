@@ -68,7 +68,7 @@ class Turret {
                     angle,
                     { "fdx": fdx, "fdy": fdy },
                     {
-                        speed: 0.009,
+                        speed: 0.05,
                         type: "HE",
                         blastRadius: 2,
                         penetration: 2
@@ -82,7 +82,9 @@ class Turret {
                     "create shell",
                     {
                         "clientID": thiss.firedShell.clientID,
-                        "shellID": thiss.firedShell.shellID
+                        "shellID": thiss.firedShell.shellID,
+                        "initPos": thiss.firedShell.body.position,
+                        "initAng": thiss.firedShell.body.angle
                     }
                 );
                 // Remove reference

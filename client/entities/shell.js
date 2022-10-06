@@ -1,6 +1,6 @@
 class Shell extends window.globals.entityModule.Entity {
-    constructor(ss, ssData, fps, clientID, sID) {
-        super({ "x": 0, "y": 0 }, 0, false);
+    constructor(ss, ssData, fps, clientID, sID, initPos, initAng) {
+        super({ "x": initPos.x, "y": initPos.y }, initAng, false);
 
         // Variables used for rendering this object
         this.index = 0;
@@ -11,6 +11,19 @@ class Shell extends window.globals.entityModule.Entity {
 
         this.clientID = clientID;
         this.shellID = sID;
+        this.startPosition = { "x": initPos.x, "y": initPos.y };
+        this.endPosition = { "x": initPos.x, "y": initPos.y };
+        this.startAngle = initAng;
+        this.endAngle = initAng;
+
+        // Bind this
+        this.updateThis = this.updateThis.bind(this);
+        this.lerpMovement = this.lerpMovement.bind(this);
+        this.lerpRotation = this.lerpRotation.bind(this);
+        this.lerp = this.lerp.bind(this);
+
+        this.timeSinceLastPositionTick = 0;
+        this.timeSinceLastRotationTick = 0;
 
         this.setupEventListeners();
     }
@@ -20,8 +33,21 @@ class Shell extends window.globals.entityModule.Entity {
         let thiss = this;
         window.globals.clientSocket.on("update shell", function (data) {
             if (thiss.clientID == data.clientID && thiss.shellID == data.shellID) {
-                thiss.position = data.position;
-                thiss.angle = data.angle;
+                // Take by value not ref!
+                thiss.startPosition.x = thiss.position.x;
+                thiss.startPosition.y = thiss.position.y;
+                thiss.endPosition.x = data.position.x;
+                thiss.endPosition.y = data.position.y;
+
+                thiss.startAngle = thiss.angle;
+                thiss.endAngle = data.angle;
+                /// DELETE below
+                //thiss.position = data.position;
+                //thiss.angle = data.angle;
+
+                // Reset time
+                thiss.timeSinceLastPositionTick = 0;
+                thiss.timeSinceLastRotationTick = 0;
             }
         });
 
@@ -57,6 +83,10 @@ class Shell extends window.globals.entityModule.Entity {
     }
 
     updateThis(keysDown, dt) {
+        // Lerp position and angle
+        this.lerpMovement(this.lerp, this.startPosition, this.endPosition, dt, window.globals.serverTickRate);
+        this.lerpRotation(this.lerp, this.startAngle, this.endAngle, dt, window.globals.serverTickRate);
+
         // Update animation index
         this.timeTracker += dt;
         let delay = 1 / this.framesPerSecond;
@@ -65,6 +95,34 @@ class Shell extends window.globals.entityModule.Entity {
             this.index = this.index % this.spriteSheetData.frames.length;
             this.timeTracker = 0;
         }
+    }
+
+    lerpRotation(lerpFunc, startAngle, endAngle, delta, lerpDuration) {
+        if (this.timeSinceLastRotationTick < lerpDuration) {
+            // Do linear interpolation
+            this.angle = lerpFunc(startAngle, endAngle, this.timeSinceLastRotationTick / lerpDuration);
+            this.timeSinceLastRotationTick += delta;
+        } else {
+            // Skip linear interpolation
+            this.angle = endAngle;
+        }
+    }
+
+    lerpMovement(lerpFunc, startPosition, endPosition, delta, lerpDuration) {
+        if (this.timeSinceLastPositionTick < lerpDuration) {
+            // Do linear interpolation
+            this.position.x = lerpFunc(startPosition.x, endPosition.x, this.timeSinceLastPositionTick / lerpDuration);
+            this.position.y = lerpFunc(startPosition.y, endPosition.y, this.timeSinceLastPositionTick / lerpDuration);
+            this.timeSinceLastPositionTick += delta;
+        } else {
+            // Skip linear interpolation
+            this.position.x = endPosition.x;
+            this.position.y = endPosition.y;
+        }
+    }
+
+    lerp(start, end, time) {
+        return start * (1 - time) + end * time;
     }
 
     animateShellPenetration(position, angle) {

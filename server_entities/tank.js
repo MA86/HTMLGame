@@ -23,7 +23,7 @@ class Tank {
                 group: 1
             },
             isStatic: false,
-            frictionAir: 0.05,
+            frictionAir: 0.2,
             restitution: 0,
             density: 5,
             friction: 0.6,
@@ -37,9 +37,9 @@ class Tank {
         // Properties of tank
         this.clientID = socket.id;
         this.socketServer = server;
-        this.maxSpeed = 5;
+        this.maxSpeed = 6;
         this.currentSpeed = 0;
-        this.maxTurnSpeed = 0.01;
+        this.maxTurnSpeed = 0.04;
         this.currentTurnSpeed = 0;
         this.world = world;
         this.engine = eng;
@@ -81,7 +81,7 @@ class Tank {
         thiss.socket.on("move forward", function (data) {
             // Slowly increment speed
             if (thiss.currentSpeed < thiss.maxSpeed) {
-                thiss.currentSpeed += 0.5;
+                thiss.currentSpeed += 0.2;
             }
             // Prepare velocity vector
             let velocityX = Math.cos(thiss.body.angle) * thiss.currentSpeed;
@@ -130,7 +130,7 @@ class Tank {
         thiss.socket.on("move backward", function (data) {
             // Slowly increment speed
             if (thiss.currentSpeed < thiss.maxSpeed) {
-                thiss.currentSpeed += 0.5;
+                thiss.currentSpeed += 0.2;
             }
             // Prepare velocity vector
             let velocityX = Math.cos(thiss.body.angle) * -thiss.currentSpeed;
@@ -178,7 +178,7 @@ class Tank {
         // Listen for right turn
         thiss.socket.on("turn right", function (data) {
             if (thiss.currentTurnSpeed < thiss.maxTurnSpeed) {
-                thiss.currentTurnSpeed += 0.00006;
+                thiss.currentTurnSpeed += 0.0005;
             }
             Body.setAngularVelocity(thiss.body, thiss.currentTurnSpeed);
         });
@@ -186,7 +186,7 @@ class Tank {
         // Listen for left turn
         thiss.socket.on("turn left", function (data) {
             if (thiss.currentTurnSpeed < thiss.maxTurnSpeed) {
-                thiss.currentTurnSpeed += 0.00006;
+                thiss.currentTurnSpeed += 0.0005;
             }
             Body.setAngularVelocity(thiss.body, -thiss.currentTurnSpeed);
         });

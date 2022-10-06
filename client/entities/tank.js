@@ -1,6 +1,6 @@
 class Tank extends window.globals.entityModule.Entity {
-    constructor(ss, ssData, fps, clientID, turretParams, shellParams) {
-        super({ "x": 0, "y": 0 }, 0, false);
+    constructor(ss, ssData, fps, clientID, turretParams, shellParams, initPos, initAng) {
+        super({ "x": initPos.x, "y": initPos.y }, initAng, false);
 
         this.turret = new window.globals.turretModule.Turret(
             turretParams.ss,
@@ -13,10 +13,10 @@ class Tank extends window.globals.entityModule.Entity {
 
         // Properties of this object
         this.clientID = clientID;
-        this.startPosition = { "x": 0, "y": 0 };
-        this.endPosition = { "x": 0, "y": 0 };
-        this.startAngle = 0;
-        this.endAngle = 0;
+        this.startPosition = { "x": initPos.x, "y": initPos.y };
+        this.endPosition = { "x": initPos.x, "y": initPos.y };
+        this.startAngle = initAng;
+        this.endAngle = initAng;
 
         // Bind this object to its functions
         this.setupEventListeners = this.setupEventListeners.bind(this);
@@ -38,7 +38,7 @@ class Tank extends window.globals.entityModule.Entity {
         this.spriteSheet = ss;
 
         this.timeSinceLastPositionTick = 0;    // Milisecond
-        this.timeSinceLastRotationTick = 0
+        this.timeSinceLastRotationTick = 0;
 
         this.setupEventListeners();
     }

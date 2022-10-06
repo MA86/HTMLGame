@@ -65,19 +65,19 @@ const Start = function () {
 
                 // Update clients
                 if (entity instanceof Shell) {
-                    console.log(entity.clientID + " Shell")///
+                    console.log(entity.clientID + " Shell")/// For debug
                     socketServer.emit(
                         "update shell",
                         {
                             "clientID": entity.clientID,
-                            "shellID": entity.shellID,///
+                            "shellID": entity.shellID,
                             "position": entity.body.position,
                             "angle": entity.body.angle,
                         }
                     );
                 }
                 if (entity instanceof Tank) {
-                    console.log(entity.clientID + " Tank")///
+                    console.log(entity.clientID + " Tank")/// For debug
                     socketServer.emit(
                         "update tank and turret",
                         {
@@ -104,18 +104,21 @@ socketServer.on("connection", function onConnect(socket) {
     // Create a new tank for this client, add it to entities list
     let entity = new Tank({ "x": 0, "y": 0 }, world, socket, socketServer, null, engine);
     entities.push(entity);
-    // TODO: send clients static list too.
     // TODO: when new client enters, load shells on his screen too!
     // TODO: send them start screen!
     // For every item in the entities list, broadcast message to connected clients to create items
     entities.forEach(function (item, index, arr) {
         if (item instanceof Tank) {
-            socketServer.emit("create client", { "clientID": item.clientID });
+            socketServer.emit("create client",
+                { "clientID": item.clientID, "initPos": item.body.position, "initAng": item.body.angle }
+            );
         }
     });
     entities.forEach(function (item, index, arr) {
         if (item instanceof Shell) {
-            socketServer.emit("create shell", { "clientID": item.clientID, "shellID": item.shellID });
+            socketServer.emit("create shell",
+                { "clientID": item.clientID, "shellID": item.shellID, "initPos": item.body.position, "initAng": item.body.angle }
+            );
         }
     });
 

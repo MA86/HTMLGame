@@ -88,7 +88,7 @@ window.addEventListener("load", async function (e) {
 
         // Render map
         let testTerrain = new window.globals.terrainLayerModule.TerrainLayer(
-            0, 0, null, 10, 10, window.globals.images["./images_and_data/ground.png"], 128, 8, 8
+            0, 0, null, 20, 10, window.globals.images["./images_and_data/ground.png"], 128, 8, 8
         );
         testTerrain.setTiles(window.globals.spriteSheetsData.oasis.layerOne);
         testTerrain.renderThis(window.globals.bgContext);
@@ -116,7 +116,9 @@ window.addEventListener("load", async function (e) {
                         "ssData": window.globals.spriteSheetsData.shellData,
                         "fps": 1,
                         "clientID": data.clientID
-                    }
+                    },
+                    data.initPos,
+                    data.initAng
                 );
                 // Add tank to entities list and client to client list
                 window.globals.entities.push(mSixTank);

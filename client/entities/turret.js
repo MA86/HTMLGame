@@ -15,6 +15,15 @@ class Turret extends window.globals.entityModule.Entity {
         this.firedShell = null;
         this.shellIsActive = false;
 
+        this.startAngle = 0;
+        this.endAngle = 0;
+        this.timeSinceLastRotationTick = 0;
+
+        // Bind this
+        this.updateThis = this.updateThis.bind(this);
+        this.lerpRotation = this.lerpRotation.bind(this);
+        this.lerp = this.lerp.bind(this);
+
         this.setupEventListeners();
     }
 
@@ -24,7 +33,13 @@ class Turret extends window.globals.entityModule.Entity {
         window.globals.clientSocket.on("update tank and turret", function (data) {
             // Update if it's this turret
             if (thiss.clientID == data.clientID) {
-                thiss.angle = data.turretAngle;
+                //thiss.angle = data.turretAngle;
+
+                thiss.startAngle = thiss.angle;
+                thiss.endAngle = data.turretAngle;
+
+                // Reset time
+                thiss.timeSinceLastRotationTick = 0;
             }
         });
 
@@ -37,7 +52,9 @@ class Turret extends window.globals.entityModule.Entity {
                     thiss.shellParams.ssData,
                     thiss.shellParams.fps,
                     data.clientID,
-                    data.shellID
+                    data.shellID,
+                    data.initPos,
+                    data.initAng
                 );
 
                 // Add this shell rep. to entities list 
@@ -66,6 +83,9 @@ class Turret extends window.globals.entityModule.Entity {
     }
 
     updateThis(keysDown, dt) {
+        // Lerp rotation
+        this.lerpRotation(this.lerp, this.startAngle, this.endAngle, dt, window.globals.serverTickRate);
+
         if (this.clientID == window.globals.clientSocket.id) {
             // Client tells server to rotate right/left
             if (keysDown && keysDown.KeyD == true) {
@@ -98,6 +118,21 @@ class Turret extends window.globals.entityModule.Entity {
             this.index = this.index % this.spriteSheetData.mSixTankTurretData.frames.length;
             this.timeTracker = 0;
         }
+    }
+
+    lerpRotation(lerpFunc, startAngle, endAngle, delta, lerpDuration) {
+        if (this.timeSinceLastRotationTick < lerpDuration) {
+            // Do linear interpolation
+            this.angle = lerpFunc(startAngle, endAngle, this.timeSinceLastRotationTick / lerpDuration);
+            this.timeSinceLastRotationTick += delta;
+        } else {
+            // Skip linear interpolation
+            this.angle = endAngle;
+        }
+    }
+
+    lerp(start, end, time) {
+        return start * (1 - time) + end * time;
     }
 
     cleanupSelf() {

@@ -11,5 +11,6 @@ Some tradeoffs to consider:
     	// Read up scrolling background too. (aka parallax)
 
     // TODO:
-    // Learn 'signals'
+    // "create shell" emit in both server.js and /server/turret.js
+	// resulting in one client having two copies of same shell. server still has correct num of shells though
     
