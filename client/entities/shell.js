@@ -41,11 +41,8 @@ class Shell extends window.globals.entityModule.Entity {
 
                 thiss.startAngle = thiss.angle;
                 thiss.endAngle = data.angle;
-                /// DELETE below
-                //thiss.position = data.position;
-                //thiss.angle = data.angle;
 
-                // Reset time
+                // Reset counter
                 thiss.timeSinceLastPositionTick = 0;
                 thiss.timeSinceLastRotationTick = 0;
             }
@@ -148,7 +145,7 @@ class Shell extends window.globals.entityModule.Entity {
 
         // Find index of this shell and remove it from list
         let indexOfShell = window.globals.entities.findIndex(function (obj) {
-            if (obj instanceof Shell && thiss.shellID == obj.shellID) {
+            if (obj instanceof Shell && thiss.shellID == obj.shellID && thiss.clientID == obj.clientID) {
                 return true;
             }
         });

@@ -7,13 +7,6 @@ class Entity {
     }
 
     render(ctx, lerpFactor, delta) {
-        // TODO: Make values frame-rate independent? And put lerp in update
-        //this.position.x = this.position.x * (delta / 1000);
-        //this.position.y = this.position.y * (delta / 1000);
-        //this.updatedPosition.x = this.updatedPosition.x * (delta / 1000);
-        //this.updatedPosition.y = this.updatedPosition.y * (delta / 1000);
-        //this.angle = this.angle * (delta / 1000);
-
         // This logic is for rendering locally vs globally
         if (this.isChild) {
             // Translate context relative to parent position

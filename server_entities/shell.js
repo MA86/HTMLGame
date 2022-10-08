@@ -20,7 +20,7 @@ class Shell {
         // Bind this object to its functions
         this.setupEventListeners = this.setupEventListeners.bind(this);
         this.handleCollision = this.handleCollision.bind(this);
-        this.cleanupSelf = this.cleanupSelf.bind(this);
+        this.removeSelf = this.removeSelf.bind(this);
 
         // Properties of shell
         this.clientID = clientID;
@@ -64,6 +64,9 @@ class Shell {
 
         // On engine's collisions event...
         Events.on(thiss.engine, "collisionStart", thiss.handleCollision);
+
+        // Destory self after 2s
+        thiss.removeSelf(2000)
     }
 
     handleCollision(event) {
@@ -131,6 +134,38 @@ class Shell {
                 // Then, unsubscribe from engine's collision signal
                 Events.off(thiss.engine, "collisionStart", thiss.handleCollision);
             }
+        }
+    }
+
+    removeSelf(time) {
+        let thiss = this;
+        if (time > -1) {
+            // After x amount of time, remove shell
+            setTimeout(function () {
+                // If not already destroyed due to collision...
+                if (thiss.body != undefined) {
+                    // Tell clients to remove shell
+                    thiss.socketServer.emit(
+                        "destroy shell",
+                        {
+                            "clientID": thiss.clientID,
+                            "shellID": thiss.shellID,
+                            "currentPosition": thiss.body.position,
+                            "currentAngle": thiss.body.angle
+                        }
+                    );
+
+                    // Remove from entities list
+                    let indexOfShell = entities.findIndex(function (obj) {
+                        if (obj instanceof Shell && obj.shellID == thiss.shellID) {
+                            return true;
+                        }
+                    });
+                    entities.splice(indexOfShell, 1);
+
+                    thiss.cleanupSelf();
+                }
+            }, time);
         }
     }
 

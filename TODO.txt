@@ -13,4 +13,6 @@ Some tradeoffs to consider:
     // TODO:
     // "create shell" emit in both server.js and /server/turret.js
 	// resulting in one client having two copies of same shell. server still has correct num of shells though
+	// TEMP SOLUTION: made /server/shell.js to auto destruct in 2s... tell client to destroy too.
+    // Make a visual documentation of the architecture so far.
     

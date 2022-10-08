@@ -126,6 +126,8 @@ class Tank extends window.globals.entityModule.Entity {
         this.lerpMovement(this.lerp, this.startPosition, this.endPosition, dt, window.globals.serverTickRate);
         this.lerpRotation(this.lerp, this.startAngle, this.endAngle, dt, window.globals.serverTickRate);
 
+        // TODO: problem: faster cpu emits more! slow emits less!
+        // Do above for all emits inside updateThis!
         if (this.clientID == window.globals.clientSocket.id) {
             // Client tells server up-arrow is pressed
             if (keysDown && keysDown.ArrowUp == true) {
